@@ -16,11 +16,13 @@
 #ifdef NECKO_PROTOCOL_ftp
 #include "mozilla/net/FTPChannelChild.h"
 #endif
+#ifdef NECKO_PROTOCOL_websocket
 #include "mozilla/net/WebSocketChannelChild.h"
 #include "mozilla/net/WebSocketEventListenerChild.h"
+#include "mozilla/net/IPCTransportProvider.h"
+#endif
 #include "mozilla/net/DNSRequestChild.h"
 #include "mozilla/net/ChannelDiverterChild.h"
-#include "mozilla/net/IPCTransportProvider.h"
 #include "mozilla/dom/network/TCPSocketChild.h"
 #include "mozilla/dom/network/TCPServerSocketChild.h"
 #include "mozilla/dom/network/UDPSocketChild.h"
@@ -167,6 +169,7 @@ NeckoChild::DeallocPWyciwygChannelChild(PWyciwygChannelChild* channel)
   return true;
 }
 
+#ifdef NECKO_PROTOCOL_websocket
 PWebSocketChild*
 NeckoChild::AllocPWebSocketChild(const PBrowserOrId& browser,
                                  const SerializedLoadContext& aSerialized,
@@ -200,6 +203,7 @@ NeckoChild::DeallocPWebSocketEventListenerChild(PWebSocketEventListenerChild* aA
   MOZ_ASSERT(c);
   return true;
 }
+#endif /* NECKO_PROTOCOL_websocket */
 
 PDataChannelChild*
 NeckoChild::AllocPDataChannelChild(const uint32_t& channelId)
@@ -332,6 +336,7 @@ NeckoChild::DeallocPChannelDiverterChild(PChannelDiverterChild* child)
   return true;
 }
 
+#ifdef NECKO_PROTOCOL_websocket
 PTransportProviderChild*
 NeckoChild::AllocPTransportProviderChild()
 {
@@ -347,6 +352,7 @@ NeckoChild::DeallocPTransportProviderChild(PTransportProviderChild* aActor)
 {
   return true;
 }
+#endif
 
 bool
 NeckoChild::RecvAsyncAuthPromptForNestedFrame(const TabId& aNestedFrameId,

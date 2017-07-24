@@ -191,7 +191,10 @@ static void Shutdown();
 #include "mozilla/dom/nsMixedContentBlocker.h"
 
 #include "AudioChannelService.h"
+
+#ifdef NECKO_PROTOCOL_websocket
 #include "mozilla/net/WebSocketEventService.h"
+#endif
 
 #include "mozilla/dom/FlyWebService.h"
 
@@ -566,8 +569,10 @@ NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(Geolocation, Init)
 #define NS_AUDIOCHANNEL_SERVICE_CID \
   { 0xf712e983, 0x048a, 0x443f, { 0x88, 0x02, 0xfc, 0xc3, 0xd9, 0x27, 0xce, 0xac }}
 
+#ifdef NECKO_PROTOCOL_websocket
 #define NS_WEBSOCKETEVENT_SERVICE_CID \
   { 0x31689828, 0xda66, 0x49a6, { 0x87, 0x0c, 0xdf, 0x62, 0xb8, 0x3f, 0xe7, 0x89 }}
+#endif
 
 #define NS_FLYWEB_SERVICE_CID \
   { 0x5de19ef0, 0x895e, 0x4c0c, { 0xa6, 0xe0, 0xea, 0xe0, 0x23, 0x2b, 0x84, 0x5a } }
@@ -576,7 +581,9 @@ NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(nsGeolocationService, nsGeolocationServ
 
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(AudioChannelService, AudioChannelService::GetOrCreate)
 
+#ifdef NECKO_PROTOCOL_websocket
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(WebSocketEventService, WebSocketEventService::GetOrCreate)
+#endif
 
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(FlyWebService, FlyWebService::GetOrCreateAddRefed)
 
@@ -721,7 +728,9 @@ NS_DEFINE_NAMED_CID(NS_TEXTSERVICESDOCUMENT_CID);
 NS_DEFINE_NAMED_CID(NS_GEOLOCATION_SERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_GEOLOCATION_CID);
 NS_DEFINE_NAMED_CID(NS_AUDIOCHANNEL_SERVICE_CID);
+#ifdef NECKO_PROTOCOL_websocket
 NS_DEFINE_NAMED_CID(NS_WEBSOCKETEVENT_SERVICE_CID);
+#endif
 NS_DEFINE_NAMED_CID(NS_FLYWEB_SERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_FOCUSMANAGER_CID);
 NS_DEFINE_NAMED_CID(NS_CONTENTSECURITYMANAGER_CID);
@@ -1000,7 +1009,9 @@ static const mozilla::Module::CIDEntry kLayoutCIDs[] = {
   { &kNS_GEOLOCATION_SERVICE_CID, false, nullptr, nsGeolocationServiceConstructor },
   { &kNS_GEOLOCATION_CID, false, nullptr, GeolocationConstructor },
   { &kNS_AUDIOCHANNEL_SERVICE_CID, false, nullptr, AudioChannelServiceConstructor },
+#ifdef NECKO_PROTOCOL_websocket
   { &kNS_WEBSOCKETEVENT_SERVICE_CID, false, nullptr, WebSocketEventServiceConstructor },
+#endif
   { &kNS_FLYWEB_SERVICE_CID, false, nullptr, FlyWebServiceConstructor },
   { &kNS_FOCUSMANAGER_CID, false, nullptr, CreateFocusManager },
 #ifdef MOZ_WEBSPEECH_TEST_BACKEND
@@ -1142,7 +1153,9 @@ static const mozilla::Module::ContractIDEntry kLayoutContracts[] = {
   { "@mozilla.org/geolocation/service;1", &kNS_GEOLOCATION_SERVICE_CID },
   { "@mozilla.org/geolocation;1", &kNS_GEOLOCATION_CID },
   { "@mozilla.org/audiochannel/service;1", &kNS_AUDIOCHANNEL_SERVICE_CID },
+#ifdef NECKO_PROTOCOL_websocket
   { "@mozilla.org/websocketevent/service;1", &kNS_WEBSOCKETEVENT_SERVICE_CID },
+#endif
   { "@mozilla.org/flyweb-service;1", &kNS_FLYWEB_SERVICE_CID },
   { NS_NETWORK_PROTOCOL_CONTRACTID_PREFIX "flyweb", &kNS_FLYWEB_SERVICE_CID },
   { "@mozilla.org/focus-manager;1", &kNS_FOCUSMANAGER_CID },
