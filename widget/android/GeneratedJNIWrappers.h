@@ -361,26 +361,6 @@ public:
 
     static auto DisableNetworkNotifications() -> void;
 
-    struct DisableSensor_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int32_t> Args;
-        static constexpr char name[] = "disableSensor";
-        static constexpr char signature[] =
-                "(I)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto DisableSensor(int32_t) -> void;
-
     struct EnableLocation_t {
         typedef GeckoAppShell Owner;
         typedef void ReturnType;
@@ -439,26 +419,6 @@ public:
     };
 
     static auto EnableNetworkNotifications() -> void;
-
-    struct EnableSensor_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int32_t> Args;
-        static constexpr char name[] = "enableSensor";
-        static constexpr char signature[] =
-                "(I)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto EnableSensor(int32_t) -> void;
 
     struct GetApplicationContext_t {
         typedef GeckoAppShell Owner;
@@ -1202,30 +1162,6 @@ public:
         static constexpr char name[] = "onLocationChanged";
         static constexpr char signature[] =
                 "(DDDFFFJ)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::UI;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::GECKO;
-    };
-
-    struct OnSensorChanged_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int32_t,
-                float,
-                float,
-                float,
-                float,
-                int32_t,
-                int64_t> Args;
-        static constexpr char name[] = "onSensorChanged";
-        static constexpr char signature[] =
-                "(IFFFFIJ)V";
         static const bool isStatic = true;
         static const mozilla::jni::ExceptionMode exceptionMode =
                 mozilla::jni::ExceptionMode::ABORT;

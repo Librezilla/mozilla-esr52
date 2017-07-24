@@ -41,29 +41,6 @@ function runEmulatorCmdSafe(aCommand) {
 }
 
 /**
- * Get emulator sensor values of a named sensor.
- *
- * Fulfill params:
- *   result -- an array of emulator sensor values.
- * Reject params: (none)
- *
- * @param aSensorName
- *        A string name of the sensor.  Availables are: "acceleration"
- *        "magnetic-field", "orientation", "temperature", "proximity".
- *
- * @return A deferred promise.
- */
-function getEmulatorSensorValues(aSensorName) {
-  return runEmulatorCmdSafe("sensor get " + aSensorName)
-    .then(function(aResult) {
-      // aResult = ["orientation = 0:0:0", "OK"]
-      return aResult[0].split(" ")[2].split(":").map(function(aElement) {
-        return parseInt(aElement, 10);
-      });
-    });
-}
-
-/**
  * Convenient alias function for getting orientation sensor values.
  */
 function getEmulatorOrientationValues() {

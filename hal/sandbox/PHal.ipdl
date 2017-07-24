@@ -10,8 +10,6 @@ include protocol PBrowser;
 include "mozilla/GfxMessageUtils.h";
 
 using mozilla::dom::ScreenOrientationInternal from "mozilla/dom/ScreenOrientation.h";
-using mozilla::hal::SensorType from "mozilla/HalSensor.h";
-using mozilla::hal::SensorAccuracyType from "mozilla/HalSensor.h";
 using mozilla::hal::ProcessPriority from "mozilla/HalTypes.h";
 using nsIntRect from "nsRect.h";
 using PRTime from "prtime.h";
@@ -19,13 +17,6 @@ using PRTime from "prtime.h";
 namespace mozilla {
 
 namespace hal {
-
-struct SensorData {
-  SensorType sensor;
-  PRTime timestamp;
-  float[] values;
-  SensorAccuracyType accuracy;
-};
 
 struct NetworkInformation {
   uint32_t type;
@@ -86,12 +77,7 @@ parent:
       returns (bool allowed);
     async UnlockScreenOrientation();
 
-child:
-    async NotifySensorChange(SensorData aSensorData);
-
 parent:
-    async EnableSensorNotifications(SensorType aSensor);
-    async DisableSensorNotifications(SensorType aSensor);
 
     async __delete__();
 };

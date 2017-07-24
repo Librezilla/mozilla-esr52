@@ -33,7 +33,6 @@ $JAVA -jar ../../../../closure/compiler.jar \
   --externs temp_externs/w3c_anim_timing.js \
   --externs temp_externs/w3c_css.js \
   --externs temp_externs/w3c_css3d.js \
-  --externs temp_externs/w3c_device_sensor_event.js \
   --externs temp_externs/w3c_dom1.js \
   --externs temp_externs/w3c_dom2.js \
   --externs temp_externs/w3c_dom3.js \
