@@ -5006,7 +5006,7 @@ nsFrame::ComputeSizeWithIntrinsicDimensions(nsRenderingContext*  aRenderingConte
     aMargin.ISize(aWM) + aBorder.ISize(aWM) + aPadding.ISize(aWM) -
       boxSizingAdjust.ISize(aWM);
 
-  nscoord iSize, minISize, maxISize, bSize, minBSize, maxBSize;
+  nscoord iSize, minISize, maxISize, bSize = 0, minBSize, maxBSize;
   enum class Stretch {
     // stretch to fill the CB (preserving intrinsic ratio) in the relevant axis
     eStretchPreservingRatio,
@@ -8098,7 +8098,7 @@ nsFrame::GetLineNumber(nsIFrame *aFrame, bool aLockScroll, nsIFrame** aContainin
   NS_ASSERTION(aFrame, "null aFrame");
   nsFrameManager* frameManager = aFrame->PresContext()->FrameManager();
   nsIFrame *blockFrame = aFrame;
-  nsIFrame *thisBlock;
+  nsIFrame *thisBlock = nullptr;
   nsAutoLineIterator it;
   nsresult result = NS_ERROR_FAILURE;
   while (NS_FAILED(result) && blockFrame)

@@ -450,9 +450,9 @@ void
 FlattenBezier(const BezierControlPoints &aControlPoints,
               PathSink *aSink, double aTolerance)
 {
-  double t1;
-  double t2;
-  uint32_t count;
+  double t1 = 0;
+  double t2 = 0;
+  uint32_t count = 0;
 
   FindInflectionPoints(aControlPoints, &t1, &t2, &count);
 

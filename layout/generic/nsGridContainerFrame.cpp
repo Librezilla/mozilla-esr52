@@ -4898,7 +4898,7 @@ nsGridContainerFrame::Tracks::AlignJustifyContent(
 
   // Distribute free space to/between tracks and set their position.
   MOZ_ASSERT(space > 0, "should've handled that on the fallback path above");
-  nscoord between, roundingError;
+  nscoord between, roundingError = 0;
   switch (alignment) {
     case NS_STYLE_ALIGN_STRETCH: {
       MOZ_ASSERT(numAutoTracks > 0, "we handled numAutoTracks == 0 above");
