@@ -10,13 +10,6 @@ include protocol PHttpChannel;
 include protocol PCookieService;
 include protocol PBrowser;
 include protocol PWyciwygChannel;
-#ifdef NECKO_PROTOCOL_ftp
-include protocol PFTPChannel;
-#endif
-#ifdef NECKO_PROTOCOL_websocket
-include protocol PWebSocket;
-include protocol PWebSocketEventListener;
-#endif
 include protocol PTCPSocket;
 include protocol PTCPServerSocket;
 include protocol PUDPSocket;
@@ -25,7 +18,6 @@ include protocol PChannelDiverter;
 include protocol PBlob; //FIXME: bug #792908
 include protocol PFileDescriptorSet;
 include protocol PDataChannel;
-include protocol PTransportProvider;
 include protocol PSendStream;
 
 include protocol PRtspController;
@@ -50,13 +42,6 @@ nested(upto inside_cpow) sync protocol PNecko
   manages PHttpChannel;
   manages PCookieService;
   manages PWyciwygChannel;
-#ifdef NECKO_PROTOCOL_ftp
-  manages PFTPChannel;
-#endif
-#ifdef NECKO_PROTOCOL_websocket
-  manages PWebSocket;
-  manages PWebSocketEventListener;
-#endif
   manages PTCPSocket;
   manages PTCPServerSocket;
   manages PUDPSocket;
@@ -65,7 +50,6 @@ nested(upto inside_cpow) sync protocol PNecko
   manages PRtspController;
   manages PRtspChannel;
   manages PChannelDiverter;
-  manages PTransportProvider;
   manages PAltDataOutputStream;
 
 parent:
@@ -76,24 +60,11 @@ parent:
                      SerializedLoadContext loadContext,
                      HttpChannelCreationArgs args);
   async PWyciwygChannel();
-#ifdef NECKO_PROTOCOL_ftp
-  async PFTPChannel(PBrowserOrId browser, SerializedLoadContext loadContext,
-                    FTPChannelCreationArgs args);
-#endif
-
-#ifdef NECKO_PROTOCOL_websocket
-  async PWebSocket(PBrowserOrId browser, SerializedLoadContext loadContext,
-                   uint32_t aSerialID);
-#endif
 
   async PTCPServerSocket(uint16_t localPort, uint16_t backlog, bool useArrayBuffers);
   async PUDPSocket(Principal principal, nsCString filter);
 
   async PDNSRequest(nsCString hostName, uint32_t flags, nsCString networkInterface);
-
-#ifdef NECKO_PROTOCOL_websocket
-  async PWebSocketEventListener(uint64_t aInnerWindowID);
-#endif
 
   /* Predictor Methods */
   async PredPredict(OptionalURIParams targetURI, OptionalURIParams sourceURI,
@@ -145,8 +116,6 @@ child:
   async PredOnPredictDNS(URIParams uri);
 
   async SpeculativeConnectRequest();
-
-  async PTransportProvider();
 
 both:
   // Actually we need PTCPSocket() for parent. But ipdl disallows us having different
