@@ -7,9 +7,11 @@
 #include "mozilla/net/ChannelDiverterParent.h"
 #include "mozilla/net/NeckoChannelParams.h"
 #include "mozilla/net/HttpChannelParent.h"
+#ifdef NECKO_PROTOCOL_ftp
 #include "mozilla/net/FTPChannelParent.h"
 #include "mozilla/net/PHttpChannelParent.h"
 #include "mozilla/net/PFTPChannelParent.h"
+#endif
 #include "ADivertableParentChannel.h"
 
 namespace mozilla {
@@ -37,12 +39,14 @@ ChannelDiverterParent::Init(const ChannelDiverterArgs& aArgs)
       static_cast<ADivertableParentChannel*>(httpParent);
     break;
   }
+#ifdef NECKO_PROTOCOL_ftp
   case ChannelDiverterArgs::TPFTPChannelParent:
   {
     mDivertableChannelParent = static_cast<ADivertableParentChannel*>(
       static_cast<FTPChannelParent*>(aArgs.get_PFTPChannelParent()));
     break;
   }
+#endif
   default:
     NS_NOTREACHED("unknown ChannelDiverterArgs type");
     return false;

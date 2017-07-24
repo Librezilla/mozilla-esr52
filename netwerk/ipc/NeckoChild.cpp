@@ -13,7 +13,9 @@
 #include "mozilla/net/HttpChannelChild.h"
 #include "mozilla/net/CookieServiceChild.h"
 #include "mozilla/net/WyciwygChannelChild.h"
+#ifdef NECKO_PROTOCOL_ftp
 #include "mozilla/net/FTPChannelChild.h"
+#endif
 #include "mozilla/net/WebSocketChannelChild.h"
 #include "mozilla/net/WebSocketEventListenerChild.h"
 #include "mozilla/net/DNSRequestChild.h"
@@ -107,6 +109,7 @@ NeckoChild::DeallocPAltDataOutputStreamChild(PAltDataOutputStreamChild* aActor)
   return true;
 }
 
+#ifdef NECKO_PROTOCOL_ftp
 PFTPChannelChild*
 NeckoChild::AllocPFTPChannelChild(const PBrowserOrId& aBrowser,
                                   const SerializedLoadContext& aSerialized,
@@ -126,6 +129,7 @@ NeckoChild::DeallocPFTPChannelChild(PFTPChannelChild* channel)
   child->ReleaseIPDLReference();
   return true;
 }
+#endif /* NECKO_PROTOCOL_ftp */
 
 PCookieServiceChild*
 NeckoChild::AllocPCookieServiceChild()

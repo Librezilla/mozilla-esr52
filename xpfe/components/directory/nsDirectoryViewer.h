@@ -17,7 +17,11 @@
 #include "nsITimer.h"
 #include "nsXPIDLString.h"
 #include "nsIDirIndexListener.h"
+
+#ifdef NECKO_PROTOCOL_ftp
 #include "nsIFTPChannel.h"
+#endif
+
 #include "nsCycleCollectionParticipant.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIURI.h"
@@ -41,8 +45,10 @@ class nsHTTPIndex final : public nsIHTTPIndex,
                           public nsIRDFDataSource,
                           public nsIStreamListener,
                           public nsIDirIndexListener,
-                          public nsIInterfaceRequestor,
-                          public nsIFTPEventSink
+#ifdef NECKO_PROTOCOL_ftp
+                          public nsIFTPEventSink,
+#endif
+                          public nsIInterfaceRequestor
 {
 private:
 
@@ -112,7 +118,9 @@ public:
     
     NS_DECL_NSIDIRINDEXLISTENER
     NS_DECL_NSIINTERFACEREQUESTOR
+#ifdef NECKO_PROTOCOL_ftp
     NS_DECL_NSIFTPEVENTSINK
+#endif
 
     // nsISupports interface
     NS_DECL_CYCLE_COLLECTING_ISUPPORTS

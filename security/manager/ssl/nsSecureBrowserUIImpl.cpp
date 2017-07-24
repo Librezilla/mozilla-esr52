@@ -14,7 +14,9 @@
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeItem.h"
 #include "nsIDocument.h"
+#ifdef NECKO_PROTOCOL_ftp
 #include "nsIFTPChannel.h"
+#endif
 #include "nsIFileChannel.h"
 #include "nsIHttpChannel.h"
 #include "nsIInterfaceRequestorUtils.h"
@@ -426,6 +428,30 @@ nsSecureBrowserUIImpl::UpdateSubrequestMembers(nsISupports* securityInfo,
   }
 }
 
+static bool isForBrowserWindow(nsIRequest *aRequest)
+{
+  // We are only interested in requests that load in the browser window...
+  nsCOMPtr<nsIHttpChannel> httpRequest(do_QueryInterface(aRequest));
+  if (httpRequest != nullptr)
+    return true;
+
+  nsCOMPtr<nsIFileChannel> fileRequest(do_QueryInterface(aRequest));
+  if (fileRequest != nullptr)
+    return true;
+
+  nsCOMPtr<nsIWyciwygChannel> wyciwygRequest(do_QueryInterface(aRequest));
+  if (wyciwygRequest != nullptr)
+    return true;
+
+#ifdef NECKO_PROTOCOL_ftp
+  nsCOMPtr<nsIFTPChannel> ftpRequest(do_QueryInterface(aRequest));
+  if (ftpRequest != nullptr)
+    return true;
+#endif
+
+  return false;
+}
+
 NS_IMETHODIMP
 nsSecureBrowserUIImpl::OnStateChange(nsIWebProgress* aWebProgress,
                                      nsIRequest* aRequest,
@@ -636,25 +662,13 @@ nsSecureBrowserUIImpl::OnStateChange(nsIWebProgress* aWebProgress,
            ("SecureUI:%p: OnStateChange: SOMETHING STOPS FOR TOPMOST DOCUMENT\n", this));
   }
 
-  bool isSubDocumentRelevant = true;
-
   // We are only interested in requests that load in the browser window...
-  if (!imgRequest) { // is not imgRequest
-    nsCOMPtr<nsIHttpChannel> httpRequest(do_QueryInterface(aRequest));
-    if (!httpRequest) {
-      nsCOMPtr<nsIFileChannel> fileRequest(do_QueryInterface(aRequest));
-      if (!fileRequest) {
-        nsCOMPtr<nsIWyciwygChannel> wyciwygRequest(do_QueryInterface(aRequest));
-        if (!wyciwygRequest) {
-          nsCOMPtr<nsIFTPChannel> ftpRequest(do_QueryInterface(aRequest));
-          if (!ftpRequest) {
-            MOZ_LOG(gSecureDocLog, LogLevel::Debug,
-                   ("SecureUI:%p: OnStateChange: not relevant for sub content\n", this));
-            isSubDocumentRelevant = false;
-          }
-        }
-      }
-    }
+  bool isSubDocumentRelevant = (imgRequest != nullptr)
+                             || isForBrowserWindow(aRequest);
+
+  if (!isSubDocumentRelevant) {
+    MOZ_LOG(gSecureDocLog, LogLevel::Debug,
+           ("SecureUI:%p: OnStateChange: not relevant for sub content\n", this));
   }
 
   // This will ignore all resource, chrome, data, file, moz-icon, and anno

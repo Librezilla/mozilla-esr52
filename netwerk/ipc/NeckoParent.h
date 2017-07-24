@@ -112,6 +112,8 @@ protected:
   virtual bool DeallocPCookieServiceParent(PCookieServiceParent*) override;
   virtual PWyciwygChannelParent* AllocPWyciwygChannelParent() override;
   virtual bool DeallocPWyciwygChannelParent(PWyciwygChannelParent*) override;
+
+#ifdef NECKO_PROTOCOL_ftp
   virtual PFTPChannelParent*
     AllocPFTPChannelParent(const PBrowserOrId& aBrowser,
                            const SerializedLoadContext& aSerialized,
@@ -123,6 +125,8 @@ protected:
                       const SerializedLoadContext& aSerialized,
                       const FTPChannelCreationArgs& aOpenArgs) override;
   virtual bool DeallocPFTPChannelParent(PFTPChannelParent*) override;
+#endif
+
   virtual PWebSocketParent*
     AllocPWebSocketParent(const PBrowserOrId& browser,
                           const SerializedLoadContext& aSerialized,
