@@ -82,9 +82,6 @@ TouchList implements LegacyQueryInterface;
 TreeColumns implements LegacyQueryInterface;
 TreeWalker implements LegacyQueryInterface;
 ValidityState implements LegacyQueryInterface;
-#ifdef NECKO_PROTOCOL_websocket
-WebSocket implements LegacyQueryInterface;
-#endif
 Window implements LegacyQueryInterface;
 XMLHttpRequest implements LegacyQueryInterface;
 XMLHttpRequestUpload implements LegacyQueryInterface;

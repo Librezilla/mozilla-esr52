@@ -47,9 +47,6 @@ include protocol PWebrtcGlobal;
 include protocol PPresentation;
 include protocol PVRManager;
 include protocol PVideoDecoderManager;
-#ifdef MOZ_FLYWEB
-include protocol PFlyWebPublishedServer;
-#endif
 include DOMTypes;
 include JavaScriptTypes;
 include InputStreamParams;
@@ -67,10 +64,6 @@ include ProfilerTypes;
 // are put into different UnifiedProtocolsXX.cpp files.
 // XXX Remove this once bug 1069073 is fixed
 include "mozilla/dom/PContentBridgeParent.h";
-
-#ifdef MOZ_GEOLOCATION
-using GeoPosition from "nsGeoPositionIPCSerialiser.h";
-#endif
 
 using AlertNotificationType from "mozilla/AlertNotificationIPCSerializer.h";
 
@@ -95,9 +88,6 @@ using class mozilla::dom::ipc::StructuredCloneData from "mozilla/dom/ipc/Structu
 using mozilla::DataStorageType from "ipc/DataStorageIPCUtils.h";
 using mozilla::DocShellOriginAttributes from "mozilla/ipc/BackgroundUtils.h";
 using struct mozilla::layers::TextureFactoryIdentifier from "mozilla/layers/CompositorTypes.h";
-#ifdef MOZ_FLYWEB
-using struct mozilla::dom::FlyWebPublishOptions from "mozilla/dom/FlyWebPublishOptionsIPCSerializer.h";
-#endif
 using mozilla::Telemetry::Accumulation from "mozilla/TelemetryComms.h";
 using mozilla::Telemetry::KeyedAccumulation from "mozilla/TelemetryComms.h";
 
@@ -257,9 +247,6 @@ nested(upto inside_cpow) sync protocol PContent
     manages PWebBrowserPersistDocument;
     manages PWebrtcGlobal;
     manages PPresentation;
-#ifdef MOZ_FLYWEB
-    manages PFlyWebPublishedServer;
-#endif
 
 both:
     // Depending on exactly how the new browser is being created, it might be
@@ -373,12 +360,6 @@ child:
     async DataStorageClear(nsString aFilename);
 
     async NotifyAlertsObserver(nsCString topic, nsString data);
-
-#ifdef MOZ_GEOLOCATION
-    async GeolocationUpdate(GeoPosition somewhere);
-
-    async GeolocationError(uint16_t errorCode);
-#endif
 
     async UpdateDictionaryList(nsString[] dictionaries);
 
@@ -687,10 +668,6 @@ parent:
 
     async PPresentation();
 
-#if MOZ_FLYWEB
-    async PFlyWebPublishedServer(nsString name, FlyWebPublishOptions params);
-#endif
-
     // Services remoting
 
     async StartVisitedQuery(URIParams uri);
@@ -739,12 +716,6 @@ parent:
                              nullable PBrowser aBrowser);
 
     async PHandlerService();
-
-#ifdef MOZ_GEOLOCATION
-    async AddGeolocationListener(Principal principal, bool highAccuracy);
-    async RemoveGeolocationListener();
-    async SetGeolocationHigherAccuracy(bool enable);
-#endif
 
     async ConsoleMessage(nsString message);
     async ScriptError(nsString message, nsString sourceName, nsString sourceLine,
