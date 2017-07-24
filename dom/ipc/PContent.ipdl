@@ -47,7 +47,9 @@ include protocol PWebrtcGlobal;
 include protocol PPresentation;
 include protocol PVRManager;
 include protocol PVideoDecoderManager;
+#ifdef MOZ_FLYWEB
 include protocol PFlyWebPublishedServer;
+#endif
 include DOMTypes;
 include JavaScriptTypes;
 include InputStreamParams;
@@ -250,7 +252,9 @@ nested(upto inside_cpow) sync protocol PContent
     manages PWebBrowserPersistDocument;
     manages PWebrtcGlobal;
     manages PPresentation;
+#ifdef MOZ_FLYWEB
     manages PFlyWebPublishedServer;
+#endif
 
 both:
     // Depending on exactly how the new browser is being created, it might be
@@ -676,7 +680,9 @@ parent:
 
     async PPresentation();
 
+#if MOZ_FLYWEB
     async PFlyWebPublishedServer(nsString name, FlyWebPublishOptions params);
+#endif
 
     // Services remoting
 
