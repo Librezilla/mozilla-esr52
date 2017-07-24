@@ -174,7 +174,6 @@ static PRStatus PR_CALLBACK pl_DefConnectcontinue (
 static PRFileDesc* PR_CALLBACK pl_TopAccept (
     PRFileDesc *fd, PRNetAddr *addr, PRIntervalTime timeout)
 {
-    PRStatus rv;
     PRFileDesc *newfd, *layer = fd;
     PRFileDesc *newstack;
 	PRBool newstyle_stack = PR_FALSE;
@@ -205,12 +204,11 @@ static PRFileDesc* PR_CALLBACK pl_TopAccept (
 		newstack->lower = newfd;
 		newfd->higher = newstack;
 		return newstack;
-	} else {
-		/* this PR_PushIOLayer call cannot fail */
-		rv = PR_PushIOLayer(newfd, PR_TOP_IO_LAYER, newstack);
-		PR_ASSERT(PR_SUCCESS == rv);
-    	return newfd;  /* that's it */
-	}
+    } else {
+        /* this PR_PushIOLayer call cannot fail */
+        PR_ASSERT(PR_SUCCESS == PR_PushIOLayer(newfd, PR_TOP_IO_LAYER, newstack));
+        return newfd;  /* that's it */
+    }
 }
 
 static PRStatus PR_CALLBACK pl_DefBind (PRFileDesc *fd, const PRNetAddr *addr)

@@ -7042,7 +7042,7 @@ CreateOrUpgradeDirectoryMetadataHelper::CreateOrUpgradeMetadataFiles()
       int64_t timestamp;
       nsCString group;
       nsCString origin;
-      bool hasIsApp;
+      bool hasIsApp = false;
       rv = GetDirectoryMetadata(originDir,
                                 &timestamp,
                                 group,

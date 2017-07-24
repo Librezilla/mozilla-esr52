@@ -3238,7 +3238,7 @@ ElementRestyler::RestyleChildren(nsRestyleHint aChildRestyleHint)
   // kids would use mFrame->StyleContext(), which is out of date if
   // mHintsHandled has a ReconstructFrame hint; doing this could trigger
   // assertions about mismatched rule trees.
-  nsIFrame* lastContinuation;
+  nsIFrame* lastContinuation = nullptr;
   if (!(mHintsHandled & nsChangeHint_ReconstructFrame)) {
     InitializeAccessibilityNotifications(mFrame->StyleContext());
 

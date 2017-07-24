@@ -247,10 +247,12 @@ void HRTFPanner::pan(double desiredAzimuth, double elevation, const AudioBlock* 
 
     bool needsCrossfading = m_crossfadeIncr;
 
-    const float* convolutionDestinationL1;
-    const float* convolutionDestinationR1;
-    const float* convolutionDestinationL2;
-    const float* convolutionDestinationR2;
+    // FIXME: nullptr assignment is just to silence the compiler, as it
+    // cannot proof that these fields are actually initialized.
+    const float* convolutionDestinationL1 = nullptr;
+    const float* convolutionDestinationR1 = nullptr;
+    const float* convolutionDestinationL2 = nullptr;
+    const float* convolutionDestinationR2 = nullptr;
 
     // Now do the convolutions.
     // Note that we avoid doing convolutions on both sets of convolvers if we're not currently cross-fading.

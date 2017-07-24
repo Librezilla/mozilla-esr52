@@ -777,10 +777,8 @@ PR_IMPLEMENT(PRStatus) PR_Interrupt(PRThread *thred)
     cv = thred->waiting;
     if ((NULL != cv) && !thred->interrupt_blocked)
     {
-        PRIntn rv;
         (void)PR_ATOMIC_INCREMENT(&cv->notify_pending);
-        rv = pthread_cond_broadcast(&cv->cv);
-        PR_ASSERT(0 == rv);
+        PR_ASSERT(0 == pthread_cond_broadcast(&cv->cv));
         if (0 > PR_ATOMIC_DECREMENT(&cv->notify_pending))
             PR_DestroyCondVar(cv);
     }
@@ -1572,10 +1570,8 @@ PR_IMPLEMENT(void) PR_SuspendAll(void)
 #endif
     PRThread* thred = pt_book.first;
     PRThread *me = PR_GetCurrentThread();
-    int rv;
 
-    rv = pthread_once(&pt_gc_support_control, init_pthread_gc_support);
-    PR_ASSERT(0 == rv);
+    PR_ASSERT(0 = pthread_once(&pt_gc_support_control, init_pthread_gc_support));
     PR_LOG(_pr_gc_lm, PR_LOG_ALWAYS, ("Begin PR_SuspendAll\n"));
     /*
      * Stop all threads which are marked GC able.

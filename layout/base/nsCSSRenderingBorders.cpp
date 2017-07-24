@@ -1328,7 +1328,7 @@ nsCSSBorderRenderer::DrawBorderSides(int aSides)
   }
 
   uint8_t borderRenderStyle = NS_STYLE_BORDER_STYLE_NONE;
-  nscolor borderRenderColor;
+  nscolor borderRenderColor = 0;
   const nsBorderColors *compositeColors = nullptr;
 
   uint32_t borderColorStyleCount = 0;

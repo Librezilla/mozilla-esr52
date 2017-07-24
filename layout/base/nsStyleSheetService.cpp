@@ -317,7 +317,7 @@ nsStyleSheetService::UnregisterSheet(nsIURI *aSheetURI, uint32_t aSheetType)
   RefPtr<StyleSheet> sheet = mSheets[aSheetType][foundIndex];
   mSheets[aSheetType].RemoveElementAt(foundIndex);
 
-  const char* message;
+  const char* message = "";
   switch (aSheetType) {
     case AGENT_SHEET:
       message = "agent-sheet-removed";
