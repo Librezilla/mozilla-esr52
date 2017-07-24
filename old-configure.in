@@ -4652,6 +4652,10 @@ MOZ_ARG_DISABLE_BOOL(startupcache,
 
 if test -n "$MOZ_DISABLE_STARTUPCACHE"; then
   AC_DEFINE(MOZ_DISABLE_STARTUPCACHE)
+else
+  if test -z "$MOZ_ZIPWRITER" ; then
+    AC_ERROR([startup cache depends on --enable-zipwriter])
+  fi
 fi
 AC_SUBST(MOZ_DISABLE_STARTUPCACHE)
 
