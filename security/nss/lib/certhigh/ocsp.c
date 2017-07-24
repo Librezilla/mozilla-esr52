@@ -146,18 +146,12 @@ cert_DupOCSPCertID(const CERTOCSPCertID *src);
 #define OCSP_TRACE_CERT(cert) dumpCertificate(cert)
 #define OCSP_TRACE_CERTID(certid) dumpCertID(certid)
 
-#if defined(XP_UNIX) || defined(XP_WIN32) || \
-    defined(XP_MACOSX)
-#define NSS_HAVE_GETENV 1
-#endif
-
 static PRBool
 wantOcspTrace(void)
 {
     static PRBool firstTime = PR_TRUE;
     static PRBool wantTrace = PR_FALSE;
 
-#ifdef NSS_HAVE_GETENV
     if (firstTime) {
         char *ev = PR_GetEnvSecure("NSS_TRACE_OCSP");
         if (ev && ev[0]) {
@@ -165,7 +159,6 @@ wantOcspTrace(void)
         }
         firstTime = PR_FALSE;
     }
-#endif
     return wantTrace;
 }
 
