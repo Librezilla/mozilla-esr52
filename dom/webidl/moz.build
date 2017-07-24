@@ -152,10 +152,6 @@ WEBIDL_FILES = [
     'FileSystemDirectoryReader.webidl',
     'FileSystemEntry.webidl',
     'FileSystemFileEntry.webidl',
-    'FlyWebDiscoveryManager.webidl',
-    'FlyWebFetchEvent.webidl',
-    'FlyWebPublish.webidl',
-    'FlyWebWebSocketEvent.webidl',
     'FocusEvent.webidl',
     'FontFace.webidl',
     'FontFaceSet.webidl',
@@ -593,6 +589,14 @@ if CONFIG['MOZ_EME_MODULES']:
 if CONFIG['NECKO_PROTOCOL_websocket']:
     WEBIDL_FILES = [
         'WebSocket.webidl'
+    ]
+
+if CONFIG['MOZ_FLYWEB']:
+    WEBIDL_FILES = [
+        'FlyWebDiscoveryManager.webidl',
+        'FlyWebFetchEvent.webidl',
+        'FlyWebPublish.webidl',
+        'FlyWebWebSocketEvent.webidl'
     ]
 
 if CONFIG['MOZ_WAKELOCK']:

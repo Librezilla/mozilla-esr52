@@ -55,7 +55,9 @@
 #include "mozilla/dom/PresentationParent.h"
 #include "mozilla/dom/PPresentationParent.h"
 #include "mozilla/dom/PushNotifier.h"
+#ifdef MOZ_FLYWEB
 #include "mozilla/dom/FlyWebPublishedServerIPC.h"
+#endif
 #include "mozilla/dom/quota/QuotaManagerService.h"
 #include "mozilla/dom/time/DateCacheCleaner.h"
 #include "mozilla/embedding/printingui/PrintingParent.h"
@@ -3380,6 +3382,7 @@ ContentParent::RecvPPresentationConstructor(PPresentationParent* aActor)
   return static_cast<PresentationParent*>(aActor)->Init(mChildID);
 }
 
+#ifdef MOZ_FLYWEB
 PFlyWebPublishedServerParent*
 ContentParent::AllocPFlyWebPublishedServerParent(const nsString& name,
                                                  const FlyWebPublishOptions& params)
@@ -3396,6 +3399,7 @@ ContentParent::DeallocPFlyWebPublishedServerParent(PFlyWebPublishedServerParent*
     dont_AddRef(static_cast<FlyWebPublishedServerParent*>(aActor));
   return true;
 }
+#endif
 
 PSpeechSynthesisParent*
 ContentParent::AllocPSpeechSynthesisParent()

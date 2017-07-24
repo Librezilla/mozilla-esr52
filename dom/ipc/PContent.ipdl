@@ -47,7 +47,9 @@ include protocol PWebrtcGlobal;
 include protocol PPresentation;
 include protocol PVRManager;
 include protocol PVideoDecoderManager;
+#ifdef MOZ_FLYWEB
 include protocol PFlyWebPublishedServer;
+#endif
 include DOMTypes;
 include JavaScriptTypes;
 include InputStreamParams;
@@ -90,7 +92,9 @@ using class mozilla::dom::ipc::StructuredCloneData from "mozilla/dom/ipc/Structu
 using mozilla::DataStorageType from "ipc/DataStorageIPCUtils.h";
 using mozilla::DocShellOriginAttributes from "mozilla/ipc/BackgroundUtils.h";
 using struct mozilla::layers::TextureFactoryIdentifier from "mozilla/layers/CompositorTypes.h";
+#ifdef MOZ_FLYWEB
 using struct mozilla::dom::FlyWebPublishOptions from "mozilla/dom/FlyWebPublishOptionsIPCSerializer.h";
+#endif
 using mozilla::Telemetry::Accumulation from "mozilla/TelemetryComms.h";
 using mozilla::Telemetry::KeyedAccumulation from "mozilla/TelemetryComms.h";
 
@@ -250,7 +254,9 @@ nested(upto inside_cpow) sync protocol PContent
     manages PWebBrowserPersistDocument;
     manages PWebrtcGlobal;
     manages PPresentation;
+#ifdef MOZ_FLYWEB
     manages PFlyWebPublishedServer;
+#endif
 
 both:
     // Depending on exactly how the new browser is being created, it might be
@@ -676,7 +682,9 @@ parent:
 
     async PPresentation();
 
+#if MOZ_FLYWEB
     async PFlyWebPublishedServer(nsString name, FlyWebPublishOptions params);
+#endif
 
     // Services remoting
 

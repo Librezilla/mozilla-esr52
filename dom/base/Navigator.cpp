@@ -38,8 +38,12 @@
 #include "mozilla/dom/WakeLock.h"
 #endif
 #include "mozilla/dom/power/PowerManagerService.h"
+
+#ifdef MOZ_FLYWEB
 #include "mozilla/dom/FlyWebPublishedServer.h"
 #include "mozilla/dom/FlyWebService.h"
+#endif /* MOZ_FLYWEB */
+
 #include "mozilla/dom/Permissions.h"
 #include "mozilla/dom/Presentation.h"
 #include "mozilla/dom/ServiceWorkerContainer.h"
@@ -1135,6 +1139,7 @@ Navigator::GetMozNotification(ErrorResult& aRv)
   return mNotification;
 }
 
+#ifdef MOZ_FLYWEB
 already_AddRefed<Promise>
 Navigator::PublishServer(const nsAString& aName,
                          const FlyWebPublishOptions& aOptions,
@@ -1169,6 +1174,7 @@ Navigator::PublishServer(const nsAString& aName,
 
   return domPromise.forget();
 }
+#endif /* MOZ_FLYWEB */
 
 #ifdef MOZ_WAKELOCK
 already_AddRefed<WakeLock>

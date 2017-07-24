@@ -166,7 +166,10 @@
 #include "mozilla/dom/HTMLIFrameElement.h"
 #include "mozilla/dom/HTMLImageElement.h"
 #include "mozilla/dom/MediaSource.h"
+
+#ifdef MOZ_FLYWEB
 #include "mozilla/dom/FlyWebService.h"
+#endif
 
 #include "mozAutoDocUpdate.h"
 #include "nsGlobalWindow.h"
@@ -8395,12 +8398,14 @@ nsDocument::CanSavePresentation(nsIRequest *aNewRequest)
     return false;
   }
 
+#ifdef MOZ_FLYWEB
   // Don't save presentation if there are active FlyWeb connections or FlyWeb
   // servers.
   FlyWebService* flyWebService = FlyWebService::GetExisting();
   if (flyWebService && flyWebService->HasConnectionOrServer(win->WindowID())) {
     return false;
   }
+#endif /* MOZ_FLYWEB */
 
   if (mSubDocuments) {
     for (auto iter = mSubDocuments->Iter(); !iter.Done(); iter.Next()) {
