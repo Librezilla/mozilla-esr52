@@ -44,7 +44,7 @@
  */
 #include "seccomon.h"
 
-#if defined(XP_UNIX) || defined(XP_WIN32)
+#if defined(XP_UNIX)
 
 #include "cert.h"
 #include "ssl.h"
@@ -68,11 +68,6 @@
 #include "unix_err.h"
 
 #else
-
-#ifdef XP_WIN32
-#include <wtypes.h>
-#include "win32err.h"
-#endif
 
 #endif
 #include <sys/types.h>
@@ -1019,9 +1014,6 @@ InitCache(cacheDesc *cache, int maxCacheEntries, int maxCertCacheEntries,
         cfn = PR_smprintf("%s/.sslsvrcache.%d", directory, myPid);
         */
         cfn = PR_smprintf("%s", directory);
-#elif defined(XP_WIN32)
-        cfn = PR_smprintf("%s/svrcache_%d_%x.ssl", directory, myPid,
-                          GetCurrentThreadId());
 #else
 #error "Don't know how to create file name for this platform!"
 #endif
@@ -1969,4 +1961,4 @@ SSL_SetMaxServerCacheLocks(PRUint32 maxLocks)
     return SECFailure;
 }
 
-#endif /* XP_UNIX || XP_WIN32 */
+#endif /* XP_UNIX */

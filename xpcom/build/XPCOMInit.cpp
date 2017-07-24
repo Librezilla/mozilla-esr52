@@ -139,7 +139,9 @@ extern nsresult nsStringInputStreamConstructor(nsISupports*, REFNSIID, void**);
 #include "mozilla/PoisonIOInterposer.h"
 #include "mozilla/LateWriteChecks.h"
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
 #include "mozilla/scache/StartupCache.h"
+#endif
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -742,7 +744,9 @@ NS_InitXPCOM2(nsIServiceManager** aResult,
   nsCOMPtr<nsISupports> componentLoader =
     do_GetService("@mozilla.org/moz/jsloader;1");
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
   mozilla::scache::StartupCache::GetSingleton();
+#endif
   mozilla::AvailableMemoryTracker::Activate();
 
   // Notify observers of xpcom autoregistration start
@@ -919,7 +923,9 @@ ShutdownXPCOM(nsIServiceManager* aServMgr)
     gfxPlatform::ShutdownLayersIPC();
     mozilla::dom::VideoDecoderManagerChild::Shutdown();
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
     mozilla::scache::StartupCache::DeleteSingleton();
+#endif
     if (observerService)
     {
       mozilla::KillClearOnShutdown(ShutdownPhase::ShutdownThreads);

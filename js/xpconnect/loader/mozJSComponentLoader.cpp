@@ -42,8 +42,10 @@
 #include "WrapperFactory.h"
 
 #include "mozilla/AddonPathService.h"
+#ifndef MOZ_DISABLE_STARTUPCACHE
 #include "mozilla/scache/StartupCache.h"
 #include "mozilla/scache/StartupCacheUtils.h"
+#endif
 #include "mozilla/MacroForEach.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/dom/ScriptSettings.h"
@@ -691,6 +693,7 @@ mozJSComponentLoader::ObjectForLocation(ComponentLoaderInfo& aInfo,
     // the startupcache.  Note: as a rule, startupcache errors are not fatal
     // to loading the script, since we can always slow-load.
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
     bool writeToCache = false;
     StartupCache* cache = StartupCache::GetSingleton();
 
@@ -718,6 +721,7 @@ mozJSComponentLoader::ObjectForLocation(ComponentLoaderInfo& aInfo,
             JS_ClearPendingException(cx);
         }
     }
+#endif
 
     if (!script && !function) {
         // The script wasn't in the cache , so compile it now.
@@ -742,7 +746,11 @@ mozJSComponentLoader::ObjectForLocation(ComponentLoaderInfo& aInfo,
         options.setNoScriptRval(mReuseLoaderGlobal ? false : true)
                .setVersion(JSVERSION_LATEST)
                .setFileAndLine(nativePath.get(), 1)
-               .setSourceIsLazy(!mReuseLoaderGlobal && !!cache);
+               .setSourceIsLazy(!mReuseLoaderGlobal
+#ifndef MOZ_DISABLE_STARTUPCACHE
+                                 && !!cache
+#endif
+                );
 
         if (realFile) {
 #ifdef HAVE_PR_MEMMAP
@@ -917,6 +925,7 @@ mozJSComponentLoader::ObjectForLocation(ComponentLoaderInfo& aInfo,
     MOZ_ASSERT(!!script != !!function);
     MOZ_ASSERT(!!script == JS_IsGlobalObject(obj));
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
     if (writeToCache) {
         // We successfully compiled the script, so cache it.
         if (script) {
@@ -935,6 +944,7 @@ mozJSComponentLoader::ObjectForLocation(ComponentLoaderInfo& aInfo,
             LOG(("Failed to write to cache\n"));
         }
     }
+#endif
 
     // Assign aObject here so that it's available to recursive imports.
     // See bug 384168.
