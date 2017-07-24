@@ -28,8 +28,10 @@
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/ToJSValue.h"
 #include "mozilla/HoldDropJSObjects.h"
+#ifndef MOZ_DISABLE_STARTUPCACHE
 #include "mozilla/scache/StartupCache.h"
 #include "mozilla/scache/StartupCacheUtils.h"
+#endif
 #include "mozilla/Unused.h"
 #include "nsContentUtils.h"
 #include "nsStringGlue.h"
@@ -219,6 +221,7 @@ EvalScript(JSContext* cx,
         return false;
     }
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
     if (cache && !!script) {
         nsAutoCString cachePath;
         JSVersion version = JS_GetVersion(cx);
@@ -241,6 +244,7 @@ EvalScript(JSContext* cx,
         WriteCachedScript(StartupCache::GetSingleton(),
                           cachePath, cx, principal, script);
     }
+#endif /* !MOZ_DISABLE_STARTUPCACHE */
 
     return true;
 }
@@ -617,9 +621,13 @@ mozJSSubScriptLoader::DoLoadSubScriptWithOptions(const nsAString& url,
     JSAutoCompartment ac(cx, targetObj);
 
     // Suppress caching if we're compiling as content.
+#ifndef MOZ_DISABLE_STARTUPCACHE
     StartupCache* cache = (principal == mSystemPrincipal)
                           ? StartupCache::GetSingleton()
                           : nullptr;
+#else
+    void* cache = nullptr;
+#endif
     nsCOMPtr<nsIIOService> serv = do_GetService(NS_IOSERVICE_CONTRACTID);
     if (!serv) {
         ReportError(cx, LOAD_ERROR_NOSERVICE);
@@ -664,13 +672,16 @@ mozJSSubScriptLoader::DoLoadSubScriptWithOptions(const nsAString& url,
         uriStr = tmp;
     }
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
     JSVersion version = JS_GetVersion(cx);
     nsAutoCString cachePath;
     cachePath.AppendPrintf("jssubloader/%d", version);
     PathifyURI(uri, cachePath);
+#endif /* !MOZ_DISABLE_STARTUPCACHE */
 
     RootedFunction function(cx);
     RootedScript script(cx);
+#ifndef MOZ_DISABLE_STARTUPCACHE
     if (cache && !options.ignoreCache) {
         rv = ReadCachedScript(cache, cachePath, cx, mSystemPrincipal, &script);
         if (NS_FAILED(rv)) {
@@ -678,6 +689,7 @@ mozJSSubScriptLoader::DoLoadSubScriptWithOptions(const nsAString& url,
             JS_ClearPendingException(cx);
         }
     }
+#endif /* !MOZ_DISABLE_STARTUPCACHE */
 
     // If we are doing an async load, trigger it and bail out.
     if (!script && options.async) {

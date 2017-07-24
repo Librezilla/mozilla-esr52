@@ -21,21 +21,8 @@
 
 #define MAX_COMMENT_LENGTH   500
 
-#if defined(XP_WIN32)
-
-#include <windows.h>
-
-#define UI_SNPRINTF _snprintf
-#define UI_DIR_SEPARATOR "\\"
-
-std::string WideToUTF8(const std::wstring& wide, bool* success = 0);
-
-#else
-
 #define UI_SNPRINTF snprintf
 #define UI_DIR_SEPARATOR "/"
-
-#endif
 
 #define UI_CRASH_REPORTER_FILENAME "crashreporter"
 #define UI_MINIDUMP_ANALYZER_FILENAME "minidump-analyzer"

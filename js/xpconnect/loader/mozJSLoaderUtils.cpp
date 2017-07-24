@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
+
 #include "mozilla/scache/StartupCache.h"
 
 #include "jsapi.h"
@@ -83,3 +85,5 @@ WriteCachedFunction(StartupCache* cache, nsACString& uri, JSContext* cx,
     // This doesn't actually work ...
     return NS_ERROR_NOT_IMPLEMENTED;
 }
+
+#endif /* !MOZ_DISABLE_STARTUPCACHE */

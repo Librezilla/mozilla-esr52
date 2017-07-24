@@ -135,10 +135,12 @@ if CONFIG['MOZ_PREF_EXTENSIONS']:
 DIRS += [
     '/devtools',
     '/services',
-    '/startupcache',
     '/js/ductwork/debugger',
     '/other-licenses/snappy',
 ]
+
+if not CONFIG['MOZ_DISABLE_STARTUPCACHE']:
+    DIRS += ['/startupcache']
 
 if CONFIG['MOZ_GIO_COMPONENT']:
     DIRS += ['/extensions/gio']
