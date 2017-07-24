@@ -3997,6 +3997,7 @@ nsresult HTMLMediaElement::FinishDecoderSetup(MediaDecoder* aDecoder,
                               ms.mFinishWhenEnded);
   }
 
+#ifdef MOZ_EME_MODULES
   if (mMediaKeys) {
     if (mMediaKeys->GetCDMProxy()) {
       mDecoder->SetCDMProxy(mMediaKeys->GetCDMProxy());
@@ -4006,6 +4007,7 @@ nsresult HTMLMediaElement::FinishDecoderSetup(MediaDecoder* aDecoder,
       return NS_ERROR_FAILURE;
     }
   }
+#endif
 
   MediaEventSource<void>* waitingForKeyProducer = mDecoder->WaitingForKeyEvent();
   // Not every decoder will produce waitingForKey events, only add ones that can
@@ -5429,6 +5431,7 @@ void HTMLMediaElement::SuspendOrResumeElement(bool aPauseElement, bool aSuspendE
       // the CDM's decoder. This ensures the CDM gets reliable and prompt
       // shutdown notifications, as it may have book-keeping it needs
       // to do on shutdown.
+#ifdef MOZ_EME_MODULES
       if (mMediaKeys) {
         mMediaKeys->Shutdown();
         mMediaKeys = nullptr;
@@ -5436,13 +5439,16 @@ void HTMLMediaElement::SuspendOrResumeElement(bool aPauseElement, bool aSuspendE
           ShutdownDecoder();
         }
       }
+#endif
       if (mDecoder) {
         mDecoder->Pause();
         mDecoder->Suspend();
       }
       mEventDeliveryPaused = aSuspendEvents;
     } else {
+#ifdef MOZ_EME_MODULES
       MOZ_ASSERT(!mMediaKeys);
+#endif
       if (mDecoder) {
         mDecoder->Resume();
         if (!mPaused && !mDecoder->IsEnded()) {
@@ -6261,6 +6267,8 @@ HTMLMediaElement::OnVisibilityChange(Visibility aNewVisibility)
 
 }
 
+#ifdef MOZ_EME_MODULES
+
 MediaKeys*
 HTMLMediaElement::GetMediaKeys() const
 {
@@ -6442,6 +6450,7 @@ HTMLMediaElement::DispatchEncrypted(const nsTArray<uint8_t>& aInitData,
     new AsyncEventDispatcher(this, event);
   asyncDispatcher->PostDOMEvent();
 }
+#endif /* MOZ_EME_MODULES */
 
 bool
 HTMLMediaElement::IsEventAttributeName(nsIAtom* aName)

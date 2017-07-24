@@ -8,7 +8,9 @@
 #define MediaDecoder_h_
 
 #include "mozilla/Atomics.h"
+#ifdef MOZ_EME_MODULES
 #include "mozilla/CDMProxy.h"
+#endif
 #include "mozilla/MozPromise.h"
 #include "mozilla/ReentrantMonitor.h"
 #include "mozilla/StateMirroring.h"

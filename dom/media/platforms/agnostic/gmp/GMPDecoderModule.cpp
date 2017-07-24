@@ -17,8 +17,15 @@
 #include "mozilla/StaticMutex.h"
 #include "gmp-audio-decode.h"
 #include "gmp-video-decode.h"
+
+#ifdef MOZ_FMP4
 #include "MP4Decoder.h"
+#endif
+
+#ifdef MOZ_FFVPX
 #include "VPXDecoder.h"
+#endif
+
 #ifdef XP_WIN
 #include "WMFDecoderModule.h"
 #endif
@@ -51,11 +58,16 @@ CreateDecoderWrapper(MediaDataDecoderCallback* aCallback)
 already_AddRefed<MediaDataDecoder>
 GMPDecoderModule::CreateVideoDecoder(const CreateDecoderParams& aParams)
 {
-  if (!MP4Decoder::IsH264(aParams.mConfig.mMimeType) &&
-      !VPXDecoder::IsVP8(aParams.mConfig.mMimeType) &&
-      !VPXDecoder::IsVP9(aParams.mConfig.mMimeType)) {
+  if (!(
+#ifdef MOZ_FMP4
+        MP4Decoder::IsH264(aParams.mConfig.mMimeType) ||
+#endif
+#ifdef MOZ_FFVPX
+        VPXDecoder::IsVP8(aParams.mConfig.mMimeType) ||
+        VPXDecoder::IsVP9(aParams.mConfig.mMimeType) ||
+#endif
+        false))
     return nullptr;
-  }
 
   if (aParams.mDiagnostics) {
     const Maybe<nsCString> preferredGMP = PreferredGMP(aParams.mConfig.mMimeType);
@@ -94,11 +106,12 @@ PlatformDecoderModule::ConversionRequired
 GMPDecoderModule::DecoderNeedsConversion(const TrackInfo& aConfig) const
 {
   // GMPVideoCodecType::kGMPVideoCodecH264 specifies that encoded frames must be in AVCC format.
-  if (aConfig.IsVideo() && MP4Decoder::IsH264(aConfig.mMimeType)) {
+#ifdef MOZ_FMP4
+  if (aConfig.IsVideo() && MP4Decoder::IsH264(aConfig.mMimeType))
     return ConversionRequired::kNeedAVCC;
-  } else {
-    return ConversionRequired::kNeedNone;
-  }
+#endif
+
+  return ConversionRequired::kNeedNone;
 }
 
 /* static */
@@ -114,6 +127,7 @@ GMPDecoderModule::PreferredGMP(const nsACString& aMimeType)
     }
   }
 
+#ifdef MOZ_FMP4
   if (MP4Decoder::IsH264(aMimeType)) {
     switch (MediaPrefs::GMPH264Preferred()) {
       case 1: rv.emplace(kEMEKeySystemClearkey); break;
@@ -121,6 +135,7 @@ GMPDecoderModule::PreferredGMP(const nsACString& aMimeType)
       default: break;
     }
   }
+#endif
 
   return rv;
 }
@@ -134,11 +149,14 @@ GMPDecoderModule::SupportsMimeType(const nsACString& aMimeType,
     return false;
   }
 
+#ifdef MOZ_FMP4
   if (MP4Decoder::IsH264(aMimeType)) {
     return HaveGMPFor(NS_LITERAL_CSTRING(GMP_API_VIDEO_DECODER),
                       { NS_LITERAL_CSTRING("h264"), aGMP.value()});
   }
+#endif
 
+#ifdef MOZ_FFVPX
   if (VPXDecoder::IsVP9(aMimeType)) {
     return HaveGMPFor(NS_LITERAL_CSTRING(GMP_API_VIDEO_DECODER),
                       { NS_LITERAL_CSTRING("vp9"), aGMP.value()});
@@ -148,11 +166,14 @@ GMPDecoderModule::SupportsMimeType(const nsACString& aMimeType,
     return HaveGMPFor(NS_LITERAL_CSTRING(GMP_API_VIDEO_DECODER),
                       { NS_LITERAL_CSTRING("vp8"), aGMP.value()});
   }
+#endif
 
+#ifdef MOZ_FMP4
   if (MP4Decoder::IsAAC(aMimeType)) {
     return HaveGMPFor(NS_LITERAL_CSTRING(GMP_API_AUDIO_DECODER),
                       { NS_LITERAL_CSTRING("aac"), aGMP.value()});
   }
+#endif
 
   return false;
 }
