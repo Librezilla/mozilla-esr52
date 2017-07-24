@@ -96,7 +96,7 @@ nsTextFrameUtils::TransformText(const char16_t* aText, uint32_t aLength,
           continue;
         }
         uint32_t ucs4before;
-        uint32_t ucs4after;
+        uint32_t ucs4after = 0;
         if (i > 1 &&
             NS_IS_LOW_SURROGATE(aText[i - 1]) &&
             NS_IS_HIGH_SURROGATE(aText[i - 2])) {

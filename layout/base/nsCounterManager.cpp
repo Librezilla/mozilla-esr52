@@ -100,7 +100,7 @@ nsCounterUseNode::GetText(nsString& aResult)
         for (nsCounterNode *n = mScopeStart; n->mScopePrev; n = n->mScopeStart)
             stack.AppendElement(n->mScopePrev);
 
-    const char16_t* separator;
+    const char16_t* separator = nullptr;
     if (mAllCounters)
         separator = mCounterFunction->Item(1).GetStringBufferValue();
 

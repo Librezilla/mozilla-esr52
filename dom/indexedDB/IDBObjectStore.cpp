@@ -215,7 +215,7 @@ StructuredCloneWriteCallback(JSContext* aCx,
   // UNWRAP_OBJECT calls might mutate this.
   JS::Rooted<JSObject*> obj(aCx, aObj);
 
-  IDBMutableFile* mutableFile;
+  IDBMutableFile* mutableFile = nullptr;
   if (NS_SUCCEEDED(UNWRAP_OBJECT(IDBMutableFile, &obj, mutableFile))) {
     if (cloneWriteInfo->mDatabase->IsFileHandleDisabled()) {
       return false;

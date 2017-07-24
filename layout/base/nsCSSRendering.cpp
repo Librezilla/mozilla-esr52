@@ -2636,7 +2636,7 @@ nsCSSRendering::PaintGradient(nsPresContext* aPresContext,
   int32_t firstUnsetPosition = -1;
   for (uint32_t i = 0; i < aGradient->mStops.Length(); ++i) {
     const nsStyleGradientStop& stop = aGradient->mStops[i];
-    double position;
+    double position = 0;
     switch (stop.mLocation.GetUnit()) {
     case eStyleUnit_None:
       if (i == 0) {

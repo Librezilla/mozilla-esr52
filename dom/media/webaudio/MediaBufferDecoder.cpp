@@ -578,7 +578,7 @@ WebAudioDecodeJob::OnFailure(ErrorCode aErrorCode)
 {
   MOZ_ASSERT(NS_IsMainThread());
 
-  const char* errorMessage;
+  const char* errorMessage = "";
   switch (aErrorCode) {
   case NoError:
     MOZ_FALLTHROUGH_ASSERT("Who passed NoError to OnFailure?");

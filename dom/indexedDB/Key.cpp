@@ -559,7 +559,7 @@ Key::DecodeString(const unsigned char*& aPos, const unsigned char* aEnd,
     aEnd = iter;
   }
 
-  char16_t* out;
+  char16_t* out = nullptr;
   if (size && !aString.GetMutableData(&out, size)) {
     return;
   }

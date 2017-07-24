@@ -167,7 +167,7 @@ nsMathMLmmultiscriptsFrame::PlaceMultiScript(nsPresContext*  aPresContext,
 
   nsBoundingMetrics bmFrame;
 
-  nscoord minShiftFromXHeight, subDrop, supDrop;
+  nscoord minShiftFromXHeight = 0, subDrop = 0, supDrop = 0;
 
   ////////////////////////////////////////
   // Initialize super/sub shifts that

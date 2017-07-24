@@ -423,7 +423,7 @@ void GeneratedMessageReflection::SwapOneofField(
   double temp_double;
   bool temp_bool;
   int temp_int;
-  Message* temp_message;
+  Message* temp_message = nullptr;
   string temp_string;
 
   // Stores message1's oneof field to a temp variable.

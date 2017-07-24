@@ -491,7 +491,7 @@ GfxPatternToCairoPattern(const Pattern& aPattern,
                          Float aAlpha,
                          const Matrix& aTransform)
 {
-  cairo_pattern_t* pat;
+  cairo_pattern_t* pat = nullptr;
   const Matrix* matrix = nullptr;
 
   switch (aPattern.GetType())

@@ -174,7 +174,7 @@ nsSelectsAreaFrame::Reflow(nsPresContext*           aPresContext,
   // See similar logic in nsListControlFrame::Reflow and
   // nsListControlFrame::ReflowAsDropdown.  We need to match it here.
   WritingMode wm = aReflowInput.GetWritingMode();
-  nscoord oldBSize;
+  nscoord oldBSize = 0;
   if (isInDropdownMode) {
     // Store the block size now in case it changes during
     // nsBlockFrame::Reflow for some odd reason.

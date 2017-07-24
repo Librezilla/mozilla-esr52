@@ -334,7 +334,7 @@ gfxGraphiteShaper::SetGlyphsFromSegment(DrawTarget      *aDrawTarget,
         } else {
             // not a one-to-one mapping with simple metrics: use DetailedGlyph
             AutoTArray<gfxShapedText::DetailedGlyph,8> details;
-            float clusterLoc;
+            float clusterLoc = 0;
             for (uint32_t j = c.baseGlyph; j < c.baseGlyph + c.nGlyphs; ++j) {
                 gfxShapedText::DetailedGlyph* d = details.AppendElement();
                 d->mGlyphID = gids[j];
