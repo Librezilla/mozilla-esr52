@@ -46,11 +46,14 @@ protected:
   virtual bool DeallocPFTPChannelChild(PFTPChannelChild*) override;
 #endif /* NECKO_PROTOCOL_ftp */
 
+#ifdef NECKO_PROTOCOL_websocket
   virtual PWebSocketChild*
     AllocPWebSocketChild(const PBrowserOrId&,
                          const SerializedLoadContext&,
                          const uint32_t&) override;
   virtual bool DeallocPWebSocketChild(PWebSocketChild*) override;
+#endif /* NECKO_PROTOCOL_websocket */
+
   virtual PTCPSocketChild* AllocPTCPSocketChild(const nsString& host,
                                                 const uint16_t& port) override;
   virtual bool DeallocPTCPSocketChild(PTCPSocketChild*) override;
@@ -78,17 +81,21 @@ protected:
   AllocPChannelDiverterChild(const ChannelDiverterArgs& channel) override;
   virtual bool
   DeallocPChannelDiverterChild(PChannelDiverterChild* actor) override;
-  virtual PTransportProviderChild*
-  AllocPTransportProviderChild() override;
-  virtual bool
-  DeallocPTransportProviderChild(PTransportProviderChild* aActor) override;
+
   virtual bool RecvAsyncAuthPromptForNestedFrame(const TabId& aNestedFrameId,
                                                  const nsCString& aUri,
                                                  const nsString& aRealm,
                                                  const uint64_t& aCallbackId) override;
+
+#ifdef NECKO_PROTOCOL_websocket
+  virtual PTransportProviderChild*
+  AllocPTransportProviderChild() override;
+  virtual bool
+  DeallocPTransportProviderChild(PTransportProviderChild* aActor) override;
   virtual PWebSocketEventListenerChild*
     AllocPWebSocketEventListenerChild(const uint64_t& aInnerWindowID) override;
   virtual bool DeallocPWebSocketEventListenerChild(PWebSocketEventListenerChild*) override;
+#endif /* NECKO_PROTOCOL_websocket */
 
   /* Predictor Messsages */
   virtual bool RecvPredOnPredictPrefetch(const URIParams& aURI,

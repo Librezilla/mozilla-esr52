@@ -8,7 +8,9 @@
 #include "nsNetUtil.h"
 #include "nsIChannel.h"
 #include "nsIPrivateBrowsingChannel.h"
+#ifdef NECKO_PROTOCOL_websocket
 #include "nsIWebSocketChannel.h"
+#endif
 
 namespace IPC {
 
@@ -44,6 +46,7 @@ SerializedLoadContext::SerializedLoadContext(nsIChannel* aChannel)
   }
 }
 
+#ifdef NECKO_PROTOCOL_websocket
 SerializedLoadContext::SerializedLoadContext(nsIWebSocketChannel* aChannel)
 {
   nsCOMPtr<nsILoadContext> loadContext;
@@ -52,6 +55,7 @@ SerializedLoadContext::SerializedLoadContext(nsIWebSocketChannel* aChannel)
   }
   Init(loadContext);
 }
+#endif /* NECKO_PROTOCOL_websocket */
 
 void
 SerializedLoadContext::Init(nsILoadContext* aLoadContext)
