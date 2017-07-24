@@ -10,7 +10,9 @@ include protocol PHttpChannel;
 include protocol PCookieService;
 include protocol PBrowser;
 include protocol PWyciwygChannel;
+#ifdef NECKO_PROTOCOL_ftp
 include protocol PFTPChannel;
+#endif
 include protocol PWebSocket;
 include protocol PWebSocketEventListener;
 include protocol PTCPSocket;
@@ -46,7 +48,9 @@ nested(upto inside_cpow) sync protocol PNecko
   manages PHttpChannel;
   manages PCookieService;
   manages PWyciwygChannel;
+#ifdef NECKO_PROTOCOL_ftp
   manages PFTPChannel;
+#endif
   manages PWebSocket;
   manages PWebSocketEventListener;
   manages PTCPSocket;
@@ -68,8 +72,10 @@ parent:
                      SerializedLoadContext loadContext,
                      HttpChannelCreationArgs args);
   async PWyciwygChannel();
+#ifdef NECKO_PROTOCOL_ftp
   async PFTPChannel(PBrowserOrId browser, SerializedLoadContext loadContext,
                     FTPChannelCreationArgs args);
+#endif
 
   async PWebSocket(PBrowserOrId browser, SerializedLoadContext loadContext,
                    uint32_t aSerialID);

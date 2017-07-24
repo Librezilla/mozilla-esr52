@@ -37,11 +37,15 @@ protected:
   virtual bool DeallocPCookieServiceChild(PCookieServiceChild*) override;
   virtual PWyciwygChannelChild* AllocPWyciwygChannelChild() override;
   virtual bool DeallocPWyciwygChannelChild(PWyciwygChannelChild*) override;
+
+#ifdef NECKO_PROTOCOL_ftp
   virtual PFTPChannelChild*
     AllocPFTPChannelChild(const PBrowserOrId& aBrowser,
                           const SerializedLoadContext& aSerialized,
                           const FTPChannelCreationArgs& aOpenArgs) override;
   virtual bool DeallocPFTPChannelChild(PFTPChannelChild*) override;
+#endif /* NECKO_PROTOCOL_ftp */
+
   virtual PWebSocketChild*
     AllocPWebSocketChild(const PBrowserOrId&,
                          const SerializedLoadContext&,
