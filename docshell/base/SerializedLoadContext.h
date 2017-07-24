@@ -20,7 +20,9 @@ class nsILoadContext;
  */
 
 class nsIChannel;
+#ifdef NECKO_PROTOCOL_websocket
 class nsIWebSocketChannel;
+#endif
 
 namespace IPC {
 
@@ -38,7 +40,9 @@ public:
 
   explicit SerializedLoadContext(nsILoadContext* aLoadContext);
   explicit SerializedLoadContext(nsIChannel* aChannel);
+#ifdef MOZ_PROTOCOL_websocket
   explicit SerializedLoadContext(nsIWebSocketChannel* aChannel);
+#endif
 
   void Init(nsILoadContext* aLoadContext);
 

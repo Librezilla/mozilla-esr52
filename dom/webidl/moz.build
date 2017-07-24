@@ -560,7 +560,6 @@ WEBIDL_FILES = [
     'WebGL2RenderingContext.webidl',
     'WebGLRenderingContext.webidl',
     'WebKitCSSMatrix.webidl',
-    'WebSocket.webidl',
     'WheelEvent.webidl',
     'WidevineCDMManifest.webidl',
     'WindowOrWorkerGlobalScope.webidl',
@@ -587,6 +586,11 @@ WEBIDL_FILES = [
     'XULDocument.webidl',
     'XULElement.webidl',
 ]
+
+if CONFIG['NECKO_PROTOCOL_websocket']:
+    WEBIDL_FILES = [
+        'WebSocket.webidl'
+    ]
 
 if CONFIG['MOZ_AUDIO_CHANNEL_MANAGER']:
     WEBIDL_FILES += [

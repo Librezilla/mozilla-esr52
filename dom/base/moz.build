@@ -218,7 +218,6 @@ EXPORTS.mozilla.dom += [
     'Timeout.h',
     'TreeWalker.h',
     'WebKitCSSMatrix.h',
-    'WebSocket.h',
     'WindowOrientationObserver.h',
 ]
 
@@ -365,10 +364,17 @@ UNIFIED_SOURCES += [
     'Timeout.cpp',
     'TreeWalker.cpp',
     'WebKitCSSMatrix.cpp',
-    'WebSocket.cpp',
     'WindowNamedPropertiesHandler.cpp',
     'WindowOrientationObserver.cpp',
 ]
+
+if CONFIG['NECKO_PROTOCOL_websocket']:
+    EXPORTS.mozilla.dom += [
+        'WebSocket.h'
+    ]
+    UNIFIED_SOURCES += [
+        'WebSocket.cpp'
+    ]
 
 if CONFIG['MOZ_WEBRTC']:
     UNIFIED_SOURCES += [
