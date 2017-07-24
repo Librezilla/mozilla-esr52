@@ -123,11 +123,13 @@ interface NavigatorGeolocation {
 };
 Navigator implements NavigatorGeolocation;
 
+#ifdef MOZ_FLYWEB
 partial interface Navigator {
   [NewObject, Pref="dom.flyweb.enabled"]
   Promise<FlyWebPublishedServer> publishServer(DOMString name,
                                                optional FlyWebPublishOptions options);
 };
+#endif
 
 // http://www.w3.org/TR/pointerevents/#extensions-to-the-navigator-interface
 partial interface Navigator {

@@ -26,7 +26,10 @@
 #include "nsThreadUtils.h"
 #include "nsIFile.h"
 #include "nsIWidget.h"
+
+#ifdef MOZ_FLYWEB
 #include "mozilla/dom/FlyWebService.h"
+#endif
 
 #if defined(XP_WIN)
 #include "mozilla/WindowsVersion.h"
@@ -718,6 +721,7 @@ nsSocketTransportService::CreateRoutedTransport(const char **types,
                                                 nsIProxyInfo *proxyInfo,
                                                 nsISocketTransport **result)
 {
+#ifdef MOZ_FLYWEB
     // Check FlyWeb table for host mappings.  If one exists, then use that.
     RefPtr<mozilla::dom::FlyWebService> fws =
         mozilla::dom::FlyWebService::GetExisting();
@@ -731,6 +735,7 @@ nsSocketTransportService::CreateRoutedTransport(const char **types,
             return NS_OK;
         }
     }
+#endif
 
     NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
     NS_ENSURE_TRUE(port >= 0 && port <= 0xFFFF, NS_ERROR_ILLEGAL_VALUE);

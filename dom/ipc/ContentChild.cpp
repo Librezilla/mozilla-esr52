@@ -30,7 +30,9 @@
 #include "mozilla/dom/DataTransfer.h"
 #include "mozilla/dom/DOMStorageIPC.h"
 #include "mozilla/dom/ExternalHelperAppChild.h"
+#ifdef MOZ_FLYWEB
 #include "mozilla/dom/FlyWebPublishedServerIPC.h"
+#endif
 #include "mozilla/dom/GetFilesHelper.h"
 #include "mozilla/dom/PCrashReporterChild.h"
 #include "mozilla/dom/ProcessGlobal.h"
@@ -1650,6 +1652,7 @@ ContentChild::DeallocPPresentationChild(PPresentationChild* aActor)
   return true;
 }
 
+#ifdef MOZ_FLYWEB
 PFlyWebPublishedServerChild*
 ContentChild::AllocPFlyWebPublishedServerChild(const nsString& name,
                                                const FlyWebPublishOptions& params)
@@ -1665,6 +1668,7 @@ ContentChild::DeallocPFlyWebPublishedServerChild(PFlyWebPublishedServerChild* aA
     dont_AddRef(static_cast<FlyWebPublishedServerChild*>(aActor));
   return true;
 }
+#endif /* MOZ_FLYWEB */
 
 bool
 ContentChild::RecvNotifyPresentationReceiverLaunched(PBrowserChild* aIframe,
