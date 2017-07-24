@@ -31,7 +31,6 @@ public:
   ProcessOrientation() {};
   ~ProcessOrientation() {};
 
-  int OnSensorChanged(const mozilla::hal::SensorData& event, int deviceCurrentRotation);
   int Reset();
 
 private:

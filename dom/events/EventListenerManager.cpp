@@ -13,7 +13,6 @@
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/EventDispatcher.h"
 #include "mozilla/EventListenerManager.h"
-#include "mozilla/HalSensor.h"
 #include "mozilla/InternalMutationEvent.h"
 #include "mozilla/JSEventHandler.h"
 #include "mozilla/Maybe.h"
@@ -475,15 +474,6 @@ bool
 EventListenerManager::IsDeviceType(EventMessage aEventMessage)
 {
   switch (aEventMessage) {
-    case eDeviceOrientation:
-    case eAbsoluteDeviceOrientation:
-    case eDeviceMotion:
-    case eDeviceLight:
-    case eDeviceProximity:
-    case eUserProximity:
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-    case eOrientationChange:
-#endif
       return true;
     default:
       break;
@@ -500,40 +490,6 @@ EventListenerManager::EnableDevice(EventMessage aEventMessage)
   }
 
   switch (aEventMessage) {
-    case eDeviceOrientation:
-#ifdef MOZ_WIDGET_ANDROID
-      // Falls back to SENSOR_ROTATION_VECTOR and SENSOR_ORIENTATION if
-      // unavailable on device.
-      window->EnableDeviceSensor(SENSOR_GAME_ROTATION_VECTOR);
-#else
-      window->EnableDeviceSensor(SENSOR_ORIENTATION);
-#endif
-      break;
-    case eAbsoluteDeviceOrientation:
-#ifdef MOZ_WIDGET_ANDROID
-      // Falls back to SENSOR_ORIENTATION if unavailable on device.
-      window->EnableDeviceSensor(SENSOR_ROTATION_VECTOR);
-#else
-      window->EnableDeviceSensor(SENSOR_ORIENTATION);
-#endif
-      break;
-    case eDeviceProximity:
-    case eUserProximity:
-      window->EnableDeviceSensor(SENSOR_PROXIMITY);
-      break;
-    case eDeviceLight:
-      window->EnableDeviceSensor(SENSOR_LIGHT);
-      break;
-    case eDeviceMotion:
-      window->EnableDeviceSensor(SENSOR_ACCELERATION);
-      window->EnableDeviceSensor(SENSOR_LINEAR_ACCELERATION);
-      window->EnableDeviceSensor(SENSOR_GYROSCOPE);
-      break;
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-    case eOrientationChange:
-      window->EnableOrientationChangeListener();
-      break;
-#endif
     default:
       NS_WARNING("Enabling an unknown device sensor.");
       break;
@@ -549,37 +505,6 @@ EventListenerManager::DisableDevice(EventMessage aEventMessage)
   }
 
   switch (aEventMessage) {
-    case eDeviceOrientation:
-#ifdef MOZ_WIDGET_ANDROID
-      // Disable all potential fallback sensors.
-      window->DisableDeviceSensor(SENSOR_GAME_ROTATION_VECTOR);
-      window->DisableDeviceSensor(SENSOR_ROTATION_VECTOR);
-#endif
-      window->DisableDeviceSensor(SENSOR_ORIENTATION);
-      break;
-    case eAbsoluteDeviceOrientation:
-#ifdef MOZ_WIDGET_ANDROID
-      window->DisableDeviceSensor(SENSOR_ROTATION_VECTOR);
-#endif
-      window->DisableDeviceSensor(SENSOR_ORIENTATION);
-      break;
-    case eDeviceMotion:
-      window->DisableDeviceSensor(SENSOR_ACCELERATION);
-      window->DisableDeviceSensor(SENSOR_LINEAR_ACCELERATION);
-      window->DisableDeviceSensor(SENSOR_GYROSCOPE);
-      break;
-    case eDeviceProximity:
-    case eUserProximity:
-      window->DisableDeviceSensor(SENSOR_PROXIMITY);
-      break;
-    case eDeviceLight:
-      window->DisableDeviceSensor(SENSOR_LIGHT);
-      break;
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-    case eOrientationChange:
-      window->DisableOrientationChangeListener();
-      break;
-#endif
     default:
       NS_WARNING("Disabling an unknown device sensor.");
       break;

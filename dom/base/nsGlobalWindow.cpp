@@ -24,9 +24,6 @@
 #include "mozilla/dom/StorageEventBinding.h"
 #include "mozilla/dom/Timeout.h"
 #include "mozilla/IntegerPrintfMacros.h"
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-#include "mozilla/dom/WindowOrientationObserver.h"
-#endif
 #include "nsDOMOfflineResourceList.h"
 #include "nsError.h"
 #include "nsIIdleService.h"
@@ -95,7 +92,6 @@
 #include "nsIWidget.h"
 #include "nsIWidgetListener.h"
 #include "nsIBaseWindow.h"
-#include "nsIDeviceSensors.h"
 #include "nsIContent.h"
 #include "nsIDocShell.h"
 #include "nsIDocCharset.h"
@@ -1547,10 +1543,6 @@ nsGlobalWindow::~nsGlobalWindow()
   } else {
     MOZ_ASSERT(mCleanedUp);
   }
-
-  nsCOMPtr<nsIDeviceSensors> ac = do_GetService(NS_DEVICE_SENSORS_CONTRACTID);
-  if (ac)
-    ac->RemoveWindowAsListener(this);
 
   nsLayoutStatics::Release();
 }
@@ -11989,11 +11981,6 @@ nsGlobalWindow::Suspend()
     return;
   }
 
-  nsCOMPtr<nsIDeviceSensors> ac = do_GetService(NS_DEVICE_SENSORS_CONTRACTID);
-  if (ac) {
-    for (uint32_t i = 0; i < mEnabledSensors.Length(); i++)
-      ac->RemoveWindowListener(mEnabledSensors[i], this);
-  }
   DisableGamepadUpdates();
   DisableVRUpdates();
 
@@ -12051,11 +12038,6 @@ nsGlobalWindow::Resume()
   // We should not be able to resume a frozen window.  It must be Thaw()'d first.
   MOZ_ASSERT(mFreezeDepth == 0);
 
-  nsCOMPtr<nsIDeviceSensors> ac = do_GetService(NS_DEVICE_SENSORS_CONTRACTID);
-  if (ac) {
-    for (uint32_t i = 0; i < mEnabledSensors.Length(); i++)
-      ac->AddWindowListener(mEnabledSensors[i], this);
-  }
   EnableGamepadUpdates();
   EnableVRUpdates();
 
@@ -13722,82 +13704,6 @@ nsGlobalWindow::RestoreWindowState(nsISupports *aState)
 }
 
 void
-nsGlobalWindow::EnableDeviceSensor(uint32_t aType)
-{
-  MOZ_ASSERT(IsInnerWindow());
-
-  bool alreadyEnabled = false;
-  for (uint32_t i = 0; i < mEnabledSensors.Length(); i++) {
-    if (mEnabledSensors[i] == aType) {
-      alreadyEnabled = true;
-      break;
-    }
-  }
-
-  mEnabledSensors.AppendElement(aType);
-
-  if (alreadyEnabled) {
-    return;
-  }
-
-  nsCOMPtr<nsIDeviceSensors> ac = do_GetService(NS_DEVICE_SENSORS_CONTRACTID);
-  if (ac) {
-    ac->AddWindowListener(aType, this);
-  }
-}
-
-void
-nsGlobalWindow::DisableDeviceSensor(uint32_t aType)
-{
-  MOZ_ASSERT(IsInnerWindow());
-
-  int32_t doomedElement = -1;
-  int32_t listenerCount = 0;
-  for (uint32_t i = 0; i < mEnabledSensors.Length(); i++) {
-    if (mEnabledSensors[i] == aType) {
-      doomedElement = i;
-      listenerCount++;
-    }
-  }
-
-  if (doomedElement == -1) {
-    return;
-  }
-
-  mEnabledSensors.RemoveElementAt(doomedElement);
-
-  if (listenerCount > 1) {
-    return;
-  }
-
-  nsCOMPtr<nsIDeviceSensors> ac = do_GetService(NS_DEVICE_SENSORS_CONTRACTID);
-  if (ac) {
-    ac->RemoveWindowListener(aType, this);
-  }
-}
-
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-void
-nsGlobalWindow::EnableOrientationChangeListener()
-{
-  MOZ_ASSERT(IsInnerWindow());
-  if (!nsContentUtils::ShouldResistFingerprinting(mDocShell) &&
-      !mOrientationChangeObserver) {
-    mOrientationChangeObserver =
-      new WindowOrientationObserver(this);
-  }
-}
-
-void
-nsGlobalWindow::DisableOrientationChangeListener()
-{
-  MOZ_ASSERT(IsInnerWindow());
-
-  mOrientationChangeObserver = nullptr;
-}
-#endif
-
-void
 nsGlobalWindow::SetHasGamepadEventListener(bool aHasGamepad/* = true*/)
 {
   MOZ_ASSERT(IsInnerWindow());
@@ -14668,15 +14574,6 @@ nsGlobalWindow::IsModalContentWindow(JSContext* aCx, JSObject* aGlobal)
 {
   return xpc::WindowOrNull(aGlobal)->IsModalContentWindow();
 }
-
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-int16_t
-nsGlobalWindow::Orientation(CallerType aCallerType) const
-{
-  return nsContentUtils::ResistFingerprinting(aCallerType) ?
-           0 : WindowOrientationObserver::OrientationAngle();
-}
-#endif
 
 Console*
 nsGlobalWindow::GetConsole(ErrorResult& aRv)

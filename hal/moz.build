@@ -15,7 +15,6 @@ EXPORTS.mozilla += [
     'HalImpl.h',
     'HalSandbox.h',
     'HalScreenConfiguration.h',
-    'HalSensor.h',
     'HalTypes.h',
     'HalWakeLock.h',
 ]
@@ -37,7 +36,6 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
     ]
     UNIFIED_SOURCES += [
         'android/AndroidAlarm.cpp',
-        'android/AndroidSensor.cpp',
         'fallback/FallbackPower.cpp',
         'linux/LinuxMemory.cpp',
     ]
@@ -48,11 +46,6 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
 elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
     UNIFIED_SOURCES += [
         'gonk/GonkDiskSpaceWatcher.cpp',
-        'gonk/GonkSensor.cpp',
-        'gonk/GonkSensorsHelpers.cpp',
-        'gonk/GonkSensorsInterface.cpp',
-        'gonk/GonkSensorsPollInterface.cpp',
-        'gonk/GonkSensorsRegistryInterface.cpp',
         'gonk/GonkSwitch.cpp',
         'gonk/SystemService.cpp',
         'gonk/UeventPoller.cpp',
@@ -67,7 +60,6 @@ elif CONFIG['OS_TARGET'] == 'Linux':
     UNIFIED_SOURCES += [
         'fallback/FallbackAlarm.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
-        'fallback/FallbackSensor.cpp',
         'fallback/FallbackVibration.cpp',
         'linux/LinuxMemory.cpp',
         'linux/LinuxPower.cpp',
@@ -87,7 +79,6 @@ elif CONFIG['OS_TARGET'] == 'WINNT':
         'fallback/FallbackPower.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'fallback/FallbackVibration.cpp',
-        'windows/WindowsSensor.cpp',
     ]
     # WindowsBattery.cpp cannot be built in unified mode because it relies on HalImpl.h.
     SOURCES += [
@@ -108,7 +99,6 @@ elif CONFIG['OS_TARGET'] in ('OpenBSD', 'NetBSD', 'FreeBSD', 'DragonFly'):
         'fallback/FallbackMemory.cpp',
         'fallback/FallbackPower.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
-        'fallback/FallbackSensor.cpp',
         'fallback/FallbackVibration.cpp',
     ]
     if CONFIG['MOZ_ENABLE_DBUS']:
@@ -126,7 +116,6 @@ else:
         'fallback/FallbackMemory.cpp',
         'fallback/FallbackPower.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
-        'fallback/FallbackSensor.cpp',
         'fallback/FallbackVibration.cpp',
     ]
 
@@ -148,12 +137,6 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] != 'gonk':
 if CONFIG['MOZ_WIDGET_TOOLKIT'] != 'android':
     UNIFIED_SOURCES += [
         'fallback/FallbackNetwork.cpp',
-    ]
-
-if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
-    UNIFIED_SOURCES += [
-        'cocoa/CocoaSensor.mm',
-        'cocoa/smslib.mm',
     ]
 
 IPDL_SOURCES = [

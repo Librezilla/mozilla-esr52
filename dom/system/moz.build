@@ -24,16 +24,11 @@ XPIDL_SOURCES += [
 
 XPIDL_MODULE = 'dom_system'
 
-EXPORTS += [
-    'nsDeviceSensors.h',
-]
-
 EXPORTS.mozilla += [
     'OSFileConstants.h',
 ]
 
 UNIFIED_SOURCES += [
-    'nsDeviceSensors.cpp',
     'OSFileConstants.cpp',
 ]
 
