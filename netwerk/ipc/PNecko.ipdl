@@ -13,8 +13,10 @@ include protocol PWyciwygChannel;
 #ifdef NECKO_PROTOCOL_ftp
 include protocol PFTPChannel;
 #endif
+#ifdef NECKO_PROTOCOL_websocket
 include protocol PWebSocket;
 include protocol PWebSocketEventListener;
+#endif
 include protocol PTCPSocket;
 include protocol PTCPServerSocket;
 include protocol PUDPSocket;
@@ -51,8 +53,10 @@ nested(upto inside_cpow) sync protocol PNecko
 #ifdef NECKO_PROTOCOL_ftp
   manages PFTPChannel;
 #endif
+#ifdef NECKO_PROTOCOL_websocket
   manages PWebSocket;
   manages PWebSocketEventListener;
+#endif
   manages PTCPSocket;
   manages PTCPServerSocket;
   manages PUDPSocket;
@@ -77,14 +81,19 @@ parent:
                     FTPChannelCreationArgs args);
 #endif
 
+#ifdef NECKO_PROTOCOL_websocket
   async PWebSocket(PBrowserOrId browser, SerializedLoadContext loadContext,
                    uint32_t aSerialID);
+#endif
+
   async PTCPServerSocket(uint16_t localPort, uint16_t backlog, bool useArrayBuffers);
   async PUDPSocket(Principal principal, nsCString filter);
 
   async PDNSRequest(nsCString hostName, uint32_t flags, nsCString networkInterface);
 
+#ifdef NECKO_PROTOCOL_websocket
   async PWebSocketEventListener(uint64_t aInnerWindowID);
+#endif
 
   /* Predictor Methods */
   async PredPredict(OptionalURIParams targetURI, OptionalURIParams sourceURI,

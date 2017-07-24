@@ -7,7 +7,9 @@
 include protocol PContent;
 include protocol PSendStream;
 include protocol PFileDescriptorSet;
+#ifdef NECKO_PROTOCOL_websocket
 include protocol PTransportProvider;
+#endif
 include FetchTypes;
 include ChannelInfo;
 include PBackgroundSharedTypes;
@@ -22,8 +24,12 @@ async protocol PFlyWebPublishedServer
 child:
   async ServerReady(nsresult aStatus);
   async FetchRequest(IPCInternalRequest aRequest, uint64_t aRequestId);
+
+#ifdef NECKO_PROTOCOL_websocket
   async WebSocketRequest(IPCInternalRequest aRequest, uint64_t aRequestId,
                          PTransportProvider aProvider);
+#endif
+
   async ServerClose();
 
 parent:

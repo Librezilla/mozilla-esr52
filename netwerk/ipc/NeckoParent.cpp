@@ -14,8 +14,10 @@
 #ifdef NECKO_PROTOCOL_ftp
 #include "mozilla/net/FTPChannelParent.h"
 #endif
+#ifdef NECKO_PROTOCOL_websocket
 #include "mozilla/net/WebSocketChannelParent.h"
 #include "mozilla/net/WebSocketEventListenerParent.h"
+#endif
 #include "mozilla/net/DataChannelParent.h"
 #include "mozilla/net/AltDataOutputStreamParent.h"
 #include "mozilla/Unused.h"
@@ -25,7 +27,9 @@
 #endif
 #include "mozilla/net/DNSRequestParent.h"
 #include "mozilla/net/ChannelDiverterParent.h"
+#ifdef NECKO_PROTOCOL_websocket
 #include "mozilla/net/IPCTransportProvider.h"
+#endif
 #include "mozilla/dom/ChromeUtils.h"
 #include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/TabContext.h"
@@ -425,6 +429,7 @@ NeckoParent::DeallocPWyciwygChannelParent(PWyciwygChannelParent* channel)
   return true;
 }
 
+#ifdef NECKO_PROTOCOL_websocket
 PWebSocketParent*
 NeckoParent::AllocPWebSocketParent(const PBrowserOrId& browser,
                                    const SerializedLoadContext& serialized,
@@ -475,6 +480,7 @@ NeckoParent::DeallocPWebSocketEventListenerParent(PWebSocketEventListenerParent*
   MOZ_ASSERT(c);
   return true;
 }
+#endif /* NECKO_PROTOCOL_websocket */
 
 PDataChannelParent*
 NeckoParent::AllocPDataChannelParent(const uint32_t &channelId)
@@ -718,6 +724,7 @@ NeckoParent::DeallocPChannelDiverterParent(PChannelDiverterParent* parent)
   return true;
 }
 
+#ifdef NECKO_PROTOCOL_websocket
 PTransportProviderParent*
 NeckoParent::AllocPTransportProviderParent()
 {
@@ -732,6 +739,7 @@ NeckoParent::DeallocPTransportProviderParent(PTransportProviderParent* aActor)
     dont_AddRef(static_cast<TransportProviderParent*>(aActor));
   return true;
 }
+#endif /* NECKO_PROTOCOL_websocket */
 
 namespace {
 std::map<uint64_t, nsCOMPtr<nsIAuthPromptCallback> >&

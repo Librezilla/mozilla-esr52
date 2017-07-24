@@ -15,7 +15,9 @@
 #include "mozilla/DebugOnly.h"
 #include "mozilla/dom/ipc/StructuredCloneData.h"
 #include "mozilla/Maybe.h"
+#ifdef NECKO_PROTOCOL_websocket
 #include "mozilla/net/WebSocketFrame.h"
+#endif
 #include "mozilla/TimeStamp.h"
 #ifdef XP_WIN
 #include "mozilla/TimeStamp_windows.h"
@@ -698,6 +700,7 @@ struct ParamTraits<mozilla::dom::ipc::StructuredCloneData>
   }
 };
 
+#ifdef NECKO_PROTOCOL_websocket
 template <>
 struct ParamTraits<mozilla::net::WebSocketFrameData>
 {
@@ -713,6 +716,7 @@ struct ParamTraits<mozilla::net::WebSocketFrameData>
     return aResult->ReadIPCParams(aMsg, aIter);
   }
 };
+#endif
 
 template <>
 struct ParamTraits<JSStructuredCloneData>

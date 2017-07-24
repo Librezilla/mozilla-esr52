@@ -127,11 +127,14 @@ protected:
   virtual bool DeallocPFTPChannelParent(PFTPChannelParent*) override;
 #endif
 
+#ifdef NECKO_PROTOCOL_websocket
   virtual PWebSocketParent*
     AllocPWebSocketParent(const PBrowserOrId& browser,
                           const SerializedLoadContext& aSerialized,
                           const uint32_t& aSerial) override;
   virtual bool DeallocPWebSocketParent(PWebSocketParent*) override;
+#endif
+
   virtual PTCPSocketParent* AllocPTCPSocketParent(const nsString& host,
                                                   const uint16_t& port) override;
 
@@ -167,9 +170,12 @@ protected:
   virtual bool RecvCancelHTMLDNSPrefetch(const nsString& hostname,
                                          const uint16_t& flags,
                                          const nsresult& reason) override;
+
+#ifdef NECKO_PROTOCOL_websocket
   virtual PWebSocketEventListenerParent*
     AllocPWebSocketEventListenerParent(const uint64_t& aInnerWindowID) override;
   virtual bool DeallocPWebSocketEventListenerParent(PWebSocketEventListenerParent*) override;
+#endif
 
   virtual PDataChannelParent*
     AllocPDataChannelParent(const uint32_t& channelId) override;
@@ -197,10 +203,13 @@ protected:
                                   const ChannelDiverterArgs& channel) override;
   virtual bool DeallocPChannelDiverterParent(PChannelDiverterParent* actor)
                                                                 override;
+
+#ifdef NECKO_PROTOCOL_websocket
   virtual PTransportProviderParent*
   AllocPTransportProviderParent() override;
   virtual bool
   DeallocPTransportProviderParent(PTransportProviderParent* aActor) override;
+#endif
 
   virtual bool RecvOnAuthAvailable(const uint64_t& aCallbackId,
                                    const nsString& aUser,
