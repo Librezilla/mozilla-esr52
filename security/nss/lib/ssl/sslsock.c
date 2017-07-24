@@ -3401,16 +3401,11 @@ loser:
     return SECFailure;
 }
 
-#if defined(XP_UNIX) || defined(XP_WIN32)
-#define NSS_HAVE_GETENV 1
-#endif
-
 #define LOWER(x) (x | 0x20) /* cheap ToLower function ignores LOCALE */
 
 static void
 ssl_SetDefaultsFromEnvironment(void)
 {
-#if defined(NSS_HAVE_GETENV)
     static int firsttime = 1;
 
     if (firsttime) {
@@ -3484,7 +3479,6 @@ ssl_SetDefaultsFromEnvironment(void)
             SSL_TRACE(("SSL: cbcRandomIV set to 0"));
         }
     }
-#endif /* NSS_HAVE_GETENV */
 }
 
 const sslNamedGroupDef *
