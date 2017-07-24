@@ -160,18 +160,25 @@ GMPVideoDecoder::GMPVideoDecoder(const GMPVideoDecoderParams& aParams)
 void
 GMPVideoDecoder::InitTags(nsTArray<nsCString>& aTags)
 {
-  if (MP4Decoder::IsH264(mConfig.mMimeType)) {
+  if (0) { }
+#ifdef MOZ_FMP4
+  else if (MP4Decoder::IsH264(mConfig.mMimeType)) {
     aTags.AppendElement(NS_LITERAL_CSTRING("h264"));
     const Maybe<nsCString> gmp(
       GMPDecoderModule::PreferredGMP(NS_LITERAL_CSTRING("video/avc")));
     if (gmp.isSome()) {
       aTags.AppendElement(gmp.value());
     }
-  } else if (VPXDecoder::IsVP8(mConfig.mMimeType)) {
+  }
+#endif
+#ifdef MOZ_FFVPX
+  else if (VPXDecoder::IsVP8(mConfig.mMimeType)) {
     aTags.AppendElement(NS_LITERAL_CSTRING("vp8"));
-  } else if (VPXDecoder::IsVP9(mConfig.mMimeType)) {
+  }
+  else if (VPXDecoder::IsVP9(mConfig.mMimeType)) {
     aTags.AppendElement(NS_LITERAL_CSTRING("vp9"));
   }
+#endif
 }
 
 nsCString
@@ -254,16 +261,23 @@ GMPVideoDecoder::GMPInitDone(GMPVideoDecoderProxy* aGMP, GMPVideoHost* aHost)
 
   codec.mGMPApiVersion = kGMPVersion33;
   nsTArray<uint8_t> codecSpecific;
-  if (MP4Decoder::IsH264(mConfig.mMimeType)) {
+  if (0) { }
+#ifdef MOZ_FMP4
+  else if (MP4Decoder::IsH264(mConfig.mMimeType)) {
     codec.mCodecType = kGMPVideoCodecH264;
     codecSpecific.AppendElement(0); // mPacketizationMode.
     codecSpecific.AppendElements(mConfig.mExtraData->Elements(),
                                  mConfig.mExtraData->Length());
-  } else if (VPXDecoder::IsVP8(mConfig.mMimeType)) {
+  }
+#endif
+#ifdef MOZ_FFVPX
+  else if (VPXDecoder::IsVP8(mConfig.mMimeType)) {
     codec.mCodecType = kGMPVideoCodecVP8;
   } else if (VPXDecoder::IsVP9(mConfig.mMimeType)) {
     codec.mCodecType = kGMPVideoCodecVP9;
-  } else {
+  }
+#endif
+  else {
     // Unrecognized mime type
     aGMP->Close();
     mInitPromise.Reject(NS_ERROR_DOM_MEDIA_FATAL_ERR, __func__);

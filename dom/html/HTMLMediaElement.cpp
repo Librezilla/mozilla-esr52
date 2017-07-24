@@ -11,7 +11,10 @@
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/MathAlgorithms.h"
 #include "mozilla/AsyncEventDispatcher.h"
+
+#ifdef MOZ_EME_MODULES
 #include "mozilla/dom/MediaEncryptedEvent.h"
+#endif
 
 #include "base/basictypes.h"
 #include "nsIDOMHTMLMediaElement.h"
@@ -820,7 +823,9 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(HTMLMediaElement, nsGenericHTM
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mTextTrackManager)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mAudioTrackList)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mVideoTrackList)
+#ifdef MOZ_EME_MODULES
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mMediaKeys)
+#endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mSelectedVideoStreamTrack)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
@@ -845,7 +850,9 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(HTMLMediaElement, nsGenericHTMLE
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mTextTrackManager)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mAudioTrackList)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mVideoTrackList)
+#ifdef MOZ_EME_MODULES
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mMediaKeys)
+#endif
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mSelectedVideoStreamTrack)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
@@ -1013,7 +1020,9 @@ void HTMLMediaElement::ShutdownDecoder()
 {
   RemoveMediaElementFromURITable();
   NS_ASSERTION(mDecoder, "Must have decoder to shut down");
+#ifdef MOZ_EME_MODULES
   mWaitingForKeyListener.DisconnectIfExists();
+#endif
   mDecoder->Shutdown();
   mDecoder = nullptr;
 }
@@ -1083,9 +1092,11 @@ void HTMLMediaElement::AbortExistingLoads()
   mSuspendedForPreloadNone = false;
   mDownloadSuspendedByCache = false;
   mMediaInfo = MediaInfo();
+#ifdef MOZ_EME_MODULES
   mIsEncrypted = false;
   mPendingEncryptedInitData.mInitDatas.Clear();
   mWaitingForKey = NOT_WAITING_FOR_KEY;
+#endif
   mSourcePointer = nullptr;
 
   mTags = nullptr;
@@ -3056,8 +3067,10 @@ HTMLMediaElement::HTMLMediaElement(already_AddRefed<mozilla::dom::NodeInfo>& aNo
     mSrcStreamIsPlaying(false),
     mMediaSecurityVerified(false),
     mCORSMode(CORS_NONE),
+#ifdef MOZ_EME_MODULES
     mIsEncrypted(false),
     mWaitingForKey(NOT_WAITING_FOR_KEY),
+#endif
     mDownloadSuspendedByCache(false, "HTMLMediaElement::mDownloadSuspendedByCache"),
     mAudioChannelVolume(1.0),
     mPlayingThroughTheAudioChannel(false),
@@ -3638,6 +3651,7 @@ void HTMLMediaElement::HiddenVideoStop()
   mVideoDecodeSuspendTimer = nullptr;
 }
 
+#ifdef MOZ_EME_MODULES
 void
 HTMLMediaElement::ReportEMETelemetry()
 {
@@ -3649,6 +3663,7 @@ HTMLMediaElement::ReportEMETelemetry()
                        this, mLoadedDataFired ? "true" : "false"));
   }
 }
+#endif
 
 void
 HTMLMediaElement::ReportTelemetry()
@@ -3997,6 +4012,7 @@ nsresult HTMLMediaElement::FinishDecoderSetup(MediaDecoder* aDecoder,
                               ms.mFinishWhenEnded);
   }
 
+#ifdef MOZ_EME_MODULES
   if (mMediaKeys) {
     if (mMediaKeys->GetCDMProxy()) {
       mDecoder->SetCDMProxy(mMediaKeys->GetCDMProxy());
@@ -4013,6 +4029,7 @@ nsresult HTMLMediaElement::FinishDecoderSetup(MediaDecoder* aDecoder,
     mWaitingForKeyListener = waitingForKeyProducer->Connect(
       AbstractThread::MainThread(), this, &HTMLMediaElement::CannotDecryptWaitingForKey);
   }
+#endif /* MOZ_EME_MODULES */
 
   if (mChannelLoader) {
     mChannelLoader->Done();
@@ -4465,7 +4482,9 @@ void HTMLMediaElement::MetadataLoaded(const MediaInfo* aInfo,
 
   SetMediaInfo(*aInfo);
 
+#ifdef MOZ_EME_MODULES
   mIsEncrypted = aInfo->IsEncrypted() || mPendingEncryptedInitData.IsEncrypted();
+#endif
   mTags = aTags.forget();
   mLoadedDataFired = false;
   ChangeReadyState(nsIDOMHTMLMediaElement::HAVE_METADATA);
@@ -4483,6 +4502,7 @@ void HTMLMediaElement::MetadataLoaded(const MediaInfo* aInfo,
     ProcessMediaFragmentURI();
     mDecoder->SetFragmentEndTime(mFragmentEnd);
   }
+#ifdef MOZ_EME_MODULES
   if (mIsEncrypted) {
     // We only support playback of encrypted content via MSE by default.
     if (!mMediaSource && Preferences::GetBool("media.eme.mse-only", true)) {
@@ -4497,6 +4517,7 @@ void HTMLMediaElement::MetadataLoaded(const MediaInfo* aInfo,
     }
     mPendingEncryptedInitData.mInitDatas.Clear();
   }
+#endif
 
   mWatchManager.ManualNotify(&HTMLMediaElement::UpdateReadyStateInternal);
 
@@ -4535,8 +4556,13 @@ void HTMLMediaElement::MetadataLoaded(const MediaInfo* aInfo,
 
 void HTMLMediaElement::FirstFrameLoaded()
 {
+#ifdef MOZ_EME_MODULES
   LOG(LogLevel::Debug, ("%p, FirstFrameLoaded() mFirstFrameLoaded=%d mWaitingForKey=%d",
       this, mFirstFrameLoaded, mWaitingForKey));
+#else
+  LOG(LogLevel::Debug, ("%p, FirstFrameLoaded() mFirstFrameLoaded=%d",
+      this, mFirstFrameLoaded));
+#endif
 
   NS_ASSERTION(!mSuspendedAfterFirstFrame, "Should not have already suspended");
 
@@ -4868,6 +4894,7 @@ HTMLMediaElement::UpdateReadyStateInternal()
   }
 
   enum NextFrameStatus nextFrameStatus = NextFrameStatus();
+#ifdef MOZ_EME_MODULES
   if (nextFrameStatus == NEXT_FRAME_UNAVAILABLE ||
       (nextFrameStatus == NEXT_FRAME_UNAVAILABLE_BUFFERING &&
        mWaitingForKey == WAITING_FOR_KEY)) {
@@ -4891,6 +4918,11 @@ HTMLMediaElement::UpdateReadyStateInternal()
       nextFrameStatus = mDecoder->NextFrameBufferedStatus();
     }
   }
+#else
+  if ((nextFrameStatus == NEXT_FRAME_UNAVAILABLE) && mDecoder) {
+    nextFrameStatus = mDecoder->NextFrameBufferedStatus();
+  }
+#endif
 
   if (nextFrameStatus == MediaDecoderOwner::NEXT_FRAME_UNAVAILABLE_SEEKING) {
     LOG(LogLevel::Debug, ("MediaElement %p UpdateReadyStateInternal() "
@@ -4969,7 +5001,11 @@ HTMLMediaElement::UpdateReadyStateInternal()
   // autoplay elements for live streams will never play. Otherwise we
   // move to HAVE_ENOUGH_DATA if we can play through the entire media
   // without stopping to buffer.
+#if MOZ_EME_MODULES
   if (mWaitingForKey == NOT_WAITING_FOR_KEY && mDecoder->CanPlayThrough()) {
+#else
+  if (mDecoder->CanPlayThrough()) {
+#endif
     LOG(LogLevel::Debug, ("MediaElement %p UpdateReadyStateInternal() "
                           "Decoder can play through", this));
     ChangeReadyState(nsIDOMHTMLMediaElement::HAVE_ENOUGH_DATA);
@@ -5034,7 +5070,9 @@ void HTMLMediaElement::ChangeReadyState(nsMediaReadyState aState)
       mReadyState >= nsIDOMHTMLMediaElement::HAVE_FUTURE_DATA) {
     DispatchAsyncEvent(NS_LITERAL_STRING("canplay"));
     if (!mPaused) {
+#ifdef MOZ_EME_MODULES
       mWaitingForKey = NOT_WAITING_FOR_KEY;
+#endif
       DispatchAsyncEvent(NS_LITERAL_STRING("playing"));
     }
   }
@@ -5429,6 +5467,7 @@ void HTMLMediaElement::SuspendOrResumeElement(bool aPauseElement, bool aSuspendE
       // the CDM's decoder. This ensures the CDM gets reliable and prompt
       // shutdown notifications, as it may have book-keeping it needs
       // to do on shutdown.
+#ifdef MOZ_EME_MODULES
       if (mMediaKeys) {
         mMediaKeys->Shutdown();
         mMediaKeys = nullptr;
@@ -5436,13 +5475,16 @@ void HTMLMediaElement::SuspendOrResumeElement(bool aPauseElement, bool aSuspendE
           ShutdownDecoder();
         }
       }
+#endif
       if (mDecoder) {
         mDecoder->Pause();
         mDecoder->Suspend();
       }
       mEventDeliveryPaused = aSuspendEvents;
     } else {
+#ifdef MOZ_EME_MODULES
       MOZ_ASSERT(!mMediaKeys);
+#endif
       if (mDecoder) {
         mDecoder->Resume();
         if (!mPaused && !mDecoder->IsEnded()) {
@@ -6261,6 +6303,8 @@ HTMLMediaElement::OnVisibilityChange(Visibility aNewVisibility)
 
 }
 
+#ifdef MOZ_EME_MODULES
+
 MediaKeys*
 HTMLMediaElement::GetMediaKeys() const
 {
@@ -6442,6 +6486,7 @@ HTMLMediaElement::DispatchEncrypted(const nsTArray<uint8_t>& aInitData,
     new AsyncEventDispatcher(this, event);
   asyncDispatcher->PostDOMEvent();
 }
+#endif /* MOZ_EME_MODULES */
 
 bool
 HTMLMediaElement::IsEventAttributeName(nsIAtom* aName)
@@ -6471,6 +6516,7 @@ HTMLMediaElement::GetTopLevelPrincipal()
   return principal.forget();
 }
 
+#ifdef MOZ_EME_MODULES
 void
 HTMLMediaElement::CannotDecryptWaitingForKey()
 {
@@ -6488,6 +6534,7 @@ HTMLMediaElement::CannotDecryptWaitingForKey()
     UpdateReadyStateInternal();
   }
 }
+#endif
 
 NS_IMETHODIMP HTMLMediaElement::WindowAudioCaptureChanged(bool aCapture)
 {

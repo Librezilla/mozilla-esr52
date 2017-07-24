@@ -20,7 +20,9 @@
 
 namespace mozilla {
 
+#ifdef MOZ_EME_MODULES
 class CDMProxy;
+#endif
 
 class MediaFormatReader final : public MediaDecoderReader
 {
@@ -91,7 +93,9 @@ public:
     return mTrackDemuxersMayBlock;
   }
 
+#ifdef MOZ_EME_MODULES
   void SetCDMProxy(CDMProxy* aProxy) override;
+#endif
 
   // Returns a string describing the state of the decoder data.
   // Used for debugging purposes.
@@ -105,7 +109,9 @@ private:
   bool HasVideo() const { return mVideo.mTrackDemuxer; }
   bool HasAudio() const { return mAudio.mTrackDemuxer; }
 
+#ifdef MOZ_EME_MODULES
   bool IsWaitingOnCDMResource();
+#endif
 
   bool InitDemuxer();
   // Notify the demuxer that new data has been received.
@@ -584,7 +590,9 @@ private:
   RefPtr<VideoFrameContainer> mVideoFrameContainer;
   layers::ImageContainer* GetImageContainer();
 
+#ifdef MOZ_EME_MODULES
   RefPtr<CDMProxy> mCDMProxy;
+#endif
 
   RefPtr<GMPCrashHelper> mCrashHelper;
 

@@ -31,10 +31,12 @@ UNIFIED_SOURCES += [
 ]
 
 DIRS += [
-    'agnostic/eme',
     'agnostic/gmp',
     'omx'
 ]
+
+if CONFIG['MOZ_EME_MODULES']:
+    DIRS += [ 'agnostic/eme']
 
 if CONFIG['MOZ_WMF']:
     DIRS += [ 'wmf' ];
