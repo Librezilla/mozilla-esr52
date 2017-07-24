@@ -830,11 +830,13 @@ private:
 
   virtual bool RecvPPresentationConstructor(PPresentationParent* aActor) override;
 
+#ifdef MOZ_FLYWEB
   virtual PFlyWebPublishedServerParent*
     AllocPFlyWebPublishedServerParent(const nsString& name,
                                       const FlyWebPublishOptions& params) override;
 
   virtual bool DeallocPFlyWebPublishedServerParent(PFlyWebPublishedServerParent* aActor) override;
+#endif
 
   virtual PSpeechSynthesisParent* AllocPSpeechSynthesisParent() override;
 

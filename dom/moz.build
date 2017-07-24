@@ -52,7 +52,6 @@ DIRS += [
     'fetch',
     'filehandle',
     'filesystem',
-    'flyweb',
     'gamepad',
     'geolocation',
     'grid',
@@ -101,6 +100,9 @@ DIRS += [
     'xhr',
     'worklet',
 ]
+
+if CONFIG['MOZ_FLYWEB']:
+    DIRS += ['flyweb']
 
 if CONFIG['OS_ARCH'] == 'WINNT':
     DIRS += ['plugins/ipc/hangui']

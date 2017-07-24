@@ -327,11 +327,13 @@ public:
 
   virtual bool DeallocPPresentationChild(PPresentationChild* aActor) override;
 
+#ifdef MOZ_FLYWEB
   virtual PFlyWebPublishedServerChild*
     AllocPFlyWebPublishedServerChild(const nsString& name,
                                      const FlyWebPublishOptions& params) override;
 
   virtual bool DeallocPFlyWebPublishedServerChild(PFlyWebPublishedServerChild* aActor) override;
+#endif
 
   virtual bool
   RecvNotifyPresentationReceiverLaunched(PBrowserChild* aIframe,
