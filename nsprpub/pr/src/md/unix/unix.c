@@ -2817,7 +2817,6 @@ static void _PR_InitIOV(void)
 void _PR_UnixInit(void)
 {
     struct sigaction sigact;
-    int rv;
 
     sigemptyset(&timer_set);
 
@@ -2866,15 +2865,13 @@ void _PR_UnixInit(void)
         vec.sv_handler = SIG_IGN;
         vec.sv_mask = 0;
         vec.sv_flags = 0;
-        rv = sigvector(SIGPIPE, &vec, NULL);
-        PR_ASSERT(0 == rv);
+        PR_ASSERT(0 == sigvector(SIGPIPE, &vec, NULL));
     }
 #else
     sigact.sa_handler = SIG_IGN;
     sigemptyset(&sigact.sa_mask);
     sigact.sa_flags = 0;
-    rv = sigaction(SIGPIPE, &sigact, 0);
-    PR_ASSERT(0 == rv);
+    PR_ASSERT(0 == sigaction(SIGPIPE, &sigact, 0));
 #endif /* HPUX && _PR_DCETHREADS */
 
     _pr_rename_lock = PR_NewLock();
