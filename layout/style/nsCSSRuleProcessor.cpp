@@ -69,10 +69,6 @@ static bool gSupportVisitedPseudo = true;
 
 static nsTArray< nsCOMPtr<nsIAtom> >* sSystemMetrics = 0;
 
-#ifdef XP_WIN
-uint8_t nsCSSRuleProcessor::sWinThemeId = LookAndFeel::eWindowsTheme_Generic;
-#endif
-
 /**
  * A struct representing a given CSS rule and a particular selector
  * from that rule's selector list.
@@ -1164,40 +1160,6 @@ InitSystemMetrics()
     sSystemMetrics->AppendElement(nsGkAtoms::physical_home_button);
   }
 
-#ifdef XP_WIN
-  if (NS_SUCCEEDED(
-        LookAndFeel::GetInt(LookAndFeel::eIntID_WindowsThemeIdentifier,
-                            &metricResult))) {
-    nsCSSRuleProcessor::SetWindowsThemeIdentifier(static_cast<uint8_t>(metricResult));
-    switch(metricResult) {
-      case LookAndFeel::eWindowsTheme_Aero:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_aero);
-        break;
-      case LookAndFeel::eWindowsTheme_AeroLite:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_aero_lite);
-        break;
-      case LookAndFeel::eWindowsTheme_LunaBlue:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_luna_blue);
-        break;
-      case LookAndFeel::eWindowsTheme_LunaOlive:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_luna_olive);
-        break;
-      case LookAndFeel::eWindowsTheme_LunaSilver:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_luna_silver);
-        break;
-      case LookAndFeel::eWindowsTheme_Royale:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_royale);
-        break;
-      case LookAndFeel::eWindowsTheme_Zune:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_zune);
-        break;
-      case LookAndFeel::eWindowsTheme_Generic:
-        sSystemMetrics->AppendElement(nsGkAtoms::windows_theme_generic);
-        break;
-    }
-  }
-#endif
-
   return true;
 }
 
@@ -1222,16 +1184,6 @@ nsCSSRuleProcessor::HasSystemMetric(nsIAtom* aMetric)
   }
   return sSystemMetrics->IndexOf(aMetric) != sSystemMetrics->NoIndex;
 }
-
-#ifdef XP_WIN
-/* static */ uint8_t
-nsCSSRuleProcessor::GetWindowsThemeIdentifier()
-{
-  if (!sSystemMetrics)
-    InitSystemMetrics();
-  return sWinThemeId;
-}
-#endif
 
 /* static */
 EventStates

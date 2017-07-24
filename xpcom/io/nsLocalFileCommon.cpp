@@ -16,11 +16,6 @@
 #include "nsNativeCharsetUtils.h"
 #include "nsUTF8Utils.h"
 
-#ifdef XP_WIN
-#include <string.h>
-#endif
-
-
 void
 NS_StartupLocalFile()
 {
@@ -33,7 +28,7 @@ NS_ShutdownLocalFile()
   nsLocalFile::GlobalShutdown();
 }
 
-#if !defined(MOZ_WIDGET_COCOA) && !defined(XP_WIN)
+#if !defined(MOZ_WIDGET_COCOA)
 NS_IMETHODIMP
 nsLocalFile::InitWithFile(nsIFile* aFile)
 {
@@ -61,13 +56,8 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes)
   nsresult rv;
   bool longName;
 
-#ifdef XP_WIN
-  nsAutoString pathName, leafName, rootName, suffix;
-  rv = GetPath(pathName);
-#else
   nsAutoCString pathName, leafName, rootName, suffix;
   rv = GetNativePath(pathName);
-#endif
   if (NS_FAILED(rv)) {
     return rv;
   }
@@ -81,21 +71,12 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes)
     }
   }
 
-#ifdef XP_WIN
-  rv = GetLeafName(leafName);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-
-  const int32_t lastDot = leafName.RFindChar(char16_t('.'));
-#else
   rv = GetNativeLeafName(leafName);
   if (NS_FAILED(rv)) {
     return rv;
   }
 
   const int32_t lastDot = leafName.RFindChar('.');
-#endif
 
   if (lastDot == kNotFound) {
     rootName = leafName;
@@ -116,12 +97,6 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes)
       return NS_ERROR_FILE_UNRECOGNIZED_PATH;
     }
 
-#ifdef XP_WIN
-    // ensure that we don't cut the name in mid-UTF16-character
-    rootName.SetLength(NS_IS_LOW_SURROGATE(rootName[maxRootLength]) ?
-                       maxRootLength - 1 : maxRootLength);
-    SetLeafName(rootName + suffix);
-#else
     if (NS_IsNativeUTF8()) {
       // ensure that we don't cut the name in mid-UTF8-character
       // (assume the name is valid UTF8 to begin with)
@@ -137,7 +112,6 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes)
 
     rootName.SetLength(maxRootLength);
     SetNativeLeafName(rootName + suffix);
-#endif
     nsresult rvCreate = Create(aType, aAttributes);
     if (rvCreate != NS_ERROR_FILE_ALREADY_EXISTS) {
       return rvCreate;
@@ -146,13 +120,7 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes)
 
   for (int indx = 1; indx < 10000; ++indx) {
     // start with "Picture-1.jpg" after "Picture.jpg" exists
-#ifdef XP_WIN
-    SetLeafName(rootName +
-                NS_ConvertASCIItoUTF16(nsPrintfCString("-%d", indx)) +
-                suffix);
-#else
     SetNativeLeafName(rootName + nsPrintfCString("-%d", indx) + suffix);
-#endif
     rv = Create(aType, aAttributes);
     if (NS_SUCCEEDED(rv) || rv != NS_ERROR_FILE_ALREADY_EXISTS) {
       return rv;
@@ -163,9 +131,7 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes)
   return NS_ERROR_FILE_TOO_BIG;
 }
 
-#if defined(XP_WIN)
-static const char16_t kPathSeparatorChar       = '\\';
-#elif defined(XP_UNIX)
+#if defined(XP_UNIX)
 static const char16_t kPathSeparatorChar       = '/';
 #else
 #error Need to define file path separator for your platform
@@ -235,16 +201,9 @@ nsLocalFile::GetRelativeDescriptor(nsIFile* aFromFile, nsACString& aResult)
   for (nodeIndex = 0;
        nodeIndex < thisNodes.Length() && nodeIndex < fromNodes.Length();
        ++nodeIndex) {
-#ifdef XP_WIN
-    if (_wcsicmp(char16ptr_t(thisNodes[nodeIndex]),
-                 char16ptr_t(fromNodes[nodeIndex]))) {
-      break;
-    }
-#else
     if (nsCRT::strcmp(thisNodes[nodeIndex], fromNodes[nodeIndex])) {
       break;
     }
-#endif
   }
 
   size_t branchIndex = nodeIndex;

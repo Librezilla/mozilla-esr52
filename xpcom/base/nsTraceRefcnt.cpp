@@ -23,12 +23,7 @@
 #include "CodeAddressService.h"
 
 #include "nsXULAppAPI.h"
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#else
 #include <unistd.h>
-#endif
 
 #include "mozilla/Atomics.h"
 #include "mozilla/AutoRestore.h"
@@ -629,11 +624,7 @@ LogThisObj(intptr_t aSerialNumber)
   return (bool)PL_HashTableLookup(gObjectsToLog, (const void*)aSerialNumber);
 }
 
-#ifdef XP_WIN
-#define FOPEN_NO_INHERIT "N"
-#else
 #define FOPEN_NO_INHERIT
-#endif
 
 static bool
 InitLog(const char* aEnvVar, const char* aMsg, FILE** aResult)

@@ -21,10 +21,6 @@
 #include "nsIDocument.h"
 #include "nsISupportsPrimitives.h"
 
-#ifdef XP_WIN
-#undef PostMessage
-#endif
-
 namespace mozilla {
 
 using namespace ipc;

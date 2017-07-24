@@ -21,12 +21,8 @@
 
 #include "prenv.h"
 #include "prprf.h"
-#ifdef XP_WIN
-#include <process.h>
-#else
 #include <sys/types.h>
 #include <unistd.h>
-#endif
 
 // NB: Initial amount determined by auditing the codebase for the total amount
 //     of unique module names and padding up to the next power of 2.

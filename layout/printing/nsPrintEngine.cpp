@@ -1610,7 +1610,7 @@ nsPrintEngine::ReconstructAndReflow(bool doSetPixelScale)
     return NS_ERROR_FAILURE;
   }
 
-#if defined(XP_WIN) && defined(EXTENDED_DEBUG_PRINTING)
+#if defined(EXTENDED_DEBUG_PRINTING)
   // We need to clear all the output files here
   // because they will be re-created with second reflow of the docs
   if (kPrintingLogMod && kPrintingLogMod->level == DUMP_LAYOUT_LEVEL) {
@@ -3721,7 +3721,7 @@ nsPrintEngine::DisconnectPagePrintTimer()
 //-- Debug helper routines
 //---------------------------------------------------------------
 //---------------------------------------------------------------
-#if defined(XP_WIN) && defined(EXTENDED_DEBUG_PRINTING)
+#if defined(EXTENDED_DEBUG_PRINTING)
 #include "windows.h"
 #include "process.h"
 #include "direct.h"

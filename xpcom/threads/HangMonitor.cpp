@@ -26,14 +26,6 @@
 #include "nsExceptionHandler.h"
 #endif
 
-#ifdef XP_WIN
-#include <windows.h>
-#endif
-
-#if defined(MOZ_ENABLE_PROFILER_SPS) && defined(MOZ_PROFILING) && defined(XP_WIN)
-  #define REPORT_CHROME_HANGS
-#endif
-
 namespace mozilla {
 namespace HangMonitor {
 
@@ -104,12 +96,6 @@ Crash()
   if (gDebugDisableHangMonitor) {
     return;
   }
-
-#ifdef XP_WIN
-  if (::IsDebuggerPresent()) {
-    return;
-  }
-#endif
 
 #ifdef MOZ_CRASHREPORTER
   // If you change this, you must also deal with the threadsafety of AnnotateCrashReport in
@@ -353,21 +339,7 @@ Shutdown()
 static bool
 IsUIMessageWaiting()
 {
-#ifndef XP_WIN
   return false;
-#else
-#define NS_WM_IMEFIRST WM_IME_SETCONTEXT
-#define NS_WM_IMELAST  WM_IME_KEYUP
-  BOOL haveUIMessageWaiting = FALSE;
-  MSG msg;
-  haveUIMessageWaiting |= ::PeekMessageW(&msg, nullptr, WM_KEYFIRST,
-                                         WM_IME_KEYLAST, PM_NOREMOVE);
-  haveUIMessageWaiting |= ::PeekMessageW(&msg, nullptr, NS_WM_IMEFIRST,
-                                         NS_WM_IMELAST, PM_NOREMOVE);
-  haveUIMessageWaiting |= ::PeekMessageW(&msg, nullptr, WM_MOUSEFIRST,
-                                         WM_MOUSELAST, PM_NOREMOVE);
-  return haveUIMessageWaiting;
-#endif
 }
 
 void

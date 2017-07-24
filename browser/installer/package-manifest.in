@@ -48,7 +48,7 @@
 @RESPATH@/chrome/@AB_CD@@JAREXT@
 @RESPATH@/chrome/@AB_CD@.manifest
 @RESPATH@/dictionaries/*
-#if defined(XP_WIN) || defined(XP_LINUX)
+#if defined(XP_LINUX)
 @RESPATH@/fonts/*
 #endif
 @RESPATH@/hyphenation/*
@@ -90,17 +90,6 @@
 #else
 @BINPATH@/@MOZ_CHILD_PROCESS_NAME@
 #endif
-#ifdef XP_WIN32
-@BINPATH@/plugin-hang-ui@BIN_SUFFIX@
-#if MOZ_PACKAGE_MSVC_DLLS
-@BINPATH@/@MSVC_C_RUNTIME_DLL@
-@BINPATH@/@MSVC_CXX_RUNTIME_DLL@
-#endif
-#if MOZ_PACKAGE_WIN_UCRT_DLLS
-@BINPATH@/api-ms-win-*.dll
-@BINPATH@/ucrtbase.dll
-#endif
-#endif
 #ifdef MOZ_ICU_DATA_ARCHIVE
 @RESPATH@/@ICU_DATA_FILE@
 #endif
@@ -141,13 +130,6 @@
 @RESPATH@/run-mozilla.sh
 #endif
 #endif
-#ifdef XP_WIN
-#ifdef _AMD64_
-@BINPATH@/@DLL_PREFIX@qipcap64@DLL_SUFFIX@
-#else
-@BINPATH@/@DLL_PREFIX@qipcap@DLL_SUFFIX@
-#endif
-#endif
 
 ; [Components]
 #ifdef MOZ_ARTIFACT_BUILDS
@@ -158,11 +140,6 @@
 #endif
 @RESPATH@/components/alerts.xpt
 #ifdef ACCESSIBILITY
-#ifdef XP_WIN32
-@BINPATH@/Accessible.tlb
-@BINPATH@/AccessibleMarshal.dll
-@BINPATH@/IA2Marshal.dll
-#endif
 @RESPATH@/components/accessibility.xpt
 #endif
 @RESPATH@/components/appshell.xpt
@@ -478,11 +455,6 @@
 @RESPATH@/browser/components/ProfileMigrator.js
 @RESPATH@/browser/components/ChromeProfileMigrator.js
 @RESPATH@/browser/components/FirefoxProfileMigrator.js
-#ifdef XP_WIN
-@RESPATH@/browser/components/360seProfileMigrator.js
-@RESPATH@/browser/components/EdgeProfileMigrator.js
-@RESPATH@/browser/components/IEProfileMigrator.js
-#endif
 #ifdef XP_MACOSX
 @RESPATH@/browser/components/SafariProfileMigrator.js
 #endif
@@ -737,15 +709,6 @@
 @RESPATH@/components/pipnss.xpt
 @RESPATH@/components/pippki.xpt
 
-; For process sandboxing
-#if defined(MOZ_SANDBOX)
-#if defined(XP_WIN)
-#if defined(WOW_HELPER)
-@BINPATH@/wow_helper.exe
-#endif
-#endif
-#endif
-
 #if defined(MOZ_SANDBOX)
 #if defined(XP_LINUX)
 @BINPATH@/@DLL_PREFIX@mozsandbox@DLL_SUFFIX@
@@ -818,12 +781,6 @@ bin/libfreebl_32int64_3.so
 ; media
 @RESPATH@/gmp-clearkey/0.1/@DLL_PREFIX@clearkey@DLL_SUFFIX@
 @RESPATH@/gmp-clearkey/0.1/clearkey.info
-
-; gfx
-#ifdef XP_WIN
-@RESPATH@/components/GfxSanityTest.manifest
-@RESPATH@/components/SanityTest.js
-#endif
 
 #ifdef MOZ_MULET
 #include ../../b2g/installer/package-manifest.in

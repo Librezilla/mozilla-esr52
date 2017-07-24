@@ -43,9 +43,6 @@ BlobSet::AppendString(const nsAString& aString, bool nativeEOL, JSContext* aCx)
       utf8Str.ReplaceSubstring("\r\n", "\n");
       utf8Str.ReplaceSubstring("\r", "\n");
     }
-#ifdef XP_WIN
-    utf8Str.ReplaceSubstring("\n", "\r\n");
-#endif
   }
 
   return AppendVoidPtr((void*)utf8Str.Data(),

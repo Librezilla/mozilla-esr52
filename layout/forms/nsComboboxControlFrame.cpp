@@ -49,11 +49,7 @@
 #include "mozilla/Unused.h"
 #include "gfx2DGlue.h"
 
-#ifdef XP_WIN
-#define COMBOBOX_ROLLUP_CONSUME_EVENT 0
-#else
 #define COMBOBOX_ROLLUP_CONSUME_EVENT 1
-#endif
 
 using namespace mozilla;
 using namespace mozilla::gfx;

@@ -6,11 +6,7 @@
 #ifndef nsAppRunner_h__
 #define nsAppRunner_h__
 
-#ifdef XP_WIN
-#include <windows.h>
-#else
 #include <limits.h>
-#endif
 
 #ifndef MAXPATHLEN
 #ifdef PATH_MAX
@@ -103,16 +99,6 @@ OverrideDefaultLocaleIfNeeded();
  */
 void
 MozExpectedExit();
-
-#ifdef XP_WIN
-void
-UseParentConsole();
-
-BOOL
-WinLaunchChild(const wchar_t *exePath, int argc,
-               char **argv, HANDLE userToken = nullptr,
-               HANDLE *hProcess = nullptr);
-#endif
 
 #define NS_NATIVEAPPSUPPORT_CONTRACTID "@mozilla.org/toolkit/native-app-support;1"
 

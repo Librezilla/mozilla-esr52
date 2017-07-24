@@ -666,9 +666,6 @@ static const char16_t* kBinaryFileExtensions[] = {
     //u".xxe",
     u".xz", // Linux archive (xz)
     u".z", // InstallShield
-#ifdef XP_WIN // disable on Mac/Linux, see 1167493
-    u".zip", // Generic archive
-#endif
     u".zipx", // WinZip
     //u".zpaq",
 };
@@ -1185,19 +1182,6 @@ PendingLookup::SendRemoteQueryInternal()
       return NS_ERROR_NOT_AVAILABLE;
     }
   }
-#ifdef XP_WIN
-  // The allowlist is only needed to do signature verification on Windows
-  {
-    nsAutoCString table;
-    NS_ENSURE_SUCCESS(Preferences::GetCString(PREF_DOWNLOAD_ALLOW_TABLE,
-                                              &table),
-                      NS_ERROR_NOT_AVAILABLE);
-    if (table.IsEmpty()) {
-      LOG(("Allowlist is empty [this = %p]", this));
-      return NS_ERROR_NOT_AVAILABLE;
-    }
-  }
-#endif
 
   LOG(("Sending remote query for application reputation [this = %p]",
        this));

@@ -119,14 +119,6 @@ typedef void* nsNativeWidget;
 #define NS_NATIVE_PLUGIN_PORT_QD    100
 #define NS_NATIVE_PLUGIN_PORT_CG    101
 #endif
-#ifdef XP_WIN
-#define NS_NATIVE_TSF_THREAD_MGR       100
-#define NS_NATIVE_TSF_CATEGORY_MGR     101
-#define NS_NATIVE_TSF_DISPLAY_ATTR_MGR 102
-#define NS_NATIVE_ICOREWINDOW          103 // winrt specific
-#define NS_NATIVE_CHILD_WINDOW         104
-#define NS_NATIVE_CHILD_OF_SHAREABLE_WINDOW 105
-#endif
 #if defined(MOZ_WIDGET_GTK)
 // set/get nsPluginNativeWindowGtk, e10s specific
 #define NS_NATIVE_PLUGIN_OBJECT_PTR    104
@@ -1084,28 +1076,6 @@ class nsIWidget : public nsISupports
      */
     static void UpdateRegisteredPluginWindowVisibility(uintptr_t aOwnerWidget,
                                                        nsTArray<uintptr_t>& aPluginIds);
-
-#if defined(XP_WIN)
-    /**
-     * Iterates over the list of registered plugins and for any that are owned
-     * by aOwnerWidget and visible it takes a snapshot.
-     *
-     * @param aOwnerWidget only captures visible widgets owned by this
-     */
-    static void CaptureRegisteredPlugins(uintptr_t aOwnerWidget);
-
-    /**
-     * Take a scroll capture for this widget if possible.
-     */
-    virtual void UpdateScrollCapture() = 0;
-
-    /**
-     * Creates an async ImageContainer to hold scroll capture images that can be
-     * used if the plugin is hidden during scroll.
-     * @return the async container ID of the created ImageContainer.
-     */
-    virtual uint64_t CreateScrollCaptureContainer() = 0;
-#endif
 
     /**
      * Set the shadow style of the window.

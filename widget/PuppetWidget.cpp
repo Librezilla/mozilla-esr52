@@ -946,11 +946,9 @@ NS_IMETHODIMP
 PuppetWidget::SetCursor(nsCursor aCursor)
 {
   // Don't cache on windows, Windowless flash breaks this via async cursor updates.
-#if !defined(XP_WIN)
   if (mCursor == aCursor && !mCustomCursor && !mUpdateCursor) {
     return NS_OK;
   }
-#endif
 
   mCustomCursor = nullptr;
 
@@ -973,14 +971,12 @@ PuppetWidget::SetCursor(imgIContainer* aCursor,
     return NS_OK;
   }
 
-#if !defined(XP_WIN)
   if (mCustomCursor == aCursor &&
       mCursorHotspotX == aHotspotX &&
       mCursorHotspotY == aHotspotY &&
       !mUpdateCursor) {
     return NS_OK;
   }
-#endif
 
   RefPtr<mozilla::gfx::SourceSurface> surface =
     aCursor->GetFrame(imgIContainer::FRAME_CURRENT,
@@ -1219,23 +1215,6 @@ PuppetWidget::GetNativeData(uint32_t aDataType)
   }
   return nullptr;
 }
-
-#if defined(XP_WIN)
-void
-PuppetWidget::SetNativeData(uint32_t aDataType, uintptr_t aVal)
-{
-  switch (aDataType) {
-  case NS_NATIVE_CHILD_OF_SHAREABLE_WINDOW:
-    MOZ_ASSERT(mTabChild, "Need TabChild to send the message.");
-    if (mTabChild) {
-      mTabChild->SendSetNativeChildOfShareableWindow(aVal);
-    }
-    break;
-  default:
-    NS_WARNING("SetNativeData called with unsupported data type.");
-  }
-}
-#endif
 
 nsIntPoint
 PuppetWidget::GetChromeDimensions()

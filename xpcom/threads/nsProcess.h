@@ -7,10 +7,6 @@
 #ifndef _nsPROCESSWIN_H_
 #define _nsPROCESSWIN_H_
 
-#if defined(XP_WIN)
-#define PROCESSMODEL_WINAPI
-#endif
-
 #include "mozilla/Attributes.h"
 #include "mozilla/Mutex.h"
 #include "nsIProcess.h"

@@ -113,10 +113,6 @@
 #include "mozilla/StyleSheetInlines.h"
 #include "mozilla/gfx/GPUProcessManager.h"
 
-#ifdef XP_WIN
-#undef GetClassName
-#endif
-
 using namespace mozilla;
 using namespace mozilla::dom;
 using namespace mozilla::ipc;

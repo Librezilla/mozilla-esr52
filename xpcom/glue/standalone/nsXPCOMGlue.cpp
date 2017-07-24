@@ -24,60 +24,8 @@ using namespace mozilla;
 static XPCOMFunctions xpcomFunctions;
 static bool do_preload = false;
 
-#if defined(XP_WIN)
-#define READ_TEXTMODE L"rt"
-#else
 #define READ_TEXTMODE "r"
-#endif
 
-#if defined(XP_WIN)
-#include <windows.h>
-#include <mbstring.h>
-
-typedef HINSTANCE LibHandleType;
-
-static LibHandleType
-GetLibHandle(pathstr_t aDependentLib)
-{
-  LibHandleType libHandle =
-    LoadLibraryExW(aDependentLib, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
-
-#ifdef DEBUG
-  if (!libHandle) {
-    DWORD err = GetLastError();
-    LPWSTR lpMsgBuf;
-    FormatMessageW(
-      FORMAT_MESSAGE_ALLOCATE_BUFFER |
-      FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr,
-      err,
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      (LPWSTR)&lpMsgBuf,
-      0,
-      nullptr
-    );
-    wprintf(L"Error loading %ls: %s\n", aDependentLib, lpMsgBuf);
-    LocalFree(lpMsgBuf);
-  }
-#endif
-
-  return libHandle;
-}
-
-static NSFuncPtr
-GetSymbol(LibHandleType aLibHandle, const char* aSymbol)
-{
-  return (NSFuncPtr)GetProcAddress(aLibHandle, aSymbol);
-}
-
-static void
-CloseLibHandle(LibHandleType aLibHandle)
-{
-  FreeLibrary(aLibHandle);
-}
-
-#else
 #include <dlfcn.h>
 
 #if defined(MOZ_LINKER) && !defined(ANDROID)
@@ -121,7 +69,6 @@ CloseLibHandle(LibHandleType aLibHandle)
 {
   dlclose(aLibHandle);
 }
-#endif
 
 struct DependentLib
 {
@@ -159,29 +106,11 @@ ReadDependentCB(pathstr_t aDependentLib, bool aDoPreload)
   return libHandle;
 }
 
-#ifdef XP_WIN
-static bool
-ReadDependentCB(const char* aDependentLib, bool do_preload)
-{
-  wchar_t wideDependentLib[MAX_PATH];
-  MultiByteToWideChar(CP_UTF8, 0, aDependentLib, -1, wideDependentLib, MAX_PATH);
-  return ReadDependentCB(wideDependentLib, do_preload);
-}
-
-inline FILE*
-TS_tfopen(const char* path, const wchar_t* mode)
-{
-  wchar_t wPath[MAX_PATH];
-  MultiByteToWideChar(CP_UTF8, 0, path, -1, wPath, MAX_PATH);
-  return _wfopen(wPath, mode);
-}
-#else
 inline FILE*
 TS_tfopen(const char* aPath, const char* aMode)
 {
   return fopen(aPath, aMode);
 }
-#endif
 
 /* RAII wrapper for FILE descriptors */
 struct ScopedCloseFileTraits
@@ -210,33 +139,11 @@ XPCOMGlueUnload()
   }
 }
 
-#if defined(XP_WIN)
-// like strpbrk but finds the *last* char, not the first
-static const char*
-ns_strrpbrk(const char* string, const char* strCharSet)
-{
-  const char* found = nullptr;
-  for (; *string; ++string) {
-    for (const char* search = strCharSet; *search; ++search) {
-      if (*search == *string) {
-        found = string;
-        // Since we're looking for the last char, we save "found"
-        // until we're at the end of the string.
-      }
-    }
-  }
-
-  return found;
-}
-#endif
-
 static GetFrozenFunctionsFunc
 XPCOMGlueLoad(const char* aXPCOMFile)
 {
   char xpcomDir[MAXPATHLEN];
-#ifdef XP_WIN
-  const char* lastSlash = ns_strrpbrk(aXPCOMFile, "/\\");
-#elif XP_MACOSX
+#if XP_MACOSX
   // On OSX, the dependentlibs.list file lives under Contents/Resources.
   // However, the actual libraries listed in dependentlibs.list live under
   // Contents/MacOS. We want to read the list from Contents/Resources, then

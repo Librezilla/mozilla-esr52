@@ -657,10 +657,6 @@ public:
   // Request that the docshell be marked as active.
   void ForcePaint(uint64_t aLayerObserverEpoch);
 
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  uintptr_t GetNativeWindowHandle() const { return mNativeWindowHandle; }
-#endif
-
   bool TakeIsFreshProcess()
   {
     bool wasFreshProcess = mIsFreshProcess;
@@ -803,11 +799,6 @@ private:
 
   // The most recently seen layer observer epoch in RecvSetDocShellIsActive.
   uint64_t mLayerObserverEpoch;
-
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  // The handle associated with the native window that contains this tab
-  uintptr_t mNativeWindowHandle;
-#endif // defined(XP_WIN)
 
   DISALLOW_EVIL_CONSTRUCTORS(TabChild);
 };

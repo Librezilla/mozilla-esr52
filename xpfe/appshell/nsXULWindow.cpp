@@ -490,33 +490,6 @@ NS_IMETHODIMP nsXULWindow::Destroy()
     mWindow->Show(false);
 #endif
 
-#if defined(XP_WIN)
-  // We need to explicitly set the focus on Windows, but 
-  // only if the parent is visible.
-  nsCOMPtr<nsIBaseWindow> parent(do_QueryReferent(mParentWindow));
-  if (parent) {
-    nsCOMPtr<nsIWidget> parentWidget;
-    parent->GetMainWidget(getter_AddRefs(parentWidget));
-    if (!parentWidget || parentWidget->IsVisible()) {
-      nsCOMPtr<nsIBaseWindow> baseHiddenWindow;
-      if (appShell) {
-        nsCOMPtr<nsIXULWindow> hiddenWindow;
-        appShell->GetHiddenWindow(getter_AddRefs(hiddenWindow));
-        if (hiddenWindow)
-          baseHiddenWindow = do_GetInterface(hiddenWindow);
-      }
-      // somebody screwed up somewhere. hiddenwindow shouldn't be anybody's
-      // parent. still, when it happens, skip activating it.
-      if (baseHiddenWindow != parent) {
-        nsCOMPtr<nsIWidget> parentWidget;
-        parent->GetMainWidget(getter_AddRefs(parentWidget));
-        if (parentWidget)
-          parentWidget->PlaceBehind(eZPlacementTop, 0, true);
-      }
-    }
-  }
-#endif
-   
   mDOMWindow = nullptr;
   if (mDocShell) {
     nsCOMPtr<nsIBaseWindow> shellAsWin(do_QueryInterface(mDocShell));

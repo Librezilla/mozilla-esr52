@@ -18,16 +18,9 @@
  * http://msdn.microsoft.com/en-us/library/tcxf1dw6.aspx
  */
 
-#if defined(XP_WIN)
-#  define PRIoSIZE  "Io"
-#  define PRIuSIZE  "Iu"
-#  define PRIxSIZE  "Ix"
-#  define PRIXSIZE  "IX"
-#else
 #  define PRIoSIZE  "zo"
 #  define PRIuSIZE  "zu"
 #  define PRIxSIZE  "zx"
 #  define PRIXSIZE  "zX"
-#endif
 
 #endif  /* mozilla_SizePrintfMacros_h_ */

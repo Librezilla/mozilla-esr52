@@ -49,14 +49,6 @@
 
 #include "mozilla/Preferences.h"
 
-#ifdef XP_WIN
-#include <shlobj.h>
-#include "nsWindowsHelpers.h"
-#ifdef DOWNLOAD_SCANNER
-#include "nsDownloadScanner.h"
-#endif
-#endif
-
 #ifdef XP_MACOSX
 #include <CoreFoundation/CoreFoundation.h>
 #endif
@@ -1385,41 +1377,6 @@ nsDownloadManager::GetDefaultDownloadsDirectory(nsIFile **aResult)
                        NS_GET_IID(nsIFile),
                        getter_AddRefs(downloadDir));
   NS_ENSURE_SUCCESS(rv, rv);
-#elif defined(XP_WIN)
-  rv = dirService->Get(NS_WIN_DEFAULT_DOWNLOAD_DIR,
-                       NS_GET_IID(nsIFile),
-                       getter_AddRefs(downloadDir));
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // Check the os version
-  nsCOMPtr<nsIPropertyBag2> infoService =
-     do_GetService(NS_SYSTEMINFO_CONTRACTID, &rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  int32_t version;
-  NS_NAMED_LITERAL_STRING(osVersion, "version");
-  rv = infoService->GetPropertyAsInt32(osVersion, &version);
-  NS_ENSURE_SUCCESS(rv, rv);
-  if (version < 6) { // XP/2K
-    // First get "My Documents"
-    rv = dirService->Get(NS_WIN_PERSONAL_DIR,
-                         NS_GET_IID(nsIFile),
-                         getter_AddRefs(downloadDir));
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    rv = downloadDir->Append(folderName);
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    // This could be the first time we are creating the downloads folder in My
-    // Documents, so make sure it exists.
-    bool exists;
-    rv = downloadDir->Exists(&exists);
-    NS_ENSURE_SUCCESS(rv, rv);
-    if (!exists) {
-      rv = downloadDir->Create(nsIFile::DIRECTORY_TYPE, 0755);
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
-  }
 #elif defined(XP_UNIX)
 #if defined(MOZ_WIDGET_ANDROID)
     // Android doesn't have a $HOME directory, and by default we only have
@@ -2770,7 +2727,7 @@ nsDownload::SetState(DownloadState aState)
         }
       }
 
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GTK)
+#if defined(XP_MACOSX) || defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GTK)
       nsCOMPtr<nsIFileURL> fileURL = do_QueryInterface(mTarget);
       nsCOMPtr<nsIFile> file;
       nsAutoString path;
@@ -2780,7 +2737,7 @@ nsDownload::SetState(DownloadState aState)
           file &&
           NS_SUCCEEDED(file->GetPath(path))) {
 
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK) || defined(MOZ_WIDGET_ANDROID)
+#if defined(MOZ_WIDGET_GTK) || defined(MOZ_WIDGET_ANDROID)
         // On Windows and Gtk, add the download to the system's "recent documents"
         // list, with a pref to disable.
         {
@@ -2802,9 +2759,7 @@ nsDownload::SetState(DownloadState aState)
           }
 #else
           if (addToRecentDocs && !mPrivate) {
-#ifdef XP_WIN
-            ::SHAddToRecentDocs(SHARD_PATHW, path.get());
-#elif defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
             GtkRecentManager* manager = gtk_recent_manager_get_default();
 
             gchar* uri = g_filename_to_uri(NS_ConvertUTF16toUTF8(path).get(),
@@ -2846,24 +2801,6 @@ nsDownload::SetState(DownloadState aState)
         ::CFRelease(observedObject);
 #endif
       }
-
-#ifdef XP_WIN
-      // Adjust file attributes so that by default, new files are indexed
-      // by desktop search services. Skip off those that land in the temp
-      // folder.
-      nsCOMPtr<nsIFile> tempDir, fileDir;
-      rv = NS_GetSpecialDirectory(NS_OS_TEMP_DIR, getter_AddRefs(tempDir));
-      NS_ENSURE_SUCCESS(rv, rv);
-      (void)file->GetParent(getter_AddRefs(fileDir));
-
-      bool isTemp = false;
-      if (fileDir)
-        (void)fileDir->Equals(tempDir, &isTemp);
-
-      nsCOMPtr<nsILocalFileWin> localFileWin(do_QueryInterface(file));
-      if (!isTemp && localFileWin)
-        (void)localFileWin->SetFileAttributesWin(nsILocalFileWin::WFA_SEARCH_INDEXED);
-#endif
 
 #endif
       // Now remove the download if the user's retention policy is "Remove when Done"

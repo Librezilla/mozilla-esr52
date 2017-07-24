@@ -28,10 +28,6 @@ typedef uintptr_t MozRefCountType;
  * The following ifdef exists to maintain binary compatibility with
  * IUnknown, the base interface in Microsoft COM.
  */
-#ifdef XP_WIN
-typedef unsigned long MozExternalRefCountType;
-#else
 typedef uint32_t MozExternalRefCountType;
-#endif
 
 #endif

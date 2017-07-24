@@ -70,11 +70,7 @@ TextEditor::TextEditor()
   , mMaxTextLength(-1)
   , mInitTriggerCounter(0)
   , mNewlineHandling(nsIPlaintextEditor::eNewlinesPasteToFirst)
-#ifdef XP_WIN
-  , mCaretStyle(1)
-#else
   , mCaretStyle(0)
-#endif
 {
   // check the "single line editor newline handling"
   // and "caret behaviour in selection" prefs
@@ -160,14 +156,7 @@ EditorPrefsChangedCallback(const char* aPrefName, void *)
                           nsIPlaintextEditor::eNewlinesPasteToFirst);
   } else if (!nsCRT::strcmp(aPrefName, "layout.selection.caret_style")) {
     sCaretStylePref = Preferences::GetInt("layout.selection.caret_style",
-#ifdef XP_WIN
-                                                 1);
-    if (!sCaretStylePref) {
-      sCaretStylePref = 1;
-    }
-#else
                                                  0);
-#endif
   }
 }
 

@@ -54,13 +54,11 @@
 #include "js/ProfilingFrameIterator.h"
 #endif
 
-#if defined(MOZ_PROFILING) && (defined(XP_MACOSX) || defined(XP_WIN))
+#if defined(MOZ_PROFILING) && (defined(XP_MACOSX)
  #define USE_NS_STACKWALK
 #endif
 
-#if defined(XP_WIN)
-typedef CONTEXT tickcontext_t;
-#elif defined(LINUX)
+#if defined(LINUX)
 #include <ucontext.h>
 typedef ucontext_t tickcontext_t;
 #endif
@@ -123,29 +121,6 @@ AddSharedLibraryInfoToStream(std::ostream& aStream, const SharedLibrary& aLib)
   aStream << ",\"name\":\"" << aLib.GetName() << "\"";
   const std::string &breakpadId = aLib.GetBreakpadId();
   aStream << ",\"breakpadId\":\"" << breakpadId << "\"";
-#ifdef XP_WIN
-  // FIXME: remove this XP_WIN code when the profiler plugin has switched to
-  // using breakpadId.
-  std::string pdbSignature = breakpadId.substr(0, 32);
-  std::string pdbAgeStr = breakpadId.substr(32,  breakpadId.size() - 1);
-
-  std::stringstream stream;
-  stream << pdbAgeStr;
-
-  unsigned pdbAge;
-  stream << std::hex;
-  stream >> pdbAge;
-
-#ifdef DEBUG
-  std::ostringstream oStream;
-  oStream << pdbSignature << std::hex << std::uppercase << pdbAge;
-  MOZ_ASSERT(breakpadId == oStream.str());
-#endif
-
-  aStream << ",\"pdbSignature\":\"" << pdbSignature << "\"";
-  aStream << ",\"pdbAge\":" << pdbAge;
-  aStream << ",\"pdbName\":\"" << aLib.GetName() << "\"";
-#endif
   aStream << "}";
 }
 
@@ -185,9 +160,6 @@ GeckoSampler::GeckoSampler(double aInterval, int aEntrySize,
   , mPrimaryThreadProfile(nullptr)
   , mBuffer(new ProfileBuffer(aEntrySize))
   , mSaveRequested(false)
-#if defined(XP_WIN)
-  , mIntelPowerGadget(nullptr)
-#endif
 {
   mUseStackWalk = hasFeature(aFeatures, aFeatureCount, "stackwalk");
 
@@ -205,13 +177,6 @@ GeckoSampler::GeckoSampler(double aInterval, int aEntrySize,
   mLayersDump = hasFeature(aFeatures, aFeatureCount, "layersdump");
   mDisplayListDump = hasFeature(aFeatures, aFeatureCount, "displaylistdump");
   mProfileRestyle = hasFeature(aFeatures, aFeatureCount, "restyle");
-
-#if defined(XP_WIN)
-  if (mProfilePower) {
-    mIntelPowerGadget = new IntelPowerGadget();
-    mProfilePower = mIntelPowerGadget->Init();
-  }
-#endif
 
 #if defined(SPS_OS_android) && !defined(MOZ_WIDGET_GONK)
   mProfileJava = mozilla::jni::IsFennec() &&
@@ -284,9 +249,6 @@ GeckoSampler::~GeckoSampler()
       }
     }
   }
-#if defined(XP_WIN)
-  delete mIntelPowerGadget;
-#endif
 
   // Cancel any in-flight async profile gatherering
   // requests
@@ -972,7 +934,7 @@ void GeckoSampler::doNativeBacktrace(ThreadProfile &aProfile, TickSample* aSampl
   uint32_t maxFrames = uint32_t(nativeStack.size - nativeStack.count);
   // win X64 doesn't support disabling frame pointers emission so we need
   // to fallback to using StackWalk64 which is slower.
-#if defined(XP_MACOSX) || (defined(XP_WIN) && !defined(V8_HOST_ARCH_X64))
+#if defined(XP_MACOSX)
   void *stackEnd = aSample->threadProfile->GetStackTop();
   bool rv = true;
   if (aSample->fp >= aSample->sp && aSample->fp <= stackEnd)
@@ -1240,13 +1202,6 @@ void GeckoSampler::InplaceTick(TickSample* sample)
     currThreadProfile.addTag(ProfileEntry('U', static_cast<double>(sample->ussMemory)));
   }
 
-#if defined(XP_WIN)
-  if (mProfilePower) {
-    mIntelPowerGadget->TakeSample();
-    currThreadProfile.addTag(ProfileEntry('p', static_cast<double>(mIntelPowerGadget->GetTotalPackagePowerInWatts())));
-  }
-#endif
-
   if (sLastFrameNumber != sFrameNumber) {
     currThreadProfile.addTag(ProfileEntry('f', sFrameNumber));
     sLastFrameNumber = sFrameNumber;
@@ -1279,7 +1234,7 @@ SyncProfile* GeckoSampler::GetBacktrace()
   sample.threadProfile = profile;
 
 #if defined(HAVE_NATIVE_UNWIND) || defined(USE_LUL_STACKWALK)
-#if defined(XP_WIN) || defined(LINUX)
+#if defined(LINUX)
   tickcontext_t context;
   sample.PopulateContext(&context);
 #elif defined(XP_MACOSX)

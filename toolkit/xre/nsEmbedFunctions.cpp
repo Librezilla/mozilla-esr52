@@ -22,11 +22,6 @@
 #include "nsIToolkitChromeRegistry.h"
 #include "nsIToolkitProfile.h"
 
-#ifdef XP_WIN
-#include <process.h>
-#include "mozilla/ipc/WindowsMessageLoop.h"
-#endif
-
 #include "nsAppDirectoryServiceDefs.h"
 #include "nsAppRunner.h"
 #include "nsAutoRef.h"
@@ -74,11 +69,6 @@
 
 #include "mozilla/Telemetry.h"
 
-#if defined(MOZ_SANDBOX) && defined(XP_WIN)
-#include "mozilla/sandboxTarget.h"
-#include "mozilla/sandboxing/loggingCallbacks.h"
-#endif
-
 #if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
 #include "mozilla/Preferences.h"
 #endif
@@ -118,10 +108,6 @@ using mozilla::ipc::XPCShellEnvironment;
 using mozilla::startup::sChildProcessType;
 
 static NS_DEFINE_CID(kAppShellCID, NS_APPSHELL_CID);
-
-#ifdef XP_WIN
-static const wchar_t kShellLibraryName[] =  L"shell32.dll";
-#endif
 
 nsresult
 XRE_LockProfileDirectory(nsIFile* aDirectory,
@@ -256,7 +242,7 @@ XRE_TakeMinidumpForChild(uint32_t aChildPid, nsIFile** aDump,
 bool
 XRE_SetRemoteExceptionHandler(const char* aPipe/*= 0*/)
 {
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   return CrashReporter::SetRemoteExceptionHandler(nsDependentCString(aPipe));
 #elif defined(OS_LINUX)
   return CrashReporter::SetRemoteExceptionHandler();
@@ -265,33 +251,6 @@ XRE_SetRemoteExceptionHandler(const char* aPipe/*= 0*/)
 #endif
 }
 #endif // if defined(MOZ_CRASHREPORTER)
-
-#if defined(XP_WIN)
-void
-SetTaskbarGroupId(const nsString& aId)
-{
-    typedef HRESULT (WINAPI * SetCurrentProcessExplicitAppUserModelIDPtr)(PCWSTR AppID);
-
-    SetCurrentProcessExplicitAppUserModelIDPtr funcAppUserModelID = nullptr;
-
-    HMODULE hDLL = ::LoadLibraryW(kShellLibraryName);
-
-    funcAppUserModelID = (SetCurrentProcessExplicitAppUserModelIDPtr)
-                          GetProcAddress(hDLL, "SetCurrentProcessExplicitAppUserModelID");
-
-    if (!funcAppUserModelID) {
-        ::FreeLibrary(hDLL);
-        return;
-    }
-
-    if (FAILED(funcAppUserModelID(aId.get()))) {
-        NS_WARNING("SetCurrentProcessExplicitAppUserModelID failed for child process.");
-    }
-
-    if (hDLL)
-        ::FreeLibrary(hDLL);
-}
-#endif
 
 #if defined(MOZ_CRASHREPORTER)
 #if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
@@ -334,36 +293,6 @@ XRE_InitChildProcess(int aArgc,
   // on Android), so we create it here inside XUL and pass it to the GMP code.
   UniquePtr<GMPLoader> loader = CreateGMPLoader(nullptr);
   GMPProcessChild::SetGMPLoader(loader.get());
-#endif
-
-#if defined(XP_WIN)
-  // From the --attach-console support in nsNativeAppSupportWin.cpp, but
-  // here we are a content child process, so we always attempt to attach
-  // to the parent's (ie, the browser's) console.
-  // Try to attach console to the parent process.
-  // It will succeed when the parent process is a command line,
-  // so that stdio will be displayed in it.
-  if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-    // Change std handles to refer to new console handles.
-    // Before doing so, ensure that stdout/stderr haven't been
-    // redirected to a valid file
-    if (_fileno(stdout) == -1 ||
-        _get_osfhandle(fileno(stdout)) == -1)
-        freopen("CONOUT$", "w", stdout);
-    // Merge stderr into CONOUT$ since there isn't any `CONERR$`.
-    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms683231%28v=vs.85%29.aspx
-    if (_fileno(stderr) == -1 ||
-        _get_osfhandle(fileno(stderr)) == -1)
-        freopen("CONOUT$", "w", stderr);
-    if (_fileno(stdin) == -1 || _get_osfhandle(fileno(stdin)) == -1)
-        freopen("CONIN$", "r", stdin);
-  }
-
-#if defined(MOZ_SANDBOX)
-  if (aChildData->sandboxTargetServices) {
-    SandboxTarget::Instance()->SetTargetServices(aChildData->sandboxTargetServices);
-  }
-#endif
 #endif
 
   // NB: This must be called before profiler_init
@@ -467,7 +396,7 @@ XRE_InitChildProcess(int aArgc,
     return NS_ERROR_FAILURE;
   const char* const crashReporterArg = aArgv[--aArgc];
   
-#  if defined(XP_WIN) || defined(XP_MACOSX)
+#  defined(XP_MACOSX)
   // on windows and mac, |crashReporterArg| is the named pipe on which the
   // server is listening for requests, or "-" if crash reporting is
   // disabled.
@@ -537,24 +466,6 @@ XRE_InitChildProcess(int aArgc,
                                                    ports_out_sender, ports_out_receiver, true);
 #endif
 
-#if defined(XP_WIN)
-  // On Win7+, register the application user model id passed in by
-  // parent. This insures windows created by the container properly
-  // group with the parent app on the Win7 taskbar.
-  const char* const appModelUserId = aArgv[--aArgc];
-  if (appModelUserId) {
-    // '-' implies no support
-    if (*appModelUserId != '-') {
-      nsString appId;
-      appId.AssignWithConversion(nsDependentCString(appModelUserId));
-      // The version string is encased in quotes
-      appId.Trim(NS_LITERAL_CSTRING("\"").get());
-      // Set the id
-      SetTaskbarGroupId(appId);
-    }
-  }
-#endif
-
   base::AtExitManager exitManager;
 
   nsresult rv = XRE_InitCommandLine(aArgc, aArgv);
@@ -587,10 +498,6 @@ XRE_InitChildProcess(int aArgc,
     MessageLoop uiMessageLoop(uiLoopType);
     {
       nsAutoPtr<ProcessChild> process;
-
-#ifdef XP_WIN
-      mozilla::ipc::windows::InitUIThread();
-#endif
 
       switch (XRE_GetProcessType()) {
       case GeckoProcessType_Default:
@@ -668,22 +575,9 @@ XRE_InitChildProcess(int aArgc,
       }
 
 #ifdef MOZ_CRASHREPORTER
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
       CrashReporter::InitChildProcessTmpDir();
 #endif
-#endif
-
-#if defined(XP_WIN)
-      // Set child processes up such that they will get killed after the
-      // chrome process is killed in cases where the user shuts the system
-      // down or logs off.
-      ::SetProcessShutdownParameters(0x280 - 1, SHUTDOWN_NORETRY);
-#endif
-
-#if defined(MOZ_SANDBOX) && defined(XP_WIN)
-      // We need to do this after the process has been initialised, as
-      // InitLoggingIfRequired may need access to prefs.
-      mozilla::sandboxing::InitLoggingIfRequired(aChildData->ProvideLogFunction);
 #endif
 
       OverrideDefaultLocaleIfNeeded();

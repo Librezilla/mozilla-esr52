@@ -27,7 +27,7 @@ public:
 #if defined(XP_UNIX) && !defined(XP_MACOSX)
         mNP_GetValue(nullptr),
 #endif
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
         mNP_GetEntryPoints(nullptr),
 #endif
         mNPP_New(nullptr),
@@ -72,7 +72,7 @@ public:
             return false;
 #endif
 
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
         mNP_GetEntryPoints = (NP_GetEntryPointsFunc)
             PR_FindFunctionSymbol(mLibrary, "NP_GetEntryPoints");
         if (!mNP_GetEntryPoints)
@@ -95,7 +95,7 @@ public:
     virtual nsresult NP_GetValue(void* aFuture, NPPVariable aVariable,
                                  void* aValue, NPError* aError) override;
 
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
     virtual nsresult NP_GetEntryPoints(NPPluginFuncs* aFuncs, NPError* aError) override;
 #endif
 
@@ -115,7 +115,7 @@ public:
 #if defined(XP_MACOSX)
     virtual nsresult IsRemoteDrawingCoreAnimation(NPP aInstance, bool* aDrawing) override;
 #endif
-#if defined(XP_MACOSX) || defined(XP_WIN)
+#if defined(XP_MACOSX)
     virtual nsresult ContentsScaleFactorChanged(NPP aInstance, double aContentsScaleFactor) override;
 #endif
     virtual nsresult SetBackgroundUnknown(NPP instance) override;
@@ -127,9 +127,6 @@ public:
     virtual void GetLibraryPath(nsACString& aPath) { aPath.Assign(mFilePath); }
     virtual nsresult GetRunID(uint32_t* aRunID) override { return NS_ERROR_NOT_IMPLEMENTED; }
     virtual void SetHasLocalInstance() override { }
-#if defined(XP_WIN)
-    virtual nsresult GetScrollCaptureContainer(NPP aInstance, mozilla::layers::ImageContainer** aContainer) override;
-#endif
     virtual nsresult HandledWindowedPluginKeyEvent(
                        NPP aInstance,
                        const mozilla::NativeEventData& aNativeKeyData,
@@ -142,7 +139,7 @@ private:
 #if defined(XP_UNIX) && !defined(XP_MACOSX)
     NP_GetValueFunc mNP_GetValue;
 #endif
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
     NP_GetEntryPointsFunc mNP_GetEntryPoints;
 #endif
     NPP_NewProcPtr mNPP_New;

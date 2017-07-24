@@ -2165,7 +2165,7 @@ ScrollFrameHelper::CompleteAsyncScroll(const nsRect &aRange, nsIAtom* aOrigin)
 bool
 ScrollFrameHelper::HasPluginFrames()
 {
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   if (XRE_IsContentProcess()) {
     nsPresContext* presContext = mOuter->PresContext();
     nsRootPresContext* rootPresContext = presContext->GetRootPresContext();

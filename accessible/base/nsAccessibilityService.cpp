@@ -42,13 +42,6 @@
 #include "AtkSocketAccessible.h"
 #endif
 
-#ifdef XP_WIN
-#include "mozilla/a11y/Compatibility.h"
-#include "mozilla/dom/ContentChild.h"
-#include "HTMLWin32ObjectAccessible.h"
-#include "mozilla/StaticPtr.h"
-#endif
-
 #ifdef A11Y_LOG
 #include "Logging.h"
 #endif
@@ -86,7 +79,7 @@
 #include "XULTreeGridAccessibleWrap.h"
 #endif
 
-#if defined(XP_WIN) || defined(MOZ_ACCESSIBILITY_ATK)
+#if defined(MOZ_ACCESSIBILITY_ATK)
 #include "nsNPAPIPluginInstance.h"
 #endif
 
@@ -397,50 +390,6 @@ nsAccessibilityService::GetRootDocumentAccessible(nsIPresShell* aPresShell,
   return nullptr;
 }
 
-#ifdef XP_WIN
-static StaticAutoPtr<nsTArray<nsCOMPtr<nsIContent> > > sPendingPlugins;
-static StaticAutoPtr<nsTArray<nsCOMPtr<nsITimer> > > sPluginTimers;
-
-class PluginTimerCallBack final : public nsITimerCallback
-{
-  ~PluginTimerCallBack() {}
-
-public:
-  PluginTimerCallBack(nsIContent* aContent) : mContent(aContent) {}
-
-  NS_DECL_ISUPPORTS
-
-  NS_IMETHOD Notify(nsITimer* aTimer) final
-  {
-    if (!mContent->IsInUncomposedDoc())
-      return NS_OK;
-
-    nsIPresShell* ps = mContent->OwnerDoc()->GetShell();
-    if (ps) {
-      DocAccessible* doc = ps->GetDocAccessible();
-      if (doc) {
-        // Make sure that if we created an accessible for the plugin that wasn't
-        // a plugin accessible we remove it before creating the right accessible.
-        doc->RecreateAccessible(mContent);
-        sPluginTimers->RemoveElement(aTimer);
-        return NS_OK;
-      }
-    }
-
-    // We couldn't get a doc accessible so presumably the document went away.
-    // In this case don't leak our ref to the content or timer.
-    sPendingPlugins->RemoveElement(mContent);
-    sPluginTimers->RemoveElement(aTimer);
-    return NS_OK;
-  }
-
-private:
-  nsCOMPtr<nsIContent> mContent;
-};
-
-NS_IMPL_ISUPPORTS(PluginTimerCallBack, nsITimerCallback)
-#endif
-
 already_AddRefed<Accessible>
 nsAccessibilityService::CreatePluginAccessible(nsPluginFrame* aFrame,
                                                nsIContent* aContent,
@@ -451,38 +400,10 @@ nsAccessibilityService::CreatePluginAccessible(nsPluginFrame* aFrame,
   if (aFrame->GetRect().IsEmpty())
     return nullptr;
 
-#if defined(XP_WIN) || defined(MOZ_ACCESSIBILITY_ATK)
+#if defined(MOZ_ACCESSIBILITY_ATK)
   RefPtr<nsNPAPIPluginInstance> pluginInstance;
   if (NS_SUCCEEDED(aFrame->GetPluginInstance(getter_AddRefs(pluginInstance))) &&
       pluginInstance) {
-#ifdef XP_WIN
-    if (!sPendingPlugins->Contains(aContent) &&
-        (Preferences::GetBool("accessibility.delay_plugins") ||
-         Compatibility::IsJAWS() || Compatibility::IsWE())) {
-      nsCOMPtr<nsITimer> timer = do_CreateInstance(NS_TIMER_CONTRACTID);
-      RefPtr<PluginTimerCallBack> cb = new PluginTimerCallBack(aContent);
-      timer->InitWithCallback(cb, Preferences::GetUint("accessibility.delay_plugin_time"),
-                              nsITimer::TYPE_ONE_SHOT);
-      sPluginTimers->AppendElement(timer);
-      sPendingPlugins->AppendElement(aContent);
-      return nullptr;
-    }
-
-    // We need to remove aContent from the pending plugins here to avoid
-    // reentrancy.  When the timer fires it calls
-    // DocAccessible::ContentInserted() which does the work async.
-    sPendingPlugins->RemoveElement(aContent);
-
-    // Note: pluginPort will be null if windowless.
-    HWND pluginPort = nullptr;
-    aFrame->GetPluginPort(&pluginPort);
-
-    RefPtr<Accessible> accessible =
-      new HTMLWin32ObjectOwnerAccessible(aContent, aContext->Document(),
-                                         pluginPort);
-    return accessible.forget();
-
-#elif MOZ_ACCESSIBILITY_ATK
     if (!AtkSocketAccessible::gCanEmbed)
       return nullptr;
 
@@ -497,7 +418,6 @@ nsAccessibilityService::CreatePluginAccessible(nsPluginFrame* aFrame,
 
       return socketAccessible.forget();
     }
-#endif
   }
 #endif
 
@@ -1268,18 +1188,6 @@ nsAccessibilityService::Init()
   if (XRE_IsParentProcess()) {
     gApplicationAccessible = new ApplicationAccessibleWrap();
   } else {
-#if defined(XP_WIN)
-    dom::ContentChild* contentChild = dom::ContentChild::GetSingleton();
-    MOZ_ASSERT(contentChild);
-    // If we were instantiated by the chrome process, GetMsaaID() will return
-    // a non-zero value and we may safely continue with initialization.
-    if (!contentChild->GetMsaaID()) {
-      // Since we were not instantiated by chrome, we need to synchronously
-      // obtain a MSAA content process id.
-      contentChild->SendGetA11yContentId();
-    }
-#endif // defined(XP_WIN)
-
     gApplicationAccessible = new ApplicationAccessible();
   }
 
@@ -1290,11 +1198,6 @@ nsAccessibilityService::Init()
   CrashReporter::
     AnnotateCrashReport(NS_LITERAL_CSTRING("Accessibility"),
                         NS_LITERAL_CSTRING("Active"));
-#endif
-
-#ifdef XP_WIN
-  sPendingPlugins = new nsTArray<nsCOMPtr<nsIContent> >;
-  sPluginTimers = new nsTArray<nsCOMPtr<nsITimer> >;
 #endif
 
   // Now its safe to start platform accessibility.
@@ -1332,16 +1235,6 @@ nsAccessibilityService::Shutdown()
   DocManager::Shutdown();
 
   SelectionManager::Shutdown();
-
-#ifdef XP_WIN
-  sPendingPlugins = nullptr;
-
-  uint32_t timerCount = sPluginTimers->Length();
-  for (uint32_t i = 0; i < timerCount; i++)
-    sPluginTimers->ElementAt(i)->Cancel();
-
-  sPluginTimers = nullptr;
-#endif
 
   if (XRE_IsParentProcess())
     PlatformShutdown();

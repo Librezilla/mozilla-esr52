@@ -12,15 +12,6 @@
 #endif
 }
 
-#ifdef XP_WIN
-@media (-moz-windows-default-theme: 0) {
-  /* more opacity for high-contrast themes */
-  .fieldtext {
-    fill-opacity: .8;
-  }
-}
-#endif
-
 .highlighttext {
   fill: highlighttext;
   fill-opacity: 1;

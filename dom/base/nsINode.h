@@ -26,13 +26,6 @@
 #include "mozilla/dom/BindingDeclarations.h"
 #include <iosfwd>
 
-// Including 'windows.h' will #define GetClassInfo to something else.
-#ifdef XP_WIN
-#ifdef GetClassInfo
-#undef GetClassInfo
-#endif
-#endif
-
 class nsAttrAndChildArray;
 class nsChildContentList;
 struct nsCSSSelectorList;

@@ -90,13 +90,6 @@
 #include "mozilla/dom/HTMLSharedObjectElement.h"
 #include "nsChannelClassifier.h"
 
-#ifdef XP_WIN
-// Thanks so much, Microsoft! :(
-#ifdef CreateEvent
-#undef CreateEvent
-#endif
-#endif // XP_WIN
-
 #ifdef XP_MACOSX
 // HandlePluginCrashed() and HandlePluginInstantiated() needed from here to
 // fix bug 1147521.  Should later be replaced by proper interface methods,
@@ -3097,7 +3090,7 @@ DoDelayedStop(nsPluginInstanceOwner* aInstanceOwner,
   // Don't delay stopping QuickTime (bug 425157), Flip4Mac (bug 426524),
   // XStandard (bug 430219), CMISS Zinc (bug 429604).
   if (aDelayedStop
-#if !(defined XP_WIN || defined MOZ_X11)
+#if !(defined MOZ_X11)
       && !aInstanceOwner->MatchPluginName("QuickTime")
       && !aInstanceOwner->MatchPluginName("Flip4Mac")
       && !aInstanceOwner->MatchPluginName("XStandard plugin")
@@ -3250,20 +3243,6 @@ nsObjectLoadingContent::StopPluginInstance()
   mInstanceOwner->SetFrame(nullptr);
 
   bool delayedStop = false;
-#ifdef XP_WIN
-  // Force delayed stop for Real plugin only; see bug 420886, 426852.
-  RefPtr<nsNPAPIPluginInstance> inst;
-  mInstanceOwner->GetInstance(getter_AddRefs(inst));
-  if (inst) {
-    const char* mime = nullptr;
-    if (NS_SUCCEEDED(inst->GetMIMEType(&mime)) && mime) {
-      if (nsPluginHost::GetSpecialType(nsDependentCString(mime)) ==
-          nsPluginHost::eSpecialType_RealPlayer) {
-        delayedStop = true;
-      }
-    }
-  }
-#endif
 
   RefPtr<nsPluginInstanceOwner> ownerGrip(mInstanceOwner);
   mInstanceOwner = nullptr;

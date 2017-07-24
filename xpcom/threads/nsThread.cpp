@@ -394,8 +394,6 @@ SetThreadAffinity(unsigned int cpu)
   policy.affinity_tag = cpu + 1;
   MOZ_ALWAYS_TRUE(thread_policy_set(mach_thread_self(), THREAD_AFFINITY_POLICY,
                                     &policy.affinity_tag, 1) == KERN_SUCCESS);
-#elif defined(XP_WIN)
-  MOZ_ALWAYS_TRUE(SetThreadIdealProcessor(GetCurrentThread(), cpu) != -1);
 #endif
 }
 
@@ -549,19 +547,6 @@ nsThread::SaveMemoryReportNearOOM(ShouldSaveMemoryReport aShouldSave)
   }
 
   bool needMemoryReport = (aShouldSave == ShouldSaveMemoryReport::kForceReport);
-#ifdef XP_WIN // XXX implement on other platforms as needed
-  // If the report is forced there is no need to check whether it is necessary
-  if (aShouldSave != ShouldSaveMemoryReport::kForceReport) {
-    const size_t LOWMEM_THRESHOLD_VIRTUAL = 200 * 1024 * 1024;
-    MEMORYSTATUSEX statex;
-    statex.dwLength = sizeof(statex);
-    if (GlobalMemoryStatusEx(&statex)) {
-      if (statex.ullAvailVirtual < LOWMEM_THRESHOLD_VIRTUAL) {
-        needMemoryReport = true;
-      }
-    }
-  }
-#endif
 
   if (needMemoryReport) {
     if (XRE_IsContentProcess()) {

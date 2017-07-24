@@ -17,14 +17,12 @@
 #include <signal.h>
 #include <semaphore.h>
 #include <sys/types.h>
-#elif defined(XP_WIN)
-#include <windows.h>
 #elif defined(XP_MACOSX)
 #include <mach/mach.h>
 #endif
 
 // Support pseudostack on these platforms.
-#if defined(XP_LINUX) || defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_LINUX) || defined(XP_MACOSX)
 #  ifdef MOZ_ENABLE_PROFILER_SPS
 #    define MOZ_THREADSTACKHELPER_PSEUDO
 #  endif
@@ -129,11 +127,6 @@ private:
 
   sem_t mSem;
   pid_t mThreadID;
-
-#elif defined(XP_WIN)
-private:
-  bool mInitialized;
-  HANDLE mThreadID;
 
 #elif defined(XP_MACOSX)
 private:

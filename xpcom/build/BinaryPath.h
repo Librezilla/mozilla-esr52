@@ -8,9 +8,7 @@
 #define mozilla_BinaryPath_h
 
 #include "nsXPCOMPrivate.h" // for MAXPATHLEN
-#ifdef XP_WIN
-#include <windows.h>
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 #include <CoreFoundation/CoreFoundation.h>
 #elif defined(XP_UNIX)
 #include <sys/stat.h>
@@ -22,29 +20,7 @@ namespace mozilla {
 class BinaryPath
 {
 public:
-#ifdef XP_WIN
-  static nsresult Get(const char* argv0, char aResult[MAXPATHLEN])
-  {
-    wchar_t wide_path[MAXPATHLEN];
-    nsresult rv = GetW(argv0, wide_path);
-    if (NS_FAILED(rv)) {
-      return rv;
-    }
-    WideCharToMultiByte(CP_UTF8, 0, wide_path, -1,
-                        aResult, MAXPATHLEN, nullptr, nullptr);
-    return NS_OK;
-  }
-
-private:
-  static nsresult GetW(const char* argv0, wchar_t aResult[MAXPATHLEN])
-  {
-    if (::GetModuleFileNameW(0, aResult, MAXPATHLEN)) {
-      return NS_OK;
-    }
-    return NS_ERROR_FAILURE;
-  }
-
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   static nsresult Get(const char* argv0, char aResult[MAXPATHLEN])
   {
     // Works even if we're not bundled.
@@ -158,23 +134,13 @@ public:
   static nsresult GetFile(const char* aArgv0, nsIFile** aResult)
   {
     nsCOMPtr<nsIFile> lf;
-#ifdef XP_WIN
-    wchar_t exePath[MAXPATHLEN];
-    nsresult rv = GetW(aArgv0, exePath);
-#else
     char exePath[MAXPATHLEN];
     nsresult rv = Get(aArgv0, exePath);
-#endif
     if (NS_FAILED(rv)) {
       return rv;
     }
-#ifdef XP_WIN
-    rv = NS_NewLocalFile(nsDependentString(exePath), true,
-                         getter_AddRefs(lf));
-#else
     rv = NS_NewNativeLocalFile(nsDependentCString(exePath), true,
                                getter_AddRefs(lf));
-#endif
     if (NS_FAILED(rv)) {
       return rv;
     }

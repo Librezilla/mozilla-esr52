@@ -111,7 +111,7 @@ GamepadManager::StopMonitoring()
   mChannelChildren.Clear();
   mGamepads.Clear();
 
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(XP_LINUX)
+#if defined(XP_MACOSX) || defined(XP_LINUX)
   mVRChannelChild = gfx::VRManagerChild::Get();
   mVRChannelChild->SendControllerListenerRemoved();
 #endif
@@ -680,7 +680,7 @@ GamepadManager::ActorCreated(PBackgroundChild *aActor)
   child->SendGamepadListenerAdded();
   mChannelChildren.AppendElement(child);
 
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(XP_LINUX)
+#if defined(XP_MACOSX) || defined(XP_LINUX)
   // Construct VRManagerChannel and ask adding the connected
   // VR controllers to GamepadManager
   mVRChannelChild = gfx::VRManagerChild::Get();

@@ -12,8 +12,6 @@
  */
 #if defined(XP_DARWIN) || defined(DARWIN)
 #include "md/_darwin.cfg"
-#elif defined(XP_WIN) || defined(_WINDOWS)
-#include "md/_win95.cfg"
 #elif defined(__FreeBSD__)
 #include "md/_freebsd.cfg"
 #elif defined(__NetBSD__)

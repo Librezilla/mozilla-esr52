@@ -53,9 +53,6 @@
 #include "nsXULAppAPI.h"
 #include "nsReadableUtils.h"
 #include "nsThreadUtils.h"
-#if defined(XP_WIN)
-#include "nsUnicharUtils.h"
-#endif
 #include "nsNetCID.h"
 #include "nsNetUtil.h"
 #include "nsJSUtils.h"
@@ -551,11 +548,7 @@ void TelemetryIOInterposeObserver::Observe(Observation& aOb)
     return;
   }
 
-#if defined(XP_WIN)
-  nsCaseInsensitiveStringComparator comparator;
-#else
   nsDefaultStringComparator comparator;
-#endif
   nsAutoString      processedName;
   nsDependentString filenameStr(filename);
   uint32_t safeDirsLen = mSafeDirs.Length();

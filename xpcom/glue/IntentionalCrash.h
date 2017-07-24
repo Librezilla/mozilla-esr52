@@ -9,12 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#else
 #include <unistd.h>
-#endif
 
 #ifndef mozilla_IntentionalCrash_h
 #define mozilla_IntentionalCrash_h

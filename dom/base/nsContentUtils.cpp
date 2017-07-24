@@ -216,11 +216,6 @@
 
 #include "nsIBidiKeyboard.h"
 
-#if defined(XP_WIN)
-// Undefine LoadImage to prevent naming conflict with Windows.
-#undef LoadImage
-#endif
-
 extern "C" int MOZ_XMLTranslateEntity(const char* ptr, const char* end,
                                       const char** next, char16_t* result);
 extern "C" int MOZ_XMLCheckQName(const char* ptr, const char* end,

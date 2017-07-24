@@ -126,16 +126,6 @@ ThreadStackHelper::ThreadStackHelper()
 #if defined(XP_LINUX)
   MOZ_ALWAYS_TRUE(!::sem_init(&mSem, 0, 0));
   mThreadID = ::syscall(SYS_gettid);
-#elif defined(XP_WIN)
-  mInitialized = !!::DuplicateHandle(
-    ::GetCurrentProcess(), ::GetCurrentThread(),
-    ::GetCurrentProcess(), &mThreadID,
-    THREAD_SUSPEND_RESUME
-#ifdef MOZ_THREADSTACKHELPER_NATIVE
-    | THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION
-#endif
-    , FALSE, 0);
-  MOZ_ASSERT(mInitialized);
 #elif defined(XP_MACOSX)
   mThreadID = mach_thread_self();
 #endif
@@ -149,10 +139,6 @@ ThreadStackHelper::~ThreadStackHelper()
 {
 #if defined(XP_LINUX)
   MOZ_ALWAYS_TRUE(!::sem_destroy(&mSem));
-#elif defined(XP_WIN)
-  if (mInitialized) {
-    MOZ_ALWAYS_TRUE(!!::CloseHandle(mThreadID));
-  }
 #endif
 }
 
@@ -175,15 +161,6 @@ void ThreadStackHelper::GetThreadStackBase()
 #endif
   }
   MOZ_ALWAYS_TRUE(!::pthread_attr_destroy(&pthr_attr));
-
-#elif defined(XP_WIN)
-  ::MEMORY_BASIC_INFORMATION meminfo = {};
-  NS_ENSURE_TRUE_VOID(::VirtualQuery(&meminfo, &meminfo, sizeof(meminfo)));
-#ifdef MOZ_THREADSTACKHELPER_STACK_GROWS_DOWN
-  mThreadStackBase = intptr_t(meminfo.BaseAddress) + meminfo.RegionSize;
-#else
-  mThreadStackBase = intptr_t(meminfo.AllocationBase);
-#endif
 
 #elif defined(XP_MACOSX)
   ::pthread_t pthr = ::pthread_self();
@@ -236,28 +213,6 @@ ThreadStackHelper::GetStack(Stack& aStack)
     return;
   }
   MOZ_ALWAYS_TRUE(!::sem_wait(&mSem));
-
-#elif defined(XP_WIN)
-  if (!mInitialized) {
-    MOZ_ASSERT(false);
-    return;
-  }
-  if (::SuspendThread(mThreadID) == DWORD(-1)) {
-    MOZ_ASSERT(false);
-    return;
-  }
-
-  // SuspendThread is asynchronous, so the thread may still be running. Use
-  // GetThreadContext to ensure it's really suspended.
-  // See https://blogs.msdn.microsoft.com/oldnewthing/20150205-00/?p=44743.
-  CONTEXT context;
-  context.ContextFlags = CONTEXT_CONTROL;
-  if (::GetThreadContext(mThreadID, &context)) {
-    FillStackBuffer();
-    FillThreadContext();
-  }
-
-  MOZ_ALWAYS_TRUE(::ResumeThread(mThreadID) != DWORD(-1));
 
 #elif defined(XP_MACOSX)
 # if defined(MOZ_VALGRIND) && defined(RUNNING_ON_VALGRIND)
@@ -597,18 +552,6 @@ ThreadStackHelper::FillThreadContext(void* aContext)
 #else
   #error "Unsupported architecture"
 #endif // architecture
-
-#elif defined(XP_WIN)
-  // Breakpad context struct is based off of the Windows CONTEXT struct,
-  // so we assume they are the same; do some sanity checks to make sure.
-  static_assert(sizeof(ThreadContext::Context) == sizeof(::CONTEXT),
-                "Context struct mismatch");
-  static_assert(offsetof(ThreadContext::Context, context_flags) ==
-                offsetof(::CONTEXT, ContextFlags),
-                "Context struct mismatch");
-  mContextToFill->mContext.context_flags = CONTEXT_FULL;
-  NS_ENSURE_TRUE_VOID(::GetThreadContext(mThreadID,
-      reinterpret_cast<::CONTEXT*>(&mContextToFill->mContext)));
 
 #elif defined(XP_MACOSX)
 #if defined(MOZ_THREADSTACKHELPER_X86)

@@ -24,13 +24,6 @@
 #include "nsWeakReference.h"
 #include <algorithm>
 
-#if defined(XP_WIN)
-// Scroll capture constants
-const uint32_t kScrollCaptureFillColor = 0xFFa0a0a0; // gray
-const mozilla::gfx::SurfaceFormat kScrollCaptureFormat =
-  mozilla::gfx::SurfaceFormat::X8R8G8B8_UINT32;
-#endif
-
 class nsIContent;
 class nsAutoRollup;
 class gfxContext;
@@ -386,10 +379,6 @@ public:
 
   void Shutdown();
 
-#if defined(XP_WIN)
-  uint64_t CreateScrollCaptureContainer() override;
-#endif
-
 protected:
   // These are methods for CompositorWidgetWrapper, and should only be
   // accessed from that class. Derived widgets can choose which methods to
@@ -603,28 +592,6 @@ protected:
    */
   void DispatchTouchInput(mozilla::MultiTouchInput& aInput);
 
-#if defined(XP_WIN)
-  void UpdateScrollCapture() override;
-
-  /**
-   * To be overridden by derived classes to return a snapshot that can be used
-   * during scrolling. Returning null means we won't update the container.
-   * @return an already AddRefed SourceSurface containing the snapshot
-   */
-  virtual already_AddRefed<SourceSurface> CreateScrollSnapshot()
-  {
-    return nullptr;
-  };
-
-  /**
-   * Used by derived classes to create a fallback scroll image.
-   * @param aSnapshotDrawTarget DrawTarget to fill with fallback image.
-   */
-  void DefaultFillScrollCapture(DrawTarget* aSnapshotDrawTarget);
-
-  RefPtr<ImageContainer> mScrollCaptureContainer;
-#endif
-
 protected:
   // Returns whether compositing should use an external surface size.
   virtual bool UseExternalCompositingSurface() const {
@@ -677,7 +644,7 @@ protected:
   bool              mUpdateCursor;
   bool              mUseAttachedEvents;
   bool              mIMEHasFocus;
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
+#if defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
   bool              mAccessibilityInUseFlag;
 #endif
   static nsIRollupListener* gRollupListener;

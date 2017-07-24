@@ -11,10 +11,6 @@
 #include "nsHashKeys.h"
 #include "nsClassHashtable.h"
 
-#ifdef XP_WIN
-#undef PostMessage
-#endif
-
 namespace mozilla {
 namespace dom {
 

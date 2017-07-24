@@ -136,10 +136,6 @@ using mozilla::gl::GLContext;
 using mozilla::gl::SkiaGLGlue;
 using mozilla::gl::GLContextProvider;
 
-#ifdef XP_WIN
-#include "gfxWindowsPlatform.h"
-#endif
-
 #ifdef MOZ_WIDGET_GONK
 #include "mozilla/layers/ShadowLayers.h"
 #endif

@@ -34,18 +34,8 @@
 #include "updaterfileutils_osx.h"
 #endif
 
-#if defined(XP_WIN)
-# include <direct.h>
-# include <process.h>
-# include <windows.h>
-# include <shlwapi.h>
-# include "nsWindowsHelpers.h"
-# define getcwd(path, size) _getcwd(path, size)
-# define getpid() GetCurrentProcessId()
-#elif defined(XP_UNIX)
 # include <unistd.h>
 # include <sys/wait.h>
-#endif
 
 using namespace mozilla;
 
@@ -59,9 +49,7 @@ GetUpdateLog()
 }
 #define LOG(args) MOZ_LOG(GetUpdateLog(), mozilla::LogLevel::Debug, args)
 
-#ifdef XP_WIN
-#define UPDATER_BIN "updater.exe"
-#elif XP_MACOSX
+#if XP_MACOSX
 #define UPDATER_BIN "org.mozilla.updater"
 #else
 #define UPDATER_BIN "updater"
@@ -94,16 +82,8 @@ GetCurrentWorkingDir(char *buf, size_t size)
   // Cannot use NS_GetSpecialDirectory because XPCOM is not yet initialized.
   // This code is duplicated from xpcom/io/SpecialSystemDirectory.cpp:
 
-#if defined(XP_WIN)
-  wchar_t wpath[MAX_PATH];
-  if (!_wgetcwd(wpath, size))
-    return NS_ERROR_FAILURE;
-  NS_ConvertUTF16toUTF8 path(wpath);
-  strncpy(buf, path.get(), size);
-#else
   if(!getcwd(buf, size))
     return NS_ERROR_FAILURE;
-#endif
   return NS_OK;
 }
 
@@ -129,13 +109,6 @@ GetInstallDirPath(nsIFile *appDir, nsACString& installDirPath)
     return rv;
   }
   rv = parentDir2->GetNativePath(installDirPath);
-#elif XP_WIN
-  nsAutoString installDirPathW;
-  rv = appDir->GetPath(installDirPathW);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-  installDirPath = NS_ConvertUTF16toUTF8(installDirPathW);
 #else
   rv = appDir->GetNativePath(installDirPath);
 #endif
@@ -383,7 +356,7 @@ CopyUpdaterIntoUpdateDir(nsIFile *greDir, nsIFile *appDir, nsIFile *updateDir,
  *
  * @param pathToAppend A new library path to prepend to LD_LIBRARY_PATH
  */
-#if defined(MOZ_VERIFY_MAR_SIGNATURE) && !defined(XP_WIN) && \
+#if defined(MOZ_VERIFY_MAR_SIGNATURE) \
     !defined(XP_MACOSX) && !defined(MOZ_WIDGET_GONK)
 #include "prprf.h"
 #define PATH_SEPARATOR ":"
@@ -428,7 +401,6 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
   //  - copy updater into updates/0/MozUpdater/bgupdate/ dir on all platforms
   //    except Windows
   //  - run updater with the correct arguments
-#ifndef XP_WIN
   nsCOMPtr<nsIFile> mozUpdaterDir;
   rv = updateDir->Clone(getter_AddRefs(mozUpdaterDir));
   if (NS_FAILED(rv)) {
@@ -455,7 +427,6 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
     LOG(("failed copying updater\n"));
     return;
   }
-#endif
 
   // We need to use the value returned from XRE_GetBinaryPath when attempting
   // to restart the running application.
@@ -472,33 +443,6 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
   if (!appFile)
     return;
 
-#ifdef XP_WIN
-  nsAutoString appFilePathW;
-  rv = appFile->GetPath(appFilePathW);
-  if (NS_FAILED(rv)) {
-    return;
-  }
-  NS_ConvertUTF16toUTF8 appFilePath(appFilePathW);
-
-  nsCOMPtr<nsIFile> updater;
-  rv = greDir->Clone(getter_AddRefs(updater));
-  if (NS_FAILED(rv)) {
-    return;
-  }
-
-  rv = updater->AppendNative(NS_LITERAL_CSTRING(UPDATER_BIN));
-  if (NS_FAILED(rv)) {
-    return;
-  }
-
-  nsAutoString updaterPathW;
-  rv = updater->GetPath(updaterPathW);
-  if (NS_FAILED(rv)) {
-    return;
-  }
-  NS_ConvertUTF16toUTF8 updaterPath(updaterPathW);
-#else
-
   nsAutoCString appFilePath;
   rv = appFile->GetNativePath(appFilePath);
   if (NS_FAILED(rv))
@@ -508,7 +452,6 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
   rv = updater->GetNativePath(updaterPath);
   if (NS_FAILED(rv))
     return;
-#endif
 
   nsAutoCString installDirPath;
   rv = GetInstallDirPath(appDir, installDirPath);
@@ -526,16 +469,7 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
 #endif
     return;
   }
-#ifdef XP_WIN
-  nsAutoString applyToDirW;
-  rv = updatedDir->GetPath(applyToDirW);
-  if (NS_FAILED(rv)) {
-    return;
-  }
-  applyToDir = NS_ConvertUTF16toUTF8(applyToDirW);
-#else
   rv = updatedDir->GetNativePath(applyToDir);
-#endif
   if (NS_FAILED(rv)) {
     return;
   }
@@ -547,14 +481,8 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
     return;
   }
 
-#if defined(XP_WIN)
-  nsAutoString updateDirPathW;
-  rv = updateDir->GetPath(updateDirPathW);
-  NS_ConvertUTF16toUTF8 updateDirPath(updateDirPathW);
-#else
   nsAutoCString updateDirPath;
   rv = updateDir->GetNativePath(updateDirPath);
-#endif
   if (NS_FAILED(rv))
     return;
 
@@ -593,11 +521,6 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
     argv[6] = (char*) appFilePath.get();
     for (int i = 1; i < appArgc; ++i)
       argv[6 + i] = appArgv[i];
-#ifdef XP_WIN
-    if (immersiveArgc) {
-      argv[argc - 1] = "-ServerName:DefaultBrowserServer";
-    }
-#endif
     argv[argc] = nullptr;
   } else {
     argc = 5;
@@ -607,7 +530,7 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
   if (gSafeMode) {
     PR_SetEnv("MOZ_SAFE_MODE_RESTART=1");
   }
-#if defined(MOZ_VERIFY_MAR_SIGNATURE) && !defined(XP_WIN) && \
+#if defined(MOZ_VERIFY_MAR_SIGNATURE) && \
     !defined(XP_MACOSX) && !defined(MOZ_WIDGET_GONK)
   AppendToLibPath(installDirPath.get());
 #endif
@@ -622,12 +545,6 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
   unsetenv("LD_PRELOAD");
 # endif
   exit(execv(updaterPath.get(), argv));
-#elif defined(XP_WIN)
-  // Switch the application using updater.exe
-  if (!WinLaunchChild(updaterPathW.get(), argc, argv)) {
-    return;
-  }
-  _exit(0);
 #elif defined(XP_MACOSX)
   CommandLineServiceMac::SetupMacCommandLine(argc, argv, true);
   LaunchChildMac(argc, argv);
@@ -705,13 +622,11 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
   //  - mark update as 'applying'
   //  - copy updater into update dir on all platforms except Windows
   //  - run updater w/ appDir as the current working dir
-#ifndef XP_WIN
   nsCOMPtr<nsIFile> updater;
   if (!CopyUpdaterIntoUpdateDir(greDir, appDir, updateDir, updater)) {
     LOG(("failed copying updater\n"));
     return;
   }
-#endif
 
   // We need to use the value returned from XRE_GetBinaryPath when attempting
   // to restart the running application.
@@ -728,32 +643,6 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
   if (!appFile)
     return;
 
-#ifdef XP_WIN
-  nsAutoString appFilePathW;
-  rv = appFile->GetPath(appFilePathW);
-  if (NS_FAILED(rv)) {
-    return;
-  }
-  NS_ConvertUTF16toUTF8 appFilePath(appFilePathW);
-
-  nsCOMPtr<nsIFile> updater;
-  rv = greDir->Clone(getter_AddRefs(updater));
-  if (NS_FAILED(rv)) {
-    return;
-  }
-
-  rv = updater->AppendNative(NS_LITERAL_CSTRING(UPDATER_BIN));
-  if (NS_FAILED(rv)) {
-    return;
-  }
-
-  nsAutoString updaterPathW;
-  rv = updater->GetPath(updaterPathW);
-  if (NS_FAILED(rv)) {
-    return;
-  }
-  NS_ConvertUTF16toUTF8 updaterPath(updaterPathW);
-#else
   nsAutoCString appFilePath;
   rv = appFile->GetNativePath(appFilePath);
   if (NS_FAILED(rv))
@@ -763,8 +652,6 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
   rv = updater->GetNativePath(updaterPath);
   if (NS_FAILED(rv))
     return;
-
-#endif
 
   nsAutoCString installDirPath;
   rv = GetInstallDirPath(appDir, installDirPath);
@@ -790,14 +677,7 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
 #endif
       return;
     }
-#ifdef XP_WIN
-    nsAutoString applyToDirW;
-    rv = updatedDir->GetPath(applyToDirW);
-    if (NS_FAILED(rv)) {
-      return;
-    }
-    applyToDir = NS_ConvertUTF16toUTF8(applyToDirW);
-#elif MOZ_WIDGET_GONK
+#if MOZ_WIDGET_GONK
     if (isOSUpdate) {
       if (!osApplyToDir) {
         return;
@@ -813,14 +693,8 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
   if (NS_FAILED(rv))
     return;
 
-#if defined(XP_WIN)
-  nsAutoString updateDirPathW;
-  rv = updateDir->GetPath(updateDirPathW);
-  NS_ConvertUTF16toUTF8 updateDirPath(updateDirPathW);
-#else
   nsAutoCString updateDirPath;
   rv = updateDir->GetNativePath(updateDirPath);
-#endif
   if (NS_FAILED(rv)) {
     return;
   }
@@ -876,11 +750,6 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
     argv[6] = (char*) appFilePath.get();
     for (int i = 1; i < appArgc; ++i)
       argv[6 + i] = appArgv[i];
-#ifdef XP_WIN
-    if (immersiveArgc) {
-      argv[argc - 1] = "-ServerName:DefaultBrowserServer";
-    }
-#endif
     argv[argc] = nullptr;
   } else {
     argc = 5;
@@ -890,7 +759,7 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
   if (gSafeMode) {
     PR_SetEnv("MOZ_SAFE_MODE_RESTART=1");
   }
-#if defined(MOZ_VERIFY_MAR_SIGNATURE) && !defined(XP_WIN) && \
+#if defined(MOZ_VERIFY_MAR_SIGNATURE) && \
     !defined(XP_MACOSX) && !defined(MOZ_WIDGET_GONK)
   AppendToLibPath(installDirPath.get());
 #endif
@@ -936,16 +805,6 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
   } else if (*outpid == 0) {
     exit(execv(updaterPath.get(), argv));
   }
-#elif defined(XP_WIN)
-  // Launch the update using updater.exe
-  if (!WinLaunchChild(updaterPathW.get(), argc, argv, nullptr, outpid)) {
-    return;
-  }
-
-  if (restart) {
-    // We are going to process an update so we should exit now
-    _exit(0);
-  }
 #elif defined(XP_MACOSX)
   CommandLineServiceMac::SetupMacCommandLine(argc, argv, restart);
   // We need to detect whether elevation is required for this update. This can
@@ -978,13 +837,7 @@ ApplyUpdate(nsIFile *greDir, nsIFile *updateDir, nsIFile *statusFile,
 static bool
 ProcessHasTerminated(ProcessType pt)
 {
-#if defined(XP_WIN)
-  if (WaitForSingleObject(pt, 1000)) {
-    return false;
-  }
-  CloseHandle(pt);
-  return true;
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   // We're waiting for the process to terminate in LaunchChildMac.
   return true;
 #elif defined(XP_UNIX)

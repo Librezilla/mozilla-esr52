@@ -14,33 +14,16 @@
 // System headers (alphabetical)
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef XP_WIN
-#include <windows.h>
-#endif
 
-#if defined(XP_WIN)
-#define READ_BINARYMODE L"rb"
-#else
 #define READ_BINARYMODE "r"
-#endif
 
 using namespace mozilla;
 
-#ifdef XP_WIN
-inline FILE*
-TS_tfopen(const char* aPath, const wchar_t* aMode)
-{
-  wchar_t wPath[MAX_PATH];
-  MultiByteToWideChar(CP_UTF8, 0, aPath, -1, wPath, MAX_PATH);
-  return _wfopen(wPath, aMode);
-}
-#else
 inline FILE*
 TS_tfopen(const char* aPath, const char* aMode)
 {
   return fopen(aPath, aMode);
 }
-#endif
 
 // Stack based FILE wrapper to ensure that fclose is called, copied from
 // toolkit/mozapps/update/updater/readstrings.cpp
@@ -71,20 +54,10 @@ nsINIParser::Init(nsIFile* aFile)
 
   AutoFILE fd;
 
-#ifdef XP_WIN
-  nsAutoString path;
-  nsresult rv = aFile->GetPath(path);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  fd = _wfopen(path.get(), READ_BINARYMODE);
-#else
   nsAutoCString path;
   aFile->GetNativePath(path);
 
   fd = fopen(path.get(), READ_BINARYMODE);
-#endif
 
   if (!fd) {
     return NS_ERROR_FAILURE;
@@ -154,35 +127,6 @@ nsINIParser::InitFromFILE(FILE* aFd)
     // files are Utf-8 anyway.  Just skip the BOM and process as usual.
     buffer = &mFileContents[3];
   }
-
-#ifdef XP_WIN
-  if (flen >= 2 &&
-      mFileContents[0] == '\xFF' &&
-      mFileContents[1] == '\xFE') {
-    // Someone set us up the Utf-16LE BOM
-    buffer = &mFileContents[2];
-    // Get the size required for our Utf8 buffer
-    flen = WideCharToMultiByte(CP_UTF8,
-                               0,
-                               reinterpret_cast<LPWSTR>(buffer),
-                               -1,
-                               nullptr,
-                               0,
-                               nullptr,
-                               nullptr);
-    if (flen == 0) {
-      return NS_ERROR_FAILURE;
-    }
-
-    UniquePtr<char[]> utf8Buffer(new char[flen]);
-    if (WideCharToMultiByte(CP_UTF8, 0, reinterpret_cast<LPWSTR>(buffer), -1,
-                            utf8Buffer.get(), flen, nullptr, nullptr) == 0) {
-      return NS_ERROR_FAILURE;
-    }
-    mFileContents = Move(utf8Buffer);
-    buffer = mFileContents.get();
-  }
-#endif
 
   char* currSection = nullptr;
 

@@ -100,50 +100,6 @@
   #define NS_OSX_MOVIE_DOCUMENTS_DIR          "Mov"
   #define NS_OSX_MUSIC_DOCUMENTS_DIR          "Music"
   #define NS_OSX_INTERNET_SITES_DIR           "IntrntSts"
-#elif defined (XP_WIN)
-  #define NS_WIN_WINDOWS_DIR                  "WinD"
-  #define NS_WIN_PROGRAM_FILES_DIR            "ProgF"
-  #define NS_WIN_HOME_DIR                     NS_OS_HOME_DIR
-  #define NS_WIN_DESKTOP_DIR                  "DeskV" // virtual folder at the root of the namespace
-  #define NS_WIN_PROGRAMS_DIR                 "Progs" // User start menu programs directory!
-  #define NS_WIN_CONTROLS_DIR                 "Cntls"
-  #define NS_WIN_PRINTERS_DIR                 "Prnts"
-  #define NS_WIN_PERSONAL_DIR                 "Pers"
-  #define NS_WIN_FAVORITES_DIR                "Favs"
-  #define NS_WIN_STARTUP_DIR                  "Strt"
-  #define NS_WIN_RECENT_DIR                   "Rcnt"
-  #define NS_WIN_SEND_TO_DIR                  "SndTo"
-  #define NS_WIN_BITBUCKET_DIR                "Buckt"
-  #define NS_WIN_STARTMENU_DIR                "Strt"
-// This gives the same thing as NS_OS_DESKTOP_DIR
-  #define NS_WIN_DESKTOP_DIRECTORY            "DeskP" // file sys dir which physically stores objects on desktop
-  #define NS_WIN_DRIVES_DIR                   "Drivs"
-  #define NS_WIN_NETWORK_DIR                  "NetW"
-  #define NS_WIN_NETHOOD_DIR                  "netH"
-  #define NS_WIN_FONTS_DIR                    "Fnts"
-  #define NS_WIN_TEMPLATES_DIR                "Tmpls"
-  #define NS_WIN_COMMON_STARTMENU_DIR         "CmStrt"
-  #define NS_WIN_COMMON_PROGRAMS_DIR          "CmPrgs"
-  #define NS_WIN_COMMON_STARTUP_DIR           "CmStrt"
-  #define NS_WIN_COMMON_DESKTOP_DIRECTORY     "CmDeskP"
-  #define NS_WIN_COMMON_APPDATA_DIR           "CmAppData"
-  #define NS_WIN_APPDATA_DIR                  "AppData"
-  #define NS_WIN_LOCAL_APPDATA_DIR            "LocalAppData"
-#if defined(MOZ_CONTENT_SANDBOX)
-  #define NS_WIN_LOCAL_APPDATA_LOW_DIR        "LocalAppDataLow"
-  #define NS_WIN_LOW_INTEGRITY_TEMP_BASE      "LowTmpDBase"
-#endif
-  #define NS_WIN_PRINTHOOD                    "PrntHd"
-  #define NS_WIN_COOKIES_DIR                  "CookD"
-  #define NS_WIN_DEFAULT_DOWNLOAD_DIR         "DfltDwnld"
-  // On Win7 and up these ids will return the default save-to location for
-  // Windows Libraries associated with the specific content type. For other
-  // os they return the local user folder. Note these can return network file
-  // paths which can jank the ui thread so be careful how you access them.
-  #define NS_WIN_DOCUMENTS_DIR                "Docs"
-  #define NS_WIN_PICTURES_DIR                 "Pict"
-  #define NS_WIN_MUSIC_DIR                    "Music"
-  #define NS_WIN_VIDEOS_DIR                   "Vids"
 #elif defined (XP_UNIX)
   #define NS_UNIX_LOCAL_DIR                   "Locl"
   #define NS_UNIX_LIB_DIR                     "LibD"

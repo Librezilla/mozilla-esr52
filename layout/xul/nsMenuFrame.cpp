@@ -51,10 +51,6 @@ using namespace mozilla;
 
 #define NS_MENU_POPUP_LIST_INDEX 0
 
-#if defined(XP_WIN)
-#define NSCONTEXTMENUISMOUSEUP 1
-#endif
-
 NS_DECLARE_FRAME_PROPERTY_FRAMELIST(PopupListProperty)
 
 // This global flag indicates that a menu just opened or closed and is used
@@ -487,9 +483,6 @@ nsMenuFrame::HandleEvent(nsPresContext* aPresContext,
           // Submenus don't get closed up immediately.
         }
         else if (this == menuParent->GetCurrentMenuItem()
-#ifdef XP_WIN
-                 && GetParentMenuListType() == eNotMenuList
-#endif
         ) {
           menuParent->ChangeMenuItem(nullptr, false, false);
         }
@@ -813,18 +806,6 @@ nsMenuFrame*
 nsMenuFrame::Enter(WidgetGUIEvent* aEvent)
 {
   if (IsDisabled()) {
-#ifdef XP_WIN
-    // behavior on Windows - close the popup chain
-    nsMenuParent* menuParent = GetMenuParent();
-    if (menuParent) {
-      nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
-      if (pm) {
-        nsIFrame* popup = pm->GetTopPopup(ePopupTypeAny);
-        if (popup)
-          pm->HidePopup(popup->GetContent(), true, true, true, false);
-      }
-    }
-#endif   // #ifdef XP_WIN
     // this menu item was disabled - exit
     return nullptr;
   }

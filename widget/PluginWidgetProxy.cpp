@@ -75,14 +75,6 @@ PluginWidgetProxy::Create(nsIWidget* aParent,
   mEnabled = true;
   mVisible = true;
 
-#if defined(XP_WIN)
-  PluginInstanceParent* instance =
-    PluginInstanceParent::LookupPluginInstanceByID(pluginInstanceId);
-  if (instance) {
-    Unused << NS_WARN_IF(NS_FAILED(instance->SetScrollCaptureId(scrollCaptureId)));
-  }
-#endif
-
   return NS_OK;
 }
 
@@ -158,29 +150,6 @@ PluginWidgetProxy::GetNativeData(uint32_t aDataType)
   PWLOG("PluginWidgetProxy::GetNativeData %p\n", (void*)mCachedPluginPort);
   return (void*)mCachedPluginPort;
 }
-
-#if defined(XP_WIN)
-void
-PluginWidgetProxy::SetNativeData(uint32_t aDataType, uintptr_t aVal)
-{
-  if (!mActor) {
-    return;
-  }
-
-  auto tab = static_cast<mozilla::dom::TabChild*>(mActor->Manager());
-  if (tab && tab->IsDestroyed()) {
-    return;
-  }
-
-  switch (aDataType) {
-    case NS_NATIVE_CHILD_WINDOW:
-      mActor->SendSetNativeChildWindow(aVal);
-      break;
-    default:
-      NS_ERROR("SetNativeData called with unsupported data type.");
-  }
-}
-#endif
 
 NS_IMETHODIMP
 PluginWidgetProxy::SetFocus(bool aRaise)

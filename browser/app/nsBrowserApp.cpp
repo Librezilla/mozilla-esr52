@@ -7,10 +7,7 @@
 #include "mozilla/AppData.h"
 #include "application.ini.h"
 #include "nsXPCOMGlue.h"
-#if defined(XP_WIN)
-#include <windows.h>
-#include <stdlib.h>
-#elif defined(XP_UNIX)
+#if defined(XP_UNIX)
 #include <sys/resource.h>
 #include <unistd.h>
 #endif
@@ -23,12 +20,6 @@
 #include "nsIFile.h"
 #include "nsStringGlue.h"
 
-#ifdef XP_WIN
-#ifdef MOZ_ASAN
-// ASAN requires firefox.exe to be built with -MD, and it's OK if we don't
-// support Windows XP SP2 in ASAN builds.
-#define XRE_DONT_SUPPORT_XPSP2
-#endif
 #define XRE_WANT_ENVIRON
 #define strcasecmp _stricmp
 #ifdef MOZ_SANDBOX
@@ -61,9 +52,7 @@ static void Output(const char *fmt, ... )
   va_list ap;
   va_start(ap, fmt);
 
-#ifndef XP_WIN
   vfprintf(stderr, fmt, ap);
-#else
   char msg[2048];
   vsnprintf_s(msg, _countof(msg), _TRUNCATE, fmt, ap);
 
@@ -107,11 +96,6 @@ static bool IsArg(const char* arg, const char* s)
       ++arg;
     return !strcasecmp(arg, s);
   }
-
-#if defined(XP_WIN)
-  if (*arg == '/')
-    return !strcasecmp(++arg, s);
-#endif
 
   return false;
 }
@@ -207,10 +191,6 @@ static int do_main(int argc, char* argv[], char* envp[], nsIFile *xreDirectory)
     }
 
     XREShellData shellData;
-#if defined(XP_WIN) && defined(MOZ_SANDBOX)
-    shellData.sandboxBrokerServices =
-      sandboxing::GetInitializedBrokerServices();
-#endif
 
     return XRE_XPCShellMain(--argc, argv, envp, &shellData);
   }
@@ -262,18 +242,6 @@ static int do_main(int argc, char* argv[], char* envp[], nsIFile *xreDirectory)
     DllBlocklist_CheckStatus() ? NS_XRE_DLL_BLOCKLIST_ENABLED : 0;
 #endif
 
-#if defined(XP_WIN) && defined(MOZ_SANDBOX)
-  sandbox::BrokerServices* brokerServices =
-    sandboxing::GetInitializedBrokerServices();
-#if defined(MOZ_CONTENT_SANDBOX)
-  if (!brokerServices) {
-    Output("Couldn't initialize the broker services.\n");
-    return 255;
-  }
-#endif
-  appData.sandboxBrokerServices = brokerServices;
-#endif
-
 #ifdef LIBFUZZER
   if (getenv("LIBFUZZER"))
     XRE_LibFuzzerSetMain(argc, argv, libfuzzer_main);
@@ -285,14 +253,7 @@ static int do_main(int argc, char* argv[], char* envp[], nsIFile *xreDirectory)
 static bool
 FileExists(const char *path)
 {
-#ifdef XP_WIN
-  wchar_t wideDir[MAX_PATH];
-  MultiByteToWideChar(CP_UTF8, 0, path, -1, wideDir, MAX_PATH);
-  DWORD fileAttrs = GetFileAttributesW(wideDir);
-  return fileAttrs != INVALID_FILE_ATTRIBUTES;
-#else
   return access(path, R_OK) == 0;
-#endif
 }
 
 static nsresult
@@ -343,13 +304,8 @@ InitXPCOMGlue(const char *argv0, nsIFile **xreDirectory)
     lastSlash = strrchr(exePath, XPCOM_FILE_PATH_SEPARATOR[0]);
     strcpy(lastSlash + 1, kOSXResourcesFolder);
 #endif
-#ifdef XP_WIN
-    rv = NS_NewLocalFile(NS_ConvertUTF8toUTF16(exePath), false,
-                         xreDirectory);
-#else
     rv = NS_NewNativeLocalFile(nsDependentCString(exePath), false,
                                xreDirectory);
-#endif
   }
 
   return rv;
@@ -375,14 +331,6 @@ int main(int argc, char* argv[], char* envp[])
   // We are launching as a content process, delegate to the appropriate
   // main
   if (argc > 1 && IsArg(argv[1], "contentproc")) {
-#if defined(XP_WIN) && defined(MOZ_SANDBOX)
-    // We need to initialize the sandbox TargetServices before InitXPCOMGlue
-    // because we might need the sandbox broker to give access to some files.
-    if (IsSandboxedProcess() && !sandboxing::GetInitializedTargetServices()) {
-      Output("Failed to initialize the sandbox target services.");
-      return 255;
-    }
-#endif
 
     nsresult rv = InitXPCOMGlue(argv[0], nullptr);
     if (NS_FAILED(rv)) {

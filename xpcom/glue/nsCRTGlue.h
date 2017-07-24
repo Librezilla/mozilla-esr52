@@ -127,8 +127,6 @@ void NS_MakeRandomString(char* aBuf, int32_t aBufLen);
 
 #if defined(XP_MACOSX)
   #define FILE_PATH_SEPARATOR        "/"
-#elif defined(XP_WIN)
-  #define FILE_PATH_SEPARATOR        "\\"
 #elif defined(XP_UNIX)
   #define FILE_PATH_SEPARATOR        "/"
 #else

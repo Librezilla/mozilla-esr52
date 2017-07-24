@@ -13,10 +13,6 @@
 #include "mozilla/gfx/2D.h"
 #include "mozilla/BasicEvents.h"
 #include "mozilla/MouseEvents.h"
-#ifdef XP_WIN
-// This is needed for DoublePassRenderingEvent.
-#include "mozilla/plugins/PluginMessageUtils.h"
-#endif
 
 #include "nscore.h"
 #include "nsCOMPtr.h"
@@ -49,11 +45,6 @@
 #include "ImageLayers.h"
 #include "nsPluginInstanceOwner.h"
 
-#ifdef XP_WIN
-#include "gfxWindowsNativeDrawing.h"
-#include "gfxWindowsSurface.h"
-#endif
-
 #include "DisplayItemScrollClip.h"
 #include "Layers.h"
 #include "ReadbackLayer.h"
@@ -77,11 +68,6 @@
 #ifdef MOZ_X11
 #include "mozilla/X11Util.h"
 using mozilla::DefaultXDisplay;
-#endif
-
-#ifdef XP_WIN
-#include <wtypes.h>
-#include <winuser.h>
 #endif
 
 #ifdef MOZ_WIDGET_ANDROID
@@ -176,13 +162,6 @@ nsPluginFrame::AccessibleType()
   return a11y::ePluginType;
 }
 
-#ifdef XP_WIN
-NS_IMETHODIMP nsPluginFrame::GetPluginPort(HWND *aPort)
-{
-  *aPort = (HWND) mInstanceOwner->GetPluginPort();
-  return NS_OK;
-}
-#endif
 #endif
 
 void
@@ -413,13 +392,13 @@ nsPluginFrame::GetWidgetConfiguration(nsTArray<nsIWidget::Configuration>* aConfi
   configuration->mChild = mWidget;
   configuration->mBounds = mNextConfigurationBounds;
   configuration->mClipRegion = mNextConfigurationClipRegion;
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   if (XRE_IsContentProcess()) {
     configuration->mWindowID = (uintptr_t)mWidget->GetNativeData(NS_NATIVE_PLUGIN_PORT);
     configuration->mVisible = mWidget->IsVisible();
 
   }
-#endif // defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#endif // defined(MOZ_WIDGET_GTK)
 }
 
 void
@@ -1317,57 +1296,6 @@ nsPluginFrame::PrintPlugin(nsRenderingContext& aRenderingContext,
   // Doesn't work in a thebes world, or on OS X.
   (void)window;
   (void)npprint;
-#elif defined(XP_WIN)
-
-  /* On Windows, we use the win32 printing surface to print.  This, in
-   * turn, uses the Cairo paginated surface, which in turn uses the
-   * meta surface to record all operations and then play them back.
-   * This doesn't work too well for plugins, because if plugins render
-   * directly into the DC, the meta surface won't have any knowledge
-   * of them, and so at the end when it actually does the replay step,
-   * it'll fill the background with white and draw over whatever was
-   * rendered before.
-   *
-   * So, to avoid this, we use PushGroup, which creates a new windows
-   * surface, the plugin renders to that, and then we use normal
-   * cairo methods to composite that in such that it's recorded using the
-   * meta surface.
-   */
-
-  /* we'll already be translated into the right spot by gfxWindowsNativeDrawing */
-  nsSize contentSize = GetContentRectRelativeToSelf().Size();
-  window.x = 0;
-  window.y = 0;
-  window.width = presContext->AppUnitsToDevPixels(contentSize.width);
-  window.height = presContext->AppUnitsToDevPixels(contentSize.height);
-
-  gfxContext *ctx = aRenderingContext.ThebesContext();
-
-  ctx->Save();
-
-  /* Make sure plugins don't do any damage outside of where they're supposed to */
-  ctx->NewPath();
-  gfxRect r(window.x, window.y, window.width, window.height);
-  ctx->Rectangle(r);
-  ctx->Clip();
-
-  gfxWindowsNativeDrawing nativeDraw(ctx, r);
-  do {
-    HDC dc = nativeDraw.BeginNativeDrawing();
-    if (!dc)
-      return;
-
-    // XXX don't we need to call nativeDraw.TransformToNativeRect here?
-    npprint.print.embedPrint.platformPrint = dc;
-    npprint.print.embedPrint.window = window;
-    // send off print info to plugin
-    pi->Print(&npprint);
-
-    nativeDraw.EndNativeDrawing();
-  } while (nativeDraw.ShouldRenderAgain());
-  nativeDraw.PaintToContext();
-
-  ctx->Restore();
 #endif
 
   // XXX Nav 4.x always sent a SetWindow call after print. Should we do the same?
@@ -1666,11 +1594,6 @@ nsPluginFrame::HandleEvent(nsPresContext* aPresContext,
     return rv;
   }
 
-#ifdef XP_WIN
-  rv = nsFrame::HandleEvent(aPresContext, anEvent, anEventStatus);
-  return rv;
-#endif
-
 #ifdef XP_MACOSX
   // we want to process some native mouse events in the cocoa event model
   if ((anEvent->mMessage == eMouseEnterIntoWidget ||
@@ -1735,18 +1658,7 @@ nsPluginFrame::HandleWheelEventAsDefaultAction(WidgetWheelEvent* aWheelEvent)
 bool
 nsPluginFrame::WantsToHandleWheelEventAsDefaultAction() const
 {
-#ifdef XP_WIN
-  if (!mInstanceOwner) {
-    return false;
-  }
-  NPWindow* window = nullptr;
-  mInstanceOwner->GetWindow(window);
-  // On Windows, only when the plugin is windowless, we need to send wheel
-  // events as default action.
-  return window->type == NPWindowTypeDrawable;
-#else
   return false;
-#endif
 }
 
 nsresult

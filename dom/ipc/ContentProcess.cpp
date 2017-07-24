@@ -8,15 +8,11 @@
 
 #include "ContentProcess.h"
 
-#if defined(XP_WIN) && defined(MOZ_CONTENT_SANDBOX)
-#include "mozilla/WindowsVersion.h"
-#endif
-
 #if defined(XP_MACOSX) && defined(MOZ_CONTENT_SANDBOX)
 #include <stdlib.h>
 #endif
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 #include "mozilla/Preferences.h"
 #include "nsAppDirectoryServiceDefs.h"
 #include "nsDirectoryService.h"
@@ -27,34 +23,6 @@ using mozilla::ipc::IOThreadChild;
 
 namespace mozilla {
 namespace dom {
-
-#if defined(XP_WIN) && defined(MOZ_CONTENT_SANDBOX)
-static bool
-IsSandboxTempDirRequired()
-{
-  // On Windows, a sandbox-writable temp directory is only used
-  // for Vista or later with sandbox pref level >= 1.
-  return (IsVistaOrLater() &&
-    (Preferences::GetInt("security.sandbox.content.level") >= 1));
-}
-
-static void
-SetTmpEnvironmentVariable(nsIFile* aValue)
-{
-  // Save the TMP environment variable so that is is picked up by GetTempPath().
-  // Note that we specifically write to the TMP variable, as that is the first
-  // variable that is checked by GetTempPath() to determine its output.
-  nsAutoString fullTmpPath;
-  nsresult rv = aValue->GetPath(fullTmpPath);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return;
-  }
-  Unused << NS_WARN_IF(!SetEnvironmentVariableW(L"TMP", fullTmpPath.get()));
-  // We also set TEMP in case there is naughty third-party code that is
-  // referencing the environment variable directly.
-  Unused << NS_WARN_IF(!SetEnvironmentVariableW(L"TEMP", fullTmpPath.get()));
-}
-#endif
 
 #if defined(XP_MACOSX) && defined(MOZ_CONTENT_SANDBOX)
 static bool
@@ -76,7 +44,7 @@ SetTmpEnvironmentVariable(nsIFile* aValue)
 }
 #endif
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 static void
 SetUpSandboxEnvironment()
 {
@@ -143,7 +111,7 @@ ContentProcess::Init()
     mContent.SetProfileDir(mProfileDir);
 #endif
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
     SetUpSandboxEnvironment();
 #endif
 

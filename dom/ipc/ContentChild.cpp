@@ -68,10 +68,7 @@
 #include "GMPServiceChild.h"
 
 #if defined(MOZ_CONTENT_SANDBOX)
-#if defined(XP_WIN)
-#define TARGET_SANDBOX_EXPORTS
-#include "mozilla/sandboxTarget.h"
-#elif defined(XP_LINUX)
+#if defined(XP_LINUX)
 #include "mozilla/Sandbox.h"
 #include "mozilla/SandboxInfo.h"
 
@@ -158,12 +155,6 @@
 #include "nsVolume.h"
 #include "nsVolumeService.h"
 #include "SpeakerManagerService.h"
-#endif
-
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#include "mozilla/widget/AudioSession.h"
 #endif
 
 #ifdef MOZ_X11
@@ -498,9 +489,6 @@ ContentChild* ContentChild::sSingleton;
 
 ContentChild::ContentChild()
  : mID(uint64_t(-1))
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
- , mMsaaID(0)
-#endif
  , mCanOverrideProcessName(true)
  , mIsAlive(true)
  , mShuttingDown(false)
@@ -576,9 +564,6 @@ ContentChild::Init(MessageLoop* aIOLoop,
   // If communications with the parent have broken down, take the process
   // down so it's not hanging around.
   GetIPCChannel()->SetAbortOnError(true);
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  GetIPCChannel()->SetChannelFlags(MessageChannel::REQUIRE_A11Y_REENTRY);
-#endif
 
 #ifdef MOZ_X11
   // Send the parent our X socket to act as a proxy reference for our X
@@ -1435,9 +1420,9 @@ ContentChild::RecvSetProcessSandbox(const MaybeFileDesc& aBroker)
     }
     sandboxEnabled = SetContentProcessSandbox(brokerFd);
   }
-#elif defined(XP_WIN)
-  mozilla::SandboxTarget::Instance()->StartSandbox();
-#elif defined(XP_MACOSX)
+#endif /* XP_LINUX */
+
+#if defined(XP_MACOSX)
   sandboxEnabled = StartMacOSContentSandbox();
 #endif
 
@@ -2381,10 +2366,6 @@ bool
 ContentChild::RecvActivateA11y(const uint32_t& aMsaaID)
 {
 #ifdef ACCESSIBILITY
-#ifdef XP_WIN
-  MOZ_ASSERT(aMsaaID != 0);
-  mMsaaID = aMsaaID;
-#endif // XP_WIN
 
   // Start accessibility in content process if it's running in chrome
   // process.
@@ -2907,10 +2888,6 @@ ContentChild::RecvShutdown()
                           "content-child-shutdown", nullptr);
   }
 
-#if defined(XP_WIN)
-    mozilla::widget::StopAudioSession();
-#endif
-
   GetIPCChannel()->SetAbortOnError(false);
 
 #ifdef MOZ_ENABLE_PROFILER_SPS
@@ -2952,20 +2929,8 @@ ContentChild::GetBrowserOrId(TabChild* aTabChild)
 bool
 ContentChild::RecvUpdateWindow(const uintptr_t& aChildId)
 {
-#if defined(XP_WIN)
-  NS_ASSERTION(aChildId, "Expected child hwnd value for remote plugin instance.");
-  mozilla::plugins::PluginInstanceParent* parentInstance =
-  mozilla::plugins::PluginInstanceParent::LookupPluginInstanceByID(aChildId);
-  if (parentInstance) {
-  // sync! update call to the plugin instance that forces the
-  // plugin to paint its child window.
-  parentInstance->CallUpdateWindow();
-  }
-  return true;
-#else
   MOZ_ASSERT(false, "ContentChild::RecvUpdateWindow calls unexpected on this platform.");
   return false;
-#endif
 }
 
 PContentPermissionRequestChild*
@@ -3030,19 +2995,8 @@ ContentChild::RecvSetAudioSessionData(const nsID& aId,
                                       const nsString& aDisplayName,
                                       const nsString& aIconPath)
 {
-#if defined(XP_WIN)
-    if (NS_FAILED(mozilla::widget::RecvAudioSessionData(aId, aDisplayName,
-                                                        aIconPath))) {
-      return true;
-    }
-
-    // Ignore failures here; we can't really do anything about them
-    mozilla::widget::StartAudioSession();
-    return true;
-#else
     NS_RUNTIMEABORT("Not Reached!");
     return false;
-#endif
 }
 
 // This code goes here rather than nsGlobalWindow.cpp because nsGlobalWindow.cpp
@@ -3224,14 +3178,6 @@ ContentChild::RecvBlobURLUnregistration(const nsCString& aURI)
   nsHostObjectProtocolHandler::RemoveDataEntry(aURI);
   return true;
 }
-
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-bool
-ContentChild::SendGetA11yContentId()
-{
-  return PContentChild::SendGetA11yContentId(&mMsaaID);
-}
-#endif // defined(XP_WIN) && defined(ACCESSIBILITY)
 
 void
 ContentChild::CreateGetFilesRequest(const nsAString& aDirectoryPath,

@@ -147,11 +147,7 @@
                  accesskey="&allowPopups.accesskey;"
                  oncommand="gPopupBlockerObserver.toggleAllowPopupsForSite(event);"/>
     <broadcaster id="blockedPopupEditSettings"
-#ifdef XP_WIN
-                 label="&editPopupSettings.label;"
-#else
                  label="&editPopupSettingsUnix.label;"
-#endif
                  accesskey="&editPopupSettings.accesskey;"
                  oncommand="gPopupBlockerObserver.editPopupSettings();"/>
     <broadcaster id="blockedPopupDontShowMessage"
@@ -223,9 +219,6 @@
 #ifdef XP_MACOSX
     <key id="key_search2" key="&findOnCmd.commandkey;" command="Tools:Search" modifiers="accel,alt"/>
 #endif
-#ifdef XP_WIN
-    <key id="key_search2" key="&searchFocus.commandkey2;" command="Tools:Search" modifiers="accel"/>
-#endif
 #ifdef XP_GNOME
     <key id="key_search2" key="&searchFocusUnix.commandkey;" command="Tools:Search" modifiers="accel"/>
     <key id="key_openDownloads" key="&downloadsUnix.commandkey;" command="Tools:Downloads" modifiers="accel,shift"/>
@@ -287,9 +280,7 @@
     <key key="&reloadCmd.commandkey;" command="Browser:Reload" modifiers="accel" id="key_reload"/>
     <key key="&reloadCmd.commandkey;" command="Browser:ReloadSkipCache" modifiers="accel,shift"/>
     <key id="key_viewSource" key="&pageSourceCmd.commandkey;" command="View:PageSource" modifiers="accel"/>
-#ifndef XP_WIN
     <key id="key_viewInfo"   key="&pageInfoCmd.commandkey;"   command="View:PageInfo"   modifiers="accel"/>
-#endif
     <key id="key_find" key="&findOnCmd.commandkey;" command="cmd_find" modifiers="accel"/>
     <key id="key_findAgain" key="&findAgainCmd.commandkey;" command="cmd_findAgain" modifiers="accel"/>
     <key id="key_findPrevious" key="&findAgainCmd.commandkey;" command="cmd_findPrevious" modifiers="accel,shift"/>
@@ -308,11 +299,6 @@
     <key id="manBookmarkKb" key="&bookmarksGtkCmd.commandkey;" command="Browser:ShowAllBookmarks" modifiers="accel,shift"/>
 #endif
     <key id="viewBookmarksSidebarKb" key="&bookmarksCmd.commandkey;" command="viewBookmarksSidebar" modifiers="accel"/>
-#ifdef XP_WIN
-# Cmd+I is conventially mapped to Info on MacOS X, thus it should not be
-# overridden for other purposes there.
-    <key id="viewBookmarksSidebarWinKb" key="&bookmarksWinCmd.commandkey;" command="viewBookmarksSidebar" modifiers="accel"/>
-#endif
 
     <key id="key_stop" keycode="VK_ESCAPE" command="Browser:Stop"/>
 

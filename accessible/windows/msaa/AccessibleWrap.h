@@ -253,13 +253,4 @@ WrapperFor(const ProxyAccessible* aProxy)
 } // namespace a11y
 } // namespace mozilla
 
-#ifdef XP_WIN
-// Undo the windows.h damage
-#undef GetMessage
-#undef CreateEvent
-#undef GetClassName
-#undef GetBinaryType
-#undef RemoveDirectory
-#endif
-
 #endif

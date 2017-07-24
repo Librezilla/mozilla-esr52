@@ -70,9 +70,7 @@
 #include "nsViewManager.h"
 #include "nsVariant.h"
 #include "nsIWidget.h"
-#ifndef XP_WIN
 #include "nsJARProtocolHandler.h"
-#endif
 #include "nsPIDOMWindow.h"
 #include "nsPresShell.h"
 #include "nsPrintfCString.h"
@@ -101,10 +99,6 @@
 #include "mozilla/WebBrowserPersistDocumentParent.h"
 #include "nsIGroupedSHistory.h"
 #include "PartialSHistory.h"
-
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-#include "mozilla/a11y/AccessibleWrap.h"
-#endif
 
 using namespace mozilla::dom;
 using namespace mozilla::ipc;
@@ -262,17 +256,6 @@ TabParent::SetOwnerElement(Element* aElement)
       !mFrameElement->HasAttr(kNameSpaceID_None, nsGkAtoms::disableglobalhistory);
     Unused << SendSetUseGlobalHistory(useGlobalHistory);
   }
-
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  if (!mIsDestroyed) {
-    uintptr_t newWindowHandle = 0;
-    if (nsCOMPtr<nsIWidget> widget = GetWidget()) {
-      newWindowHandle =
-        reinterpret_cast<uintptr_t>(widget->GetNativeData(NS_NATIVE_WINDOW));
-    }
-    Unused << SendUpdateNativeWindowHandle(newWindowHandle);
-  }
-#endif
 
   AddWindowListeners();
   TryCacheDPIAndScale();
@@ -908,12 +891,6 @@ TabParent::RecvPDocAccessibleConstructor(PDocAccessibleParent* aDoc,
 
     auto parentDoc = static_cast<a11y::DocAccessibleParent*>(aParentDoc);
     bool added = parentDoc->AddChildDoc(doc, aParentID);
-#ifdef XP_WIN
-    MOZ_ASSERT(aDocCOMProxy.IsNull());
-    if (added) {
-      a11y::WrapperFor(doc)->SetID(aMsaaID);
-    }
-#endif
     return added;
   } else {
     // null aParentDoc means this document is at the top level in the child
@@ -926,12 +903,6 @@ TabParent::RecvPDocAccessibleConstructor(PDocAccessibleParent* aDoc,
 
     doc->SetTopLevel();
     a11y::DocManager::RemoteDocAdded(doc);
-#ifdef XP_WIN
-    a11y::WrapperFor(doc)->SetID(aMsaaID);
-    MOZ_ASSERT(!aDocCOMProxy.IsNull());
-    RefPtr<IAccessible> proxy(aDocCOMProxy.Get());
-    doc->SetCOMProxy(proxy);
-#endif
   }
 #endif
   return true;
@@ -2345,19 +2316,9 @@ TabParent::RecvGetWidgetNativeData(WindowsHandle* aValue)
 bool
 TabParent::RecvSetNativeChildOfShareableWindow(const uintptr_t& aChildWindow)
 {
-#if defined(XP_WIN)
-  nsCOMPtr<nsIWidget> widget = GetTopLevelWidget();
-  if (widget) {
-    // Note that this call will probably cause a sync native message to the
-    // process that owns the child window.
-    widget->SetNativeData(NS_NATIVE_CHILD_OF_SHAREABLE_WINDOW, aChildWindow);
-  }
-  return true;
-#else
   NS_NOTREACHED(
     "TabParent::RecvSetNativeChildOfShareableWindow not implemented!");
   return false;
-#endif
 }
 
 bool

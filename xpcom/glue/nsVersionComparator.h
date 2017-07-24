@@ -11,10 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#if defined(XP_WIN) && !defined(UPDATER_NO_STRING_GLUE_STL)
-#include <wchar.h>
-#include "nsStringGlue.h"
-#endif
 
 /**
  * In order to compare version numbers in Mozilla, you need to use the
@@ -44,10 +40,6 @@
 namespace mozilla {
 
 int32_t CompareVersions(const char* aStrA, const char* aStrB);
-
-#ifdef XP_WIN
-int32_t CompareVersions(const char16_t* aStrA, const char16_t* aStrB);
-#endif
 
 struct Version
 {
@@ -118,55 +110,6 @@ struct Version
 private:
   char* versionContent;
 };
-
-#ifdef XP_WIN
-struct VersionW
-{
-  VersionW(const char16_t* aVersionStringW)
-  {
-    versionContentW =
-      reinterpret_cast<char16_t*>(wcsdup(char16ptr_t(aVersionStringW)));
-  }
-
-  const char16_t* ReadContentW() const
-  {
-    return versionContentW;
-  }
-
-  ~VersionW()
-  {
-    free(versionContentW);
-  }
-
-  bool operator<(const VersionW& aRhs) const
-  {
-    return CompareVersions(versionContentW, aRhs.ReadContentW()) == -1;
-  }
-  bool operator<=(const VersionW& aRhs) const
-  {
-    return CompareVersions(versionContentW, aRhs.ReadContentW()) < 1;
-  }
-  bool operator>(const VersionW& aRhs) const
-  {
-    return CompareVersions(versionContentW, aRhs.ReadContentW()) == 1;
-  }
-  bool operator>=(const VersionW& aRhs) const
-  {
-    return CompareVersions(versionContentW, aRhs.ReadContentW()) > -1;
-  }
-  bool operator==(const VersionW& aRhs) const
-  {
-    return CompareVersions(versionContentW, aRhs.ReadContentW()) == 0;
-  }
-  bool operator!=(const VersionW& aRhs) const
-  {
-    return CompareVersions(versionContentW, aRhs.ReadContentW()) != 0;
-  }
-
-private:
-  char16_t* versionContentW;
-};
-#endif
 
 } // namespace mozilla
 

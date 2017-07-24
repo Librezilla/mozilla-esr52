@@ -84,7 +84,7 @@
 
 #define NS_APP_PERMISSION_PARENT_DIR            "permissionDBPDir"
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 //
 // NS_APP_CONTENT_PROCESS_TEMP_DIR refers to a directory that is read and
 // write accessible from a sandboxed content process. The key may be used in
@@ -113,6 +113,6 @@
 #else
 // Otherwise NS_APP_CONTENT_PROCESS_TEMP_DIR must match NS_OS_TEMP_DIR.
 #define NS_APP_CONTENT_PROCESS_TEMP_DIR         "TmpD"
-#endif // (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#endif // (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 
 #endif // nsAppDirectoryServiceDefs_h___

@@ -25,14 +25,7 @@
 #include "nsServiceManagerUtils.h"
 #include "nsIFile.h"
 
-#ifdef XP_WIN
-#include <process.h>
-#ifndef getpid
-#define getpid _getpid
-#endif
-#else
 #include <unistd.h>
-#endif
 
 #ifdef XP_UNIX
 #define MOZ_SUPPORTS_FIFO 1

@@ -79,34 +79,10 @@
 #if defined(__i386__) && defined(__GNUC__)
 #define NS_FASTCALL __attribute__ ((regparm (3), stdcall))
 #define NS_CONSTRUCTOR_FASTCALL __attribute__ ((regparm (3), stdcall))
-#elif defined(XP_WIN) && !defined(_WIN64)
-#define NS_FASTCALL __fastcall
-#define NS_CONSTRUCTOR_FASTCALL
 #else
 #define NS_FASTCALL
 #define NS_CONSTRUCTOR_FASTCALL
 #endif
-
-#ifdef XP_WIN
-
-#define NS_IMPORT __declspec(dllimport)
-#define NS_IMPORT_(type) __declspec(dllimport) type __stdcall
-#define NS_EXPORT __declspec(dllexport)
-#define NS_EXPORT_(type) __declspec(dllexport) type __stdcall
-#define NS_IMETHOD_(type) virtual type __stdcall
-#define NS_IMETHODIMP_(type) type __stdcall
-#define NS_METHOD_(type) type __stdcall
-#define NS_CALLBACK_(_type, _name) _type (__stdcall * _name)
-#ifndef _WIN64
-// Win64 has only one calling convention.  __stdcall will be ignored by the compiler.
-#define NS_STDCALL __stdcall
-#define NS_HAVE_STDCALL
-#else
-#define NS_STDCALL
-#endif
-#define NS_FROZENCALL __cdecl
-
-#else
 
 #define NS_IMPORT NS_EXTERNAL_VIS
 #define NS_IMPORT_(type) NS_EXTERNAL_VIS_(type)
@@ -118,8 +94,6 @@
 #define NS_CALLBACK_(_type, _name) _type (* _name)
 #define NS_STDCALL
 #define NS_FROZENCALL
-
-#endif
 
 /**
  * Macro for creating typedefs for pointer-to-member types which are

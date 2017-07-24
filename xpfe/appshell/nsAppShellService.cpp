@@ -579,43 +579,6 @@ nsAppShellService::CalculateWindowZLevel(nsIXULWindow *aParent,
   return zLevel;
 }
 
-#ifdef XP_WIN
-/*
- * Checks to see if any existing window is currently in fullscreen mode.
- */
-static bool
-CheckForFullscreenWindow()
-{
-  nsCOMPtr<nsIWindowMediator> wm(do_GetService(NS_WINDOWMEDIATOR_CONTRACTID));
-  if (!wm)
-    return false;
-
-  nsCOMPtr<nsISimpleEnumerator> windowList;
-  wm->GetXULWindowEnumerator(nullptr, getter_AddRefs(windowList));
-  if (!windowList)
-    return false;
-
-  for (;;) {
-    bool more = false;
-    windowList->HasMoreElements(&more);
-    if (!more)
-      return false;
-
-    nsCOMPtr<nsISupports> supportsWindow;
-    windowList->GetNext(getter_AddRefs(supportsWindow));
-    nsCOMPtr<nsIBaseWindow> baseWin(do_QueryInterface(supportsWindow));
-    if (baseWin) {
-      nsCOMPtr<nsIWidget> widget;
-      baseWin->GetMainWidget(getter_AddRefs(widget));
-      if (widget && widget->SizeMode() == nsSizeMode_Fullscreen) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-#endif
-
 /*
  * Just do the window-making part of CreateTopLevelWindow
  */
@@ -638,14 +601,6 @@ nsAppShellService::JustCreateTopWindow(nsIXULWindow *aParent,
     parent = aParent;
 
   RefPtr<nsWebShellWindow> window = new nsWebShellWindow(aChromeMask);
-
-#ifdef XP_WIN
-  // If the parent is currently fullscreen, tell the child to ignore persisted
-  // full screen states. This way new browser windows open on top of fullscreen
-  // windows normally.
-  if (window && CheckForFullscreenWindow())
-    window->IgnoreXULSizeMode(true);
-#endif
 
   nsWidgetInitData widgetInitData;
 
@@ -676,12 +631,6 @@ nsAppShellService::JustCreateTopWindow(nsIXULWindow *aParent,
       ((aChromeMask & sheetMask) == sheetMask)) {
     widgetInitData.mWindowType = eWindowType_sheet;
   }
-#endif
-
-#if defined(XP_WIN)
-  if (widgetInitData.mWindowType == eWindowType_toplevel ||
-      widgetInitData.mWindowType == eWindowType_dialog)
-    widgetInitData.clipChildren = true;
 #endif
 
   // note default chrome overrides other OS chrome settings, but

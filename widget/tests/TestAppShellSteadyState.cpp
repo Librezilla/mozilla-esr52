@@ -25,10 +25,6 @@
 #include "nsThreadUtils.h"
 #include "mozilla/Attributes.h"
 
-#ifdef XP_WIN
-#include <windows.h>
-#endif
-
 using namespace mozilla;
 
 typedef void (*TestFunc)(nsIAppShell*);
@@ -235,69 +231,10 @@ public:
     return NS_OK;
   }
 
-#ifdef XP_WIN
-  static VOID CALLBACK
-  TimerCallback(HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
-  {
-    if (sWindowUtils) {
-      nsCOMPtr<nsIDOMWindowUtils> utils = dont_AddRef(sWindowUtils);
-      sWindowUtils = nullptr;
-
-      if (gStableStateEventHasRun) {
-        fail("StableStateRunnable ran at wrong time");
-      } else {
-        passed("StableStateRunnable state correct (false)");
-      }
-
-      int32_t layout = 0x409; // US
-      int32_t keyCode = 0x41; // VK_A
-      NS_NAMED_LITERAL_STRING(a, "a");
-
-      if (NS_FAILED(utils->SendNativeKeyEvent(layout, keyCode, 0, a, a, nullptr))) {
-        fail("Failed to synthesize native event");
-      }
-
-      return;
-    }
-
-    KillTimer(nullptr, idEvent);
-
-    nsCOMPtr<nsIAppShell> appShell = dont_AddRef(sAppShell);
-
-    if (!gStableStateEventHasRun) {
-      fail("StableStateRunnable didn't run yet");
-    } else {
-      passed("StableStateRunnable state correct (true)");
-    }
-
-    nsCOMPtr<nsIRunnable> runnable = new NextTestRunnable(appShell);
-    if (NS_FAILED(NS_DispatchToCurrentThread(runnable))) {
-      fail("Failed to dispatch next test runnable");
-    }
-
-  }
-#endif
-
   bool
   ScheduleTimer(nsIDOMWindowUtils* aWindowUtils)
   {
-#ifdef XP_WIN
-    UINT_PTR timerId = SetTimer(nullptr, 0, 1000, (TIMERPROC)TimerCallback);
-    if (!timerId) {
-      fail("SetTimer failed!");
-      return false;
-    }
-
-    nsCOMPtr<nsIDOMWindowUtils> utils = aWindowUtils;
-    utils.forget(&sWindowUtils);
-
-    nsCOMPtr<nsIAppShell> appShell = mAppShell;
-    appShell.forget(&sAppShell);
-
-    return true;
-#else
     return false;
-#endif
   }
 };
 
@@ -388,55 +325,8 @@ Test3(nsIAppShell* aAppShell)
 bool
 Test4Internal(nsIAppShell* aAppShell)
 {
-#ifndef XP_WIN
   // Not sure how to test on other platforms.
   return false;
-#else
-  nsCOMPtr<nsIAppShellService> appService =
-    do_GetService(NS_APPSHELLSERVICE_CONTRACTID);
-  if (!appService) {
-    fail("Failed to get appshell service!");
-    return false;
-  }
-
-  nsCOMPtr<nsIURI> uri;
-  if (NS_FAILED(NS_NewURI(getter_AddRefs(uri), "about:", nullptr))) {
-    fail("Failed to create new uri");
-    return false;
-  }
-
-  uint32_t flags = nsIWebBrowserChrome::CHROME_DEFAULT;
-
-  nsCOMPtr<nsIXULWindow> xulWindow;
-  if (NS_FAILED(appService->CreateTopLevelWindow(nullptr, uri, flags, 100, 100, nullptr,
-                                                 getter_AddRefs(xulWindow)))) {
-    fail("Failed to create new window");
-    return false;
-  }
-
-  nsCOMPtr<nsIDOMWindow> window = do_GetInterface(xulWindow);
-  if (!window) {
-    fail("Can't get dom window!");
-    return false;
-  }
-
-  nsCOMPtr<nsIDOMEventTarget> target = do_QueryInterface(window);
-  if (!target) {
-    fail("Can't QI to nsIDOMEventTarget!");
-    return false;
-  }
-
-  nsCOMPtr<nsIDOMEventListener> listener = new EventListener(aAppShell);
-  if (NS_FAILED(target->AddEventListener(NS_LITERAL_STRING("keypress"),
-                                         listener, false, false)) ||
-      NS_FAILED(target->AddEventListener(NS_LITERAL_STRING("load"), listener,
-                                         false, false))) {
-    fail("Can't add event listeners!");
-    return false;
-  }
-
-  return true;
-#endif
 }
 
 void

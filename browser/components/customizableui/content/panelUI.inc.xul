@@ -55,15 +55,10 @@
                          oncommand="PanelUI.showHelpView(this);"/>
           <toolbarseparator/>
           <toolbarbutton id="PanelUI-quit"
-#ifdef XP_WIN
-                         label="&quitApplicationCmdWin2.label;"
-                         tooltiptext="&quitApplicationCmdWin2.tooltip;"
-#else
 #ifdef XP_MACOSX
                          label="&quitApplicationCmdMac2.label;"
 #else
                          label="&quitApplicationCmd.label;"
-#endif
 #endif
                          command="cmd_quitApplication"/>
         </hbox>

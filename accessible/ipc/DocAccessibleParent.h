@@ -142,13 +142,6 @@ public:
   const DocAccessibleParent* ChildDocAt(size_t aIdx) const
     { return mChildDocs[aIdx]; }
 
-#if defined(XP_WIN)
-  void SetCOMProxy(const RefPtr<IAccessible>& aCOMProxy);
-
-  virtual bool RecvGetWindowedPluginIAccessible(
-      const WindowsHandle& aHwnd, IAccessibleHolder* aPluginCOMProxy) override;
-#endif
-
 private:
 
   class ProxyEntry : public PLDHashEntryHdr

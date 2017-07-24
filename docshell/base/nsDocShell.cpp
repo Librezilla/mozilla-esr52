@@ -231,12 +231,7 @@ static NS_DEFINE_CID(kAppShellCID, NS_APPSHELL_CID);
 #define DEBUG_PAGE_CACHE
 #endif
 
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#else
 #include <unistd.h> // for getpid()
-#endif
 
 using namespace mozilla;
 using namespace mozilla::dom;

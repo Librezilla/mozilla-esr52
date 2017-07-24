@@ -634,13 +634,7 @@ nsDefaultURIFixup::ConvertFileToStringURI(const nsACString& aIn,
 {
   bool attemptFixup = false;
 
-#if defined(XP_WIN)
-  // Check for \ in the url-string or just a drive (PC)
-  if (aIn.Contains('\\') ||
-      (aIn.Length() == 2 && (aIn.Last() == ':' || aIn.Last() == '|'))) {
-    attemptFixup = true;
-  }
-#elif defined(XP_UNIX)
+#if defined(XP_UNIX)
   // Check if it starts with / (UNIX)
   if (aIn.First() == '/') {
     attemptFixup = true;

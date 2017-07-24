@@ -38,9 +38,7 @@
 #include <errno.h>
 #include "nsILocalFile.h"
 
-#ifdef XP_WIN
-#include "nsLocalFileWin.h"
-#elif defined(XP_UNIX)
+#if defined(XP_UNIX)
 #include "nsLocalFileUnix.h"
 #else
 #error NOT_IMPLEMENTED

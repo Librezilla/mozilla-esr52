@@ -79,10 +79,6 @@
 #include "nsCocoaFeatures.h"
 #endif
 
-#ifdef XP_WIN
-#include "WGLLibrary.h"
-#endif
-
 // Generated
 #include "mozilla/dom/WebGLRenderingContextBinding.h"
 
@@ -725,20 +721,6 @@ WebGLContext::CreateAndInitGL(bool forceEnabled,
 
     const bool useEGL = PR_GetEnv("MOZ_WEBGL_FORCE_EGL");
 
-#ifdef XP_WIN
-    tryNativeGL = false;
-    tryANGLE = true;
-
-    if (gfxPrefs::WebGLDisableWGL()) {
-        tryNativeGL = false;
-    }
-
-    if (gfxPrefs::WebGLDisableANGLE() || PR_GetEnv("MOZ_WEBGL_FORCE_OPENGL") || useEGL) {
-        tryNativeGL = true;
-        tryANGLE = false;
-    }
-#endif
-
     if (tryNativeGL && !forceEnabled) {
         const nsCOMPtr<nsIGfxInfo> gfxInfo = services::GetGfxInfo();
         const auto feature = nsIGfxInfo::FEATURE_WEBGL_OPENGL;
@@ -1014,20 +996,6 @@ WebGLContext::SetDimensions(int32_t signedWidth, int32_t signedHeight)
             ThrowEvent_WebGLContextCreationError(text);
             return NS_ERROR_FAILURE;
         }
-
-#ifdef XP_WIN
-        if (gl->GetContextType() == gl::GLContextType::WGL &&
-            !gl::sWGLLib.HasDXInterop2())
-        {
-            DestroyResourcesAndContext();
-            MOZ_ASSERT(!gl);
-
-            failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_WEBGL_DXGL_INTEROP2");
-            const nsLiteralCString text("Caveat: WGL without DXGLInterop2.");
-            ThrowEvent_WebGLContextCreationError(text);
-            return NS_ERROR_FAILURE;
-        }
-#endif
     }
 
     if (!ResizeBackbuffer(width, height)) {

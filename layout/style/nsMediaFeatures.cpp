@@ -12,9 +12,6 @@
 #include "nsStyleConsts.h"
 #include "nsPresContext.h"
 #include "nsCSSValue.h"
-#ifdef XP_WIN
-#include "mozilla/LookAndFeel.h"
-#endif
 #include "nsCSSRuleProcessor.h"
 #include "nsDeviceContext.h"
 #include "nsIBaseWindow.h"
@@ -44,39 +41,6 @@ static const nsCSSProps::KTableEntry kDisplayModeKeywords[] = {
   { eCSSKeyword_fullscreen,              NS_STYLE_DISPLAY_MODE_FULLSCREEN },
   { eCSSKeyword_UNKNOWN,                 -1 }
 };
-
-#ifdef XP_WIN
-struct WindowsThemeName {
-  LookAndFeel::WindowsTheme id;
-  const wchar_t* name;
-};
-
-// Windows theme identities used in the -moz-windows-theme media query.
-const WindowsThemeName themeStrings[] = {
-  { LookAndFeel::eWindowsTheme_Aero,       L"aero" },
-  { LookAndFeel::eWindowsTheme_AeroLite,   L"aero-lite" },
-  { LookAndFeel::eWindowsTheme_LunaBlue,   L"luna-blue" },
-  { LookAndFeel::eWindowsTheme_LunaOlive,  L"luna-olive" },
-  { LookAndFeel::eWindowsTheme_LunaSilver, L"luna-silver" },
-  { LookAndFeel::eWindowsTheme_Royale,     L"royale" },
-  { LookAndFeel::eWindowsTheme_Zune,       L"zune" },
-  { LookAndFeel::eWindowsTheme_Generic,    L"generic" }
-};
-
-struct OperatingSystemVersionInfo {
-  LookAndFeel::OperatingSystemVersion id;
-  const wchar_t* name;
-};
-
-// Os version identities used in the -moz-os-version media query.
-const OperatingSystemVersionInfo osVersionStrings[] = {
-  { LookAndFeel::eOperatingSystemVersion_WindowsXP,     L"windows-xp" },
-  { LookAndFeel::eOperatingSystemVersion_WindowsVista,  L"windows-vista" },
-  { LookAndFeel::eOperatingSystemVersion_Windows7,      L"windows-win7" },
-  { LookAndFeel::eOperatingSystemVersion_Windows8,      L"windows-win8" },
-  { LookAndFeel::eOperatingSystemVersion_Windows10,     L"windows-win10" }
-};
-#endif
 
 // A helper for four features below
 static nsSize
@@ -411,23 +375,6 @@ GetWindowsTheme(nsPresContext* aPresContext, const nsMediaFeature* aFeature,
     return NS_OK;
   }
 
-#ifdef XP_WIN
-  uint8_t windowsThemeId =
-    nsCSSRuleProcessor::GetWindowsThemeIdentifier();
-
-  // Classic mode should fail to match.
-  if (windowsThemeId == LookAndFeel::eWindowsTheme_Classic)
-    return NS_OK;
-
-  // Look up the appropriate theme string
-  for (size_t i = 0; i < ArrayLength(themeStrings); ++i) {
-    if (windowsThemeId == themeStrings[i].id) {
-      aResult.SetStringValue(nsDependentString(themeStrings[i].name),
-                             eCSSUnit_Ident);
-      break;
-    }
-  }
-#endif
   return NS_OK;
 }
 
@@ -440,20 +387,6 @@ GetOperatingSystemVersion(nsPresContext* aPresContext, const nsMediaFeature* aFe
     return NS_OK;
   }
 
-#ifdef XP_WIN
-  int32_t metricResult;
-  if (NS_SUCCEEDED(
-        LookAndFeel::GetInt(LookAndFeel::eIntID_OperatingSystemVersionIdentifier,
-                            &metricResult))) {
-    for (size_t i = 0; i < ArrayLength(osVersionStrings); ++i) {
-      if (metricResult == osVersionStrings[i].id) {
-        aResult.SetStringValue(nsDependentString(osVersionStrings[i].name),
-                               eCSSUnit_Ident);
-        break;
-      }
-    }
-  }
-#endif
   return NS_OK;
 }
 

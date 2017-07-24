@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef XP_WIN
 # NSPR, unlike NSS, exports symbols with symbol visibility (Unix) or __declspec
 # (Windows).  When using a linker script, however, we need to explicitly
 # specify that NSPR's symbols should be globally visible.  Otherwise, NSPR's
@@ -12,7 +11,6 @@
 # exported in NSPR (Windows peculiarity).
 PR_*
 PL_*
-#endif
 #include ../../../db/sqlite3/src/sqlite.symbols
 ATOB_AsciiToData
 ATOB_AsciiToData_Util

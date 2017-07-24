@@ -45,11 +45,6 @@
 
 #include <stdlib.h>
 
-#ifdef XP_WIN
-#include <windows.h>
-#include <shlobj.h>
-#include "mozilla/WindowsVersion.h"
-#endif
 #ifdef XP_MACOSX
 #include "nsILocalFileMac.h"
 // for chflags()
@@ -63,22 +58,20 @@
 #include "UIKitDirProvider.h"
 #endif
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 #include "nsIUUIDGenerator.h"
 #include "mozilla/Unused.h"
 #endif
 
 #if defined(XP_MACOSX)
 #define APP_REGISTRY_NAME "Application Registry"
-#elif defined(XP_WIN)
-#define APP_REGISTRY_NAME "registry.dat"
 #else
 #define APP_REGISTRY_NAME "appreg"
 #endif
 
 #define PREF_OVERRIDE_DIRNAME "preferences"
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 static already_AddRefed<nsIFile> GetContentProcessSandboxTempDir();
 static nsresult DeleteDirIfExists(nsIFile *dir);
 static bool IsContentSandboxDisabled();
@@ -492,14 +485,14 @@ nsXREDirProvider::GetFile(const char* aProperty, bool* aPersistent,
     bool unused;
     rv = dirsvc->GetFile("XCurProcD", &unused, getter_AddRefs(file));
   }
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
   else if (!strcmp(aProperty, NS_APP_CONTENT_PROCESS_TEMP_DIR)) {
     if (!mContentTempDir && NS_FAILED((rv = LoadContentProcessTempDir()))) {
       return rv;
     }
     rv = mContentTempDir->Clone(getter_AddRefs(file));
   }
-#endif // defined(XP_WIN) && defined(MOZ_CONTENT_SANDBOX)
+#endif // defined(XP_MACOSX) && defined(MOZ_CONTENT_SANDBOX)
   else if (NS_SUCCEEDED(GetProfileStartupDir(getter_AddRefs(file)))) {
     // We need to allow component, xpt, and chrome registration to
     // occur prior to the profile-after-change notification.
@@ -726,16 +719,12 @@ LoadExtensionDirectories(nsINIParser &parser,
   while (true);
 }
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
 
 static const char*
 GetContentProcessTempBaseDirKey()
 {
-#if defined(XP_WIN)
-  return NS_WIN_LOW_INTEGRITY_TEMP_BASE;
-#else
   return NS_OS_TEMP_DIR;
-#endif
 }
 
 //
@@ -761,10 +750,7 @@ IsContentSandboxDisabled()
   if (!BrowserTabsRemoteAutostart()) {
     return false;
   }
-#if defined(XP_WIN)
-  const bool isSandboxDisabled = !mozilla::IsVistaOrLater() ||
-    (Preferences::GetInt("security.sandbox.content.level") < 1);
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   const bool isSandboxDisabled =
     Preferences::GetInt("security.sandbox.content.level") < 1;
 #endif
@@ -896,7 +882,7 @@ DeleteDirIfExists(nsIFile* dir)
   return NS_OK;
 }
 
-#endif // (defined(XP_WIN) || defined(XP_MACOSX)) &&
+#endif // (defined(XP_MACOSX)) &&
   // defined(MOZ_CONTENT_SANDBOX)
 
 void
@@ -1172,7 +1158,7 @@ nsXREDirProvider::DoStartup()
 
     obsSvc->NotifyObservers(nullptr, "profile-initial-state", nullptr);
 
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
     // The parent is responsible for creating the sandbox temp dir
     if (XRE_IsParentProcess()) {
       mContentProcessSandboxTempDir = CreateContentProcessSandboxTempDir();
@@ -1189,7 +1175,7 @@ nsXREDirProvider::DoShutdown()
   PROFILER_LABEL_FUNC(js::ProfileEntry::Category::OTHER);
 
   if (mProfileNotified) {
-#if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
+#if (defined(XP_MACOSX)) && defined(MOZ_CONTENT_SANDBOX)
     if (XRE_IsParentProcess()) {
       Unused << DeleteDirIfExists(mContentProcessSandboxTempDir);
     }
@@ -1218,114 +1204,6 @@ nsXREDirProvider::DoShutdown()
     mProfileNotified = false;
   }
 }
-
-#ifdef XP_WIN
-static nsresult
-GetShellFolderPath(int folder, nsAString& _retval)
-{
-  wchar_t* buf;
-  uint32_t bufLength = _retval.GetMutableData(&buf, MAXPATHLEN + 3);
-  NS_ENSURE_TRUE(bufLength >= (MAXPATHLEN + 3), NS_ERROR_OUT_OF_MEMORY);
-
-  nsresult rv = NS_OK;
-
-  LPITEMIDLIST pItemIDList = nullptr;
-
-  if (SUCCEEDED(SHGetSpecialFolderLocation(nullptr, folder, &pItemIDList)) &&
-      SHGetPathFromIDListW(pItemIDList, buf)) {
-    // We're going to use wcslen (wcsnlen not available in msvc7.1) so make
-    // sure to null terminate.
-    buf[bufLength - 1] = L'\0';
-    _retval.SetLength(wcslen(buf));
-  } else {
-    _retval.SetLength(0);
-    rv = NS_ERROR_NOT_AVAILABLE;
-  }
-
-  CoTaskMemFree(pItemIDList);
-
-  return rv;
-}
-
-/**
- * Provides a fallback for getting the path to APPDATA or LOCALAPPDATA by
- * querying the registry when the call to SHGetSpecialFolderLocation or
- * SHGetPathFromIDListW is unable to provide these paths (Bug 513958).
- */
-static nsresult
-GetRegWindowsAppDataFolder(bool aLocal, nsAString& _retval)
-{
-  HKEY key;
-  NS_NAMED_LITERAL_STRING(keyName,
-  "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders");
-  DWORD res = ::RegOpenKeyExW(HKEY_CURRENT_USER, keyName.get(), 0, KEY_READ,
-                              &key);
-  if (res != ERROR_SUCCESS) {
-    _retval.SetLength(0);
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-
-  DWORD type, size;
-  res = RegQueryValueExW(key, (aLocal ? L"Local AppData" : L"AppData"),
-                         nullptr, &type, nullptr, &size);
-  // The call to RegQueryValueExW must succeed, the type must be REG_SZ, the
-  // buffer size must not equal 0, and the buffer size be a multiple of 2.
-  if (res != ERROR_SUCCESS || type != REG_SZ || size == 0 || size % 2 != 0) {
-    ::RegCloseKey(key);
-    _retval.SetLength(0);
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-
-  // |size| may or may not include room for the terminating null character
-  DWORD resultLen = size / 2;
-
-  if (!_retval.SetLength(resultLen, mozilla::fallible)) {
-    ::RegCloseKey(key);
-    _retval.SetLength(0);
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-
-  nsAString::iterator begin;
-  _retval.BeginWriting(begin);
-
-  res = RegQueryValueExW(key, (aLocal ? L"Local AppData" : L"AppData"),
-                         nullptr, nullptr, (LPBYTE) begin.get(), &size);
-  ::RegCloseKey(key);
-  if (res != ERROR_SUCCESS) {
-    _retval.SetLength(0);
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-
-  if (!_retval.CharAt(resultLen - 1)) {
-    // It was already null terminated.
-    _retval.Truncate(resultLen - 1);
-  }
-
-  return NS_OK;
-}
-
-static bool
-GetCachedHash(HKEY rootKey, const nsAString &regPath, const nsAString &path,
-              nsAString &cachedHash)
-{
-  HKEY baseKey;
-  if (RegOpenKeyExW(rootKey, reinterpret_cast<const wchar_t*>(regPath.BeginReading()), 0, KEY_READ, &baseKey) !=
-      ERROR_SUCCESS) {
-    return false;
-  }
-
-  wchar_t cachedHashRaw[512];
-  DWORD bufferSize = sizeof(cachedHashRaw);
-  LONG result = RegQueryValueExW(baseKey, reinterpret_cast<const wchar_t*>(path.BeginReading()), 0, nullptr,
-                                 (LPBYTE)cachedHashRaw, &bufferSize);
-  RegCloseKey(baseKey);
-  if (result == ERROR_SUCCESS) {
-    cachedHash.Assign(cachedHashRaw);
-  }
-  return ERROR_SUCCESS == result;
-}
-
-#endif
 
 nsresult
 nsXREDirProvider::GetUpdateRootDir(nsIFile* *aResult)
@@ -1381,95 +1259,7 @@ nsXREDirProvider::GetUpdateRootDir(nsIFile* *aResult)
   localDir.forget(aResult);
   return NS_OK;
 
-#elif XP_WIN
-  nsAutoString pathHash;
-  bool pathHashResult = false;
-  bool hasVendor = gAppData->vendor && strlen(gAppData->vendor) != 0;
-
-  nsAutoString appDirPath;
-  if (SUCCEEDED(updRoot->GetPath(appDirPath))) {
-
-    // Figure out where we should check for a cached hash value. If the
-    // application doesn't have the nsXREAppData vendor value defined check
-    // under SOFTWARE\Mozilla.
-    wchar_t regPath[1024] = { L'\0' };
-    swprintf_s(regPath, mozilla::ArrayLength(regPath), L"SOFTWARE\\%S\\%S\\TaskBarIDs",
-               (hasVendor ? gAppData->vendor : "Mozilla"), MOZ_APP_BASENAME);
-
-    // If we pre-computed the hash, grab it from the registry.
-    pathHashResult = GetCachedHash(HKEY_LOCAL_MACHINE,
-                                   nsDependentString(regPath), appDirPath,
-                                   pathHash);
-    if (!pathHashResult) {
-      pathHashResult = GetCachedHash(HKEY_CURRENT_USER,
-                                     nsDependentString(regPath), appDirPath,
-                                     pathHash);
-    }
-  }
-
-  // Get the local app data directory and if a vendor name exists append it.
-  // If only a product name exists, append it.  If neither exist fallback to
-  // old handling.  We don't use the product name on purpose because we want a
-  // shared update directory for different apps run from the same path.
-  nsCOMPtr<nsIFile> localDir;
-  if (pathHashResult && (hasVendor || gAppData->name) &&
-      NS_SUCCEEDED(GetUserDataDirectoryHome(getter_AddRefs(localDir), true)) &&
-      NS_SUCCEEDED(localDir->AppendNative(nsDependentCString(hasVendor ?
-                                          gAppData->vendor : gAppData->name))) &&
-      NS_SUCCEEDED(localDir->Append(NS_LITERAL_STRING("updates"))) &&
-      NS_SUCCEEDED(localDir->Append(pathHash))) {
-    localDir.forget(aResult);
-    return NS_OK;
-  }
-
-  nsAutoString appPath;
-  rv = updRoot->GetPath(appPath);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // AppDir may be a short path. Convert to long path to make sure
-  // the consistency of the update folder location
-  nsString longPath;
-  wchar_t* buf;
-
-  uint32_t bufLength = longPath.GetMutableData(&buf, MAXPATHLEN);
-  NS_ENSURE_TRUE(bufLength >= MAXPATHLEN, NS_ERROR_OUT_OF_MEMORY);
-
-  DWORD len = GetLongPathNameW(appPath.get(), buf, bufLength);
-
-  // Failing GetLongPathName() is not fatal.
-  if (len <= 0 || len >= bufLength)
-    longPath.Assign(appPath);
-  else
-    longPath.SetLength(len);
-
-  // Use <UserLocalDataDir>\updates\<relative path to app dir from
-  // Program Files> if app dir is under Program Files to avoid the
-  // folder virtualization mess on Windows Vista
-  nsAutoString programFiles;
-  rv = GetShellFolderPath(CSIDL_PROGRAM_FILES, programFiles);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  programFiles.Append('\\');
-  uint32_t programFilesLen = programFiles.Length();
-
-  nsAutoString programName;
-  if (_wcsnicmp(programFiles.get(), longPath.get(), programFilesLen) == 0) {
-    programName = Substring(longPath, programFilesLen);
-  } else {
-    // We need the update root directory to live outside of the installation
-    // directory, because otherwise the updater writing the log file can cause
-    // the directory to be locked, which prevents it from being replaced after
-    // background updates.
-    programName.AssignASCII(MOZ_APP_NAME);
-  }
-
-  rv = GetUserLocalDataDirectory(getter_AddRefs(updRoot));
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  rv = updRoot->AppendRelativePath(programName);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-#endif // XP_WIN
+#endif
 #endif
   updRoot.forget(aResult);
   return NS_OK;
@@ -1557,23 +1347,7 @@ nsXREDirProvider::GetUserDataDirectoryHome(nsIFile** aFile, bool aLocal)
     rv = NS_ERROR_FAILURE;
   }
   NS_ENSURE_SUCCESS(rv, rv);
-#elif defined(XP_WIN)
-  nsString path;
-  if (aLocal) {
-    rv = GetShellFolderPath(CSIDL_LOCAL_APPDATA, path);
-    if (NS_FAILED(rv))
-      rv = GetRegWindowsAppDataFolder(aLocal, path);
-  }
-  if (!aLocal || NS_FAILED(rv)) {
-    rv = GetShellFolderPath(CSIDL_APPDATA, path);
-    if (NS_FAILED(rv)) {
-      if (!aLocal)
-        rv = GetRegWindowsAppDataFolder(aLocal, path);
-    }
-  }
-  NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = NS_NewLocalFile(path, true, getter_AddRefs(localDir));
 #elif defined(MOZ_WIDGET_GONK)
   rv = NS_NewNativeLocalFile(NS_LITERAL_CSTRING("/data/b2g"), true,
                              getter_AddRefs(localDir));
@@ -1708,7 +1482,7 @@ nsXREDirProvider::AppendSysUserExtensionPath(nsIFile* aFile)
 
   nsresult rv;
 
-#if defined (XP_MACOSX) || defined(XP_WIN)
+#if defined (XP_MACOSX)
 
   static const char* const sXR = "Mozilla";
   rv = aFile->AppendNative(nsDependentCString(sXR));
@@ -1775,19 +1549,6 @@ nsXREDirProvider::AppendProfilePath(nsIFile* aFile,
     // Note that MacOS ignores the vendor when creating the profile hierarchy -
     // all application preferences directories live alongside one another in
     // ~/Library/Application Support/
-    rv = aFile->AppendNative(appName);
-  }
-  NS_ENSURE_SUCCESS(rv, rv);
-
-#elif defined(XP_WIN)
-  if (!profile.IsEmpty()) {
-    rv = AppendProfileString(aFile, profile.get());
-  }
-  else {
-    if (!vendor.IsEmpty()) {
-      rv = aFile->AppendNative(vendor);
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
     rv = aFile->AppendNative(appName);
   }
   NS_ENSURE_SUCCESS(rv, rv);

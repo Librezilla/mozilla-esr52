@@ -17,9 +17,7 @@
 #include "mozilla/StaticPtr.h"
 #include "mozilla/ThreadLocal.h"
 #include "nscore.h" // for NS_FREE_PERMANENT_DATA
-#if !defined(XP_WIN)
 #include "NSPRInterposer.h"
-#endif // !defined(XP_WIN)
 #include "nsXULAppAPI.h"
 #include "PoisonIOInterposer.h"
 
@@ -442,9 +440,7 @@ IOInterposer::Init()
   InitPoisonIOInterposer();
   // We don't hook NSPR on Windows because PoisonIOInterposer captures a
   // superset of the former's events.
-#if !defined(XP_WIN)
   InitNSPRIOInterposing();
-#endif
   return true;
 }
 

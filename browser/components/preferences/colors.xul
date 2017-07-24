@@ -80,11 +80,7 @@
         </hbox>
       </groupbox>
     </hbox>
-#ifdef XP_WIN
-    <vbox align="start">
-#else
     <vbox>
-#endif
       <label accesskey="&overridePageColors.accesskey;"
              control="useDocumentColors">&overridePageColors.label;</label>
       <menulist id="useDocumentColors" preference="browser.display.document_color_use">

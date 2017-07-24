@@ -14,12 +14,7 @@
 #include "nsXULAppAPI.h"
 #include "nsIProfileSaveEvent.h"
 
-#ifdef XP_WIN
- #include <windows.h>
- #define getpid GetCurrentProcessId
-#else
  #include <unistd.h>
-#endif
 
 /**
  * This is an event used to save the profile on the main thread

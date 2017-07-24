@@ -16,12 +16,6 @@
 
 #include "mozilla/Sprintf.h"
 
-#ifdef XP_WIN
-#include <io.h>
-#include <windows.h>
-#include "mozilla/UniquePtr.h"
-#endif
-
 #ifdef ANDROID
 #include <android/log.h>
 #include <unistd.h>
@@ -353,44 +347,7 @@ copy_stderr_to_file(const char* aFile)
 #define VARARGS_ASSIGN(foo, bar)     (foo) = (bar)
 #endif
 
-#if defined(XP_WIN)
-void
-vprintf_stderr(const char* aFmt, va_list aArgs)
-{
-  if (sStderrCallback) {
-    va_list argsCpy;
-    VARARGS_ASSIGN(argsCpy, aArgs);
-    sStderrCallback(aFmt, aArgs);
-    va_end(argsCpy);
-  }
-
-  if (IsDebuggerPresent()) {
-    int lengthNeeded = _vscprintf(aFmt, aArgs);
-    if (lengthNeeded) {
-      lengthNeeded++;
-      auto buf = MakeUnique<char[]>(lengthNeeded);
-      if (buf) {
-        va_list argsCpy;
-        VARARGS_ASSIGN(argsCpy, aArgs);
-        vsnprintf(buf.get(), lengthNeeded, aFmt, argsCpy);
-        buf[lengthNeeded - 1] = '\0';
-        va_end(argsCpy);
-        OutputDebugStringA(buf.get());
-      }
-    }
-  }
-
-  FILE* fp = _fdopen(_dup(2), "a");
-  if (!fp) {
-    return;
-  }
-
-  vfprintf(fp, aFmt, aArgs);
-
-  fclose(fp);
-}
-
-#elif defined(ANDROID)
+#if defined(ANDROID)
 void
 vprintf_stderr(const char* aFmt, va_list aArgs)
 {

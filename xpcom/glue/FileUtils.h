@@ -9,11 +9,7 @@
 
 #include "nscore.h" // nullptr
 
-#if defined(XP_UNIX)
 # include <unistd.h>
-#elif defined(XP_WIN)
-# include <io.h>
-#endif
 #include "prio.h"
 
 #include "mozilla/Scoped.h"
@@ -23,13 +19,8 @@
 
 namespace mozilla {
 
-#if defined(XP_WIN)
-typedef void* filedesc_t;
-typedef const wchar_t* pathstr_t;
-#else
 typedef int filedesc_t;
 typedef const char* pathstr_t;
-#endif
 
 /**
  * ScopedCloseFD is a RAII wrapper for POSIX file descriptors

@@ -519,7 +519,7 @@ void mozilla_sampler_init(void* stackTop)
   const char* features[] = {"js"
                          , "leaf"
                          , "threads"
-#if defined(XP_WIN) || defined(XP_MACOSX) \
+#if defined(XP_MACOSX) \
     || (defined(SPS_ARCH_arm) && defined(linux)) \
     || defined(SPS_PLAT_amd64_linux) || defined(SPS_PLAT_x86_linux)
                          , "stackwalk"
@@ -735,10 +735,6 @@ const char** mozilla_sampler_get_features()
 #ifdef MOZ_TASK_TRACER
     // Start profiling with feature TaskTracer.
     "tasktracer",
-#endif
-#if defined(XP_WIN)
-    // Add power collection
-    "power",
 #endif
     nullptr
   };

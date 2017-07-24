@@ -112,12 +112,7 @@ nsNativeTheme::GetContentState(nsIFrame* aFrame, uint8_t aWidgetType)
     return flags;
   }
 #endif
-#if defined(XP_WIN)
-  // On Windows, focused buttons are always drawn as such by the native theme.
-  if (aWidgetType == NS_THEME_BUTTON)
-    return flags;
-#endif    
-#if defined(XP_MACOSX) || defined(XP_WIN)
+#if defined(XP_MACOSX)
   nsIDocument* doc = aFrame->GetContent()->OwnerDoc();
   nsPIDOMWindowOuter* window = doc->GetWindow();
   if (window && !window->ShouldShowFocusRing())

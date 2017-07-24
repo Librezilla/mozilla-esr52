@@ -636,13 +636,6 @@ MatchingOperatingSystems(OperatingSystem aBlockedOS, OperatingSystem aSystemOS)
     return false;
   }
 
-#if defined (XP_WIN)
-  if (aBlockedOS == OperatingSystem::Windows) {
-    // We do want even "unknown" aSystemOS to fall under "all windows"
-    return true;
-  }
-#endif
-
 #if defined (XP_MACOSX)
   if (aBlockedOS == OperatingSystem::OSX) {
     // We do want even "unknown" aSystemOS to fall under "all OS X"
@@ -694,7 +687,7 @@ GfxInfoBase::FindBlocklistedDeviceInList(const nsTArray<GfxDriverInfo>& info,
       }
     }
 
-#if defined(XP_WIN) || defined(ANDROID)
+#if defined(ANDROID)
     uint64_t driverVersion;
     ParseDriverVersion(adapterDriverVersionString, &driverVersion);
 #endif
@@ -733,7 +726,7 @@ GfxInfoBase::FindBlocklistedDeviceInList(const nsTArray<GfxDriverInfo>& info,
         continue;
     }
 
-#if defined(XP_WIN) || defined(ANDROID)
+#if defined(ANDROID)
     switch (info[i].mComparisonOp) {
     case DRIVER_LESS_THAN:
       match = driverVersion < info[i].mDriverVersion;
@@ -796,46 +789,6 @@ GfxInfoBase::FindBlocklistedDeviceInList(const nsTArray<GfxDriverInfo>& info,
       }
     }
   }
-
-#if defined(XP_WIN)
-  // As a very special case, we block D2D on machines with an NVidia 310M GPU
-  // as either the primary or secondary adapter.  D2D is also blocked when the
-  // NV 310M is the primary adapter (using the standard blocklisting mechanism).
-  // If the primary GPU already matched something in the blocklist then we
-  // ignore this special rule.  See bug 1008759.
-  if (status == nsIGfxInfo::FEATURE_STATUS_UNKNOWN &&
-    (aFeature == nsIGfxInfo::FEATURE_DIRECT2D)) {
-    nsAutoString adapterVendorID2;
-    nsAutoString adapterDeviceID2;
-    if ((!NS_FAILED(GetAdapterVendorID2(adapterVendorID2))) &&
-      (!NS_FAILED(GetAdapterDeviceID2(adapterDeviceID2))))
-    {
-      nsAString &nvVendorID = (nsAString &)GfxDriverInfo::GetDeviceVendor(VendorNVIDIA);
-      const nsString nv310mDeviceId = NS_LITERAL_STRING("0x0A70");
-      if (nvVendorID.Equals(adapterVendorID2, nsCaseInsensitiveStringComparator()) &&
-        nv310mDeviceId.Equals(adapterDeviceID2, nsCaseInsensitiveStringComparator())) {
-        status = nsIGfxInfo::FEATURE_BLOCKED_DEVICE;
-        aFailureId = "FEATURE_FAILURE_D2D_NV310M_BLOCK";
-      }
-    }
-  }
-
-  // Depends on Windows driver versioning. We don't pass a GfxDriverInfo object
-  // back to the Windows handler, so we must handle this here.
-  if (status == FEATURE_BLOCKED_DRIVER_VERSION) {
-    if (info[i].mSuggestedVersion) {
-        aSuggestedVersion.AppendPrintf("%s", info[i].mSuggestedVersion);
-    } else if (info[i].mComparisonOp == DRIVER_LESS_THAN &&
-               info[i].mDriverVersion != GfxDriverInfo::allDriverVersions)
-    {
-        aSuggestedVersion.AppendPrintf("%lld.%lld.%lld.%lld",
-                                      (info[i].mDriverVersion & 0xffff000000000000) >> 48,
-                                      (info[i].mDriverVersion & 0x0000ffff00000000) >> 32,
-                                      (info[i].mDriverVersion & 0x00000000ffff0000) >> 16,
-                                      (info[i].mDriverVersion & 0x000000000000ffff));
-    }
-  }
-#endif
 
   return status;
 }

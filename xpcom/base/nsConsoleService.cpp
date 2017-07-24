@@ -30,9 +30,6 @@
 #include <android/log.h>
 #include "mozilla/dom/ContentChild.h"
 #endif
-#ifdef XP_WIN
-#include <windows.h>
-#endif
 
 #ifdef MOZ_TASK_TRACER
 #include "GeckoTaskTracer.h"
@@ -273,14 +270,6 @@ nsConsoleService::LogMessageWithMode(nsIConsoleMessage* aMessage,
       }
 
       __android_log_print(logPriority, appName.get(), "%s", msg.get());
-    }
-#endif
-#ifdef XP_WIN
-    if (IsDebuggerPresent()) {
-      nsString msg;
-      aMessage->GetMessageMoz(getter_Copies(msg));
-      msg.Append('\n');
-      OutputDebugStringW(msg.get());
     }
 #endif
 #ifdef MOZ_TASK_TRACER

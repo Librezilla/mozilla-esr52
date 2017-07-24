@@ -63,10 +63,6 @@
 #include "nsTArray.h"                   // for nsTArray
 #include "nsThreadUtils.h"              // for NS_IsMainThread
 #include "nsXULAppAPI.h"                // for XRE_GetIOMessageLoop
-#ifdef XP_WIN
-#include "mozilla/layers/CompositorD3D11.h"
-#include "mozilla/layers/CompositorD3D9.h"
-#endif
 #include "GeckoProfiler.h"
 #include "mozilla/ipc/ProtocolTypes.h"
 #include "mozilla/Unused.h"
@@ -78,7 +74,7 @@
 #include "ProfilerMarkers.h"
 #endif
 #include "mozilla/VsyncDispatcher.h"
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
 #include "VsyncSource.h"
 #endif
 #include "mozilla/widget/CompositorWidget.h"
@@ -609,7 +605,7 @@ CompositorBridgeParent::CompositorBridgeParent(CSSToLayoutDeviceScale aScale,
   , mCompositorThreadHolder(CompositorThreadHolder::GetSingleton())
   , mCompositorScheduler(nullptr)
   , mPaintTime(TimeDuration::Forever())
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   , mLastPluginUpdateLayerTreeId(0)
   , mDeferPluginWindows(false)
   , mPluginWindowsHidden(false)
@@ -1105,7 +1101,7 @@ CompositorBridgeParent::NotifyShadowTreeTransaction(uint64_t aId, bool aIsFirstP
     AutoResolveRefLayers resolve(mCompositionManager, this, nullptr,
                                  &pluginsUpdatedFlag);
 
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
     // If plugins haven't been updated, stop waiting.
     if (!pluginsUpdatedFlag) {
       mWaitForPluginsUntil = TimeStamp();
@@ -1191,7 +1187,7 @@ CompositorBridgeParent::CompositeToTarget(DrawTarget* aTarget, const gfx::IntRec
     return;
   }
 
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   if (!mWaitForPluginsUntil.IsNull() &&
       mWaitForPluginsUntil > start) {
     mHaveBlockedForPlugins = true;
@@ -1219,7 +1215,7 @@ CompositorBridgeParent::CompositeToTarget(DrawTarget* aTarget, const gfx::IntRec
                                &hasRemoteContent,
                                &updatePluginsFlag);
 
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   // We do not support plugins in local content. When switching tabs
   // to local pages, hide every plugin associated with the window.
   if (!hasRemoteContent && gfxVars::BrowserTabsRemoteAutostart() &&
@@ -1252,7 +1248,7 @@ CompositorBridgeParent::CompositeToTarget(DrawTarget* aTarget, const gfx::IntRec
   bool requestNextFrame = mCompositionManager->TransformShadowTree(time, mVsyncRate);
   if (requestNextFrame) {
     ScheduleComposition();
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
     // If we have visible windowed plugins then we need to wait for content (and
     // then the plugins) to have been updated by the active animation.
     if (!mPluginWindowsHidden && mCachedPluginData.Length()) {
@@ -1315,7 +1311,7 @@ CompositorBridgeParent::CompositeToTarget(DrawTarget* aTarget, const gfx::IntRec
 bool
 CompositorBridgeParent::RecvRemotePluginsReady()
 {
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   mWaitForPluginsUntil = TimeStamp();
   if (mHaveBlockedForPlugins) {
     mHaveBlockedForPlugins = false;
@@ -1650,12 +1646,6 @@ CompositorBridgeParent::NewCompositor(const nsTArray<LayersBackend>& aBackendHin
       {
         compositor = new BasicCompositor(this, mWidget);
       }
-#ifdef XP_WIN
-    } else if (aBackendHints[i] == LayersBackend::LAYERS_D3D11) {
-      compositor = new CompositorD3D11(this, mWidget);
-    } else if (aBackendHints[i] == LayersBackend::LAYERS_D3D9) {
-      compositor = new CompositorD3D9(this, mWidget);
-#endif
     }
     nsCString failureReason;
     if (compositor && compositor->Initialize(&failureReason)) {

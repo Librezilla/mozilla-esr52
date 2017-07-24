@@ -110,11 +110,6 @@ extern nsresult nsStringInputStreamConstructor(nsISupports*, REFNSIID, void**);
 
 #include "SpecialSystemDirectory.h"
 
-#if defined(XP_WIN)
-#include "mozilla/WindowsVersion.h"
-#include "nsWindowsRegKey.h"
-#endif
-
 #ifdef MOZ_WIDGET_COCOA
 #include "nsMacUtilsImpl.h"
 #endif
@@ -197,10 +192,6 @@ static BackgroundHangMonitor* sMainHangMonitor;
 // here rather than in nsIRegistry.h
 extern nsresult NS_RegistryGetFactory(nsIFactory** aFactory);
 extern nsresult NS_CategoryManagerGetFactory(nsIFactory**);
-
-#ifdef XP_WIN
-extern nsresult CreateAnonTempFileRemover();
-#endif
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcess)
 
@@ -749,9 +740,6 @@ NS_InitXPCOM2(nsIServiceManager** aResult,
   NS_CreateServicesFromCategory(NS_XPCOM_STARTUP_CATEGORY,
                                 nullptr,
                                 NS_XPCOM_STARTUP_OBSERVER_ID);
-#ifdef XP_WIN
-  CreateAnonTempFileRemover();
-#endif
 
   // We only want the SystemMemoryReporter running in one process, because it
   // profiles the entire system.  The main process is the obvious place for

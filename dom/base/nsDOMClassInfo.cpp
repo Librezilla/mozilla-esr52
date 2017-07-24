@@ -6,10 +6,6 @@
 
 #include "mozilla/ArrayUtils.h"
 
-#ifdef XP_WIN
-#undef GetClassName
-#endif
-
 // JavaScript includes
 #include "jsapi.h"
 #include "jsfriendapi.h"

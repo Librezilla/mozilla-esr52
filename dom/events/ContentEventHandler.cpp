@@ -426,9 +426,6 @@ static bool IsMozBR(nsIContent* aContent)
 
 static void ConvertToNativeNewlines(nsAFlatString& aString)
 {
-#if defined(XP_WIN)
-  aString.ReplaceSubstring(NS_LITERAL_STRING("\n"), NS_LITERAL_STRING("\r\n"));
-#endif
 }
 
 static void AppendString(nsAString& aString, nsIContent* aContent)
@@ -453,58 +450,6 @@ static void AppendSubString(nsAString& aString, nsIContent* aContent,
   }
   text->AppendTo(aString, int32_t(aXPOffset), int32_t(aXPLength));
 }
-
-#if defined(XP_WIN)
-static uint32_t CountNewlinesInXPLength(nsIContent* aContent,
-                                        uint32_t aXPLength)
-{
-  NS_ASSERTION(aContent->IsNodeOfType(nsINode::eTEXT),
-               "aContent is not a text node!");
-  const nsTextFragment* text = aContent->GetText();
-  if (!text) {
-    return 0;
-  }
-  // For automated tests, we should abort on debug build.
-  MOZ_ASSERT(aXPLength == UINT32_MAX || aXPLength <= text->GetLength(),
-             "aXPLength is out-of-bounds");
-  const uint32_t length = std::min(aXPLength, text->GetLength());
-  uint32_t newlines = 0;
-  for (uint32_t i = 0; i < length; ++i) {
-    if (text->CharAt(i) == '\n') {
-      ++newlines;
-    }
-  }
-  return newlines;
-}
-
-static uint32_t CountNewlinesInNativeLength(nsIContent* aContent,
-                                            uint32_t aNativeLength)
-{
-  NS_ASSERTION(aContent->IsNodeOfType(nsINode::eTEXT),
-               "aContent is not a text node!");
-  const nsTextFragment* text = aContent->GetText();
-  if (!text) {
-    return 0;
-  }
-  // For automated tests, we should abort on debug build.
-  MOZ_ASSERT(
-    (aNativeLength == UINT32_MAX || aNativeLength <= text->GetLength() * 2),
-    "aNativeLength is unexpected value");
-  const uint32_t xpLength = text->GetLength();
-  uint32_t newlines = 0;
-  for (uint32_t i = 0, nativeOffset = 0;
-       i < xpLength && nativeOffset < aNativeLength;
-       ++i, ++nativeOffset) {
-    // For automated tests, we should abort on debug build.
-    MOZ_ASSERT(i < text->GetLength(), "i is out-of-bounds");
-    if (text->CharAt(i) == '\n') {
-      ++newlines;
-      ++nativeOffset;
-    }
-  }
-  return newlines;
-}
-#endif
 
 /* static */ uint32_t
 ContentEventHandler::GetNativeTextLength(nsIContent* aContent,
@@ -547,12 +492,7 @@ ContentEventHandler::GetNativeTextLengthBefore(nsIContent* aContent,
 /* static inline */ uint32_t
 ContentEventHandler::GetBRLength(LineBreakType aLineBreakType)
 {
-#if defined(XP_WIN)
-  // Length of \r\n
-  return (aLineBreakType == LINE_BREAK_TYPE_NATIVE) ? 2 : 1;
-#else
   return 1;
-#endif
 }
 
 /* static */ uint32_t
@@ -563,16 +503,8 @@ ContentEventHandler::GetTextLength(nsIContent* aContent,
   MOZ_ASSERT(aContent->IsNodeOfType(nsINode::eTEXT));
 
   uint32_t textLengthDifference =
-#if defined(XP_WIN)
-    // On Windows, the length of a native newline ("\r\n") is twice the length
-    // of the XP newline ("\n"), so XP length is equal to the length of the
-    // native offset plus the number of newlines encountered in the string.
-    (aLineBreakType == LINE_BREAK_TYPE_NATIVE) ?
-      CountNewlinesInXPLength(aContent, aMaxLength) : 0;
-#else
     // On other platforms, the native and XP newlines are the same.
     0;
-#endif
 
   const nsTextFragment* text = aContent->GetText();
   if (!text) {
@@ -584,15 +516,8 @@ ContentEventHandler::GetTextLength(nsIContent* aContent,
 
 static uint32_t ConvertToXPOffset(nsIContent* aContent, uint32_t aNativeOffset)
 {
-#if defined(XP_WIN)
-  // On Windows, the length of a native newline ("\r\n") is twice the length of
-  // the XP newline ("\n"), so XP offset is equal to the length of the native
-  // offset minus the number of newlines encountered in the string.
-  return aNativeOffset - CountNewlinesInNativeLength(aContent, aNativeOffset);
-#else
   // On other platforms, the native and XP newlines are the same.
   return aNativeOffset;
-#endif
 }
 
 /* static */ bool

@@ -68,11 +68,7 @@ void ShouldAbort()
     return;
 }
 
-#ifdef XP_WIN
-TEST(STLWrapper, DISABLED_ShouldAbortDeathTest)
-#else
 TEST(STLWrapper, ShouldAbortDeathTest)
-#endif
 {
   ASSERT_DEATH_IF_SUPPORTED(ShouldAbort(), "terminate called after throwing an instance of 'std::out_of_range'|vector::_M_range_check");
 }

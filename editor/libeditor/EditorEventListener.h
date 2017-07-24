@@ -26,11 +26,6 @@ class nsPresContext;
 #undef KeyPress
 #endif
 
-#ifdef XP_WIN
-// On Windows, we support switching the text direction by pressing Ctrl+Shift
-#define HANDLE_NATIVE_TEXT_DIRECTION_SWITCH
-#endif
-
 namespace mozilla {
 
 class EditorBase;

@@ -41,7 +41,7 @@ class CompositorWidgetInitData;
 class CompositorWidgetDelegate;
 
 // Platforms that support out-of-process widgets.
-#if defined(XP_WIN) || defined(MOZ_X11)
+#if defined(MOZ_X11)
 // CompositorWidgetParent should implement CompositorWidget and
 // PCompositorWidgetParent.
 class CompositorWidgetParent;

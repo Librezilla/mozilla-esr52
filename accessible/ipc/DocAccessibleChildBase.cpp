@@ -54,9 +54,6 @@ DocAccessibleChildBase::SerializeTree(Accessible* aRoot,
                                       nsTArray<AccessibleData>& aTree)
 {
   uint64_t id = reinterpret_cast<uint64_t>(aRoot->UniqueID());
-#if defined(XP_WIN)
-  int32_t msaaId = AccessibleWrap::GetChildIDFor(aRoot);
-#endif
   uint32_t role = aRoot->Role();
   uint32_t childCount = aRoot->ChildCount();
   uint32_t interfaces = InterfacesFor(aRoot);
@@ -69,11 +66,7 @@ DocAccessibleChildBase::SerializeTree(Accessible* aRoot,
     childCount = 0;
   }
 
-#if defined(XP_WIN)
-  aTree.AppendElement(AccessibleData(id, msaaId, role, childCount, interfaces));
-#else
   aTree.AppendElement(AccessibleData(id, role, childCount, interfaces));
-#endif
 
   for (uint32_t i = 0; i < childCount; i++) {
     SerializeTree(aRoot->GetChildAt(i), aTree);

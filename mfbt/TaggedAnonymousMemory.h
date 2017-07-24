@@ -32,8 +32,6 @@
 #ifndef mozilla_TaggedAnonymousMemory_h
 #define mozilla_TaggedAnonymousMemory_h
 
-#ifndef XP_WIN
-
 #include <sys/types.h>
 #include <sys/mman.h>
 
@@ -80,7 +78,5 @@ MozTaggedMemoryIsSupported(void)
 }
 
 #endif // ANDROID
-
-#endif // !XP_WIN
 
 #endif // mozilla_TaggedAnonymousMemory_h

@@ -644,11 +644,7 @@ Connection::initialize(nsIFile *aDatabaseFile)
   nsresult rv = aDatabaseFile->GetPath(path);
   NS_ENSURE_SUCCESS(rv, rv);
 
-#ifdef XP_WIN
-  static const char* sIgnoreLockingVFS = "win32-none";
-#else
   static const char* sIgnoreLockingVFS = "unix-none";
-#endif
   const char* vfs = mIgnoreLockingMode ? sIgnoreLockingVFS : nullptr;
 
   int srv = ::sqlite3_open_v2(NS_ConvertUTF16toUTF8(path).get(), &mDBConn,

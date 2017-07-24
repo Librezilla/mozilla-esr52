@@ -32,12 +32,7 @@ using namespace mozilla;
 using namespace mozilla::dom;
 using namespace mozilla::hal;
 
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#else
 #include <unistd.h>
-#endif
 
 #ifdef LOG
 #undef LOG

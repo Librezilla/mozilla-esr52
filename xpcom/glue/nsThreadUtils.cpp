@@ -18,11 +18,7 @@
 # include "nsServiceManagerUtils.h"
 #endif
 
-#ifdef XP_WIN
-#include <windows.h>
-#include "mozilla/WindowsVersion.h"
-using mozilla::IsVistaOrLater;
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 #include <sys/resource.h>
 #endif
 
@@ -442,11 +438,7 @@ nsThreadPoolNaming::SetThreadPoolName(const nsACString& aPoolName,
 // nsAutoLowPriorityIO
 nsAutoLowPriorityIO::nsAutoLowPriorityIO()
 {
-#if defined(XP_WIN)
-  lowIOPrioritySet = IsVistaOrLater() &&
-                     SetThreadPriority(GetCurrentThread(),
-                                       THREAD_MODE_BACKGROUND_BEGIN);
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   oldPriority = getiopolicy_np(IOPOL_TYPE_DISK, IOPOL_SCOPE_THREAD);
   lowIOPrioritySet = oldPriority != -1 &&
                      setiopolicy_np(IOPOL_TYPE_DISK,
@@ -459,12 +451,7 @@ nsAutoLowPriorityIO::nsAutoLowPriorityIO()
 
 nsAutoLowPriorityIO::~nsAutoLowPriorityIO()
 {
-#if defined(XP_WIN)
-  if (MOZ_LIKELY(lowIOPrioritySet)) {
-    // On Windows the old thread priority is automatically restored
-    SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_END);
-  }
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   if (MOZ_LIKELY(lowIOPrioritySet)) {
     setiopolicy_np(IOPOL_TYPE_DISK, IOPOL_SCOPE_THREAD, oldPriority);
   }

@@ -72,10 +72,6 @@ static inline pid_t gettid()
 #endif
 #endif
 
-#ifdef XP_WIN
-#include <windows.h>
-#endif
-
 #define ASSERT(a) MOZ_ASSERT(a)
 
 bool moz_profiler_verbose();
@@ -106,7 +102,7 @@ bool moz_profiler_verbose();
 
 #endif
 
-#if defined(XP_MACOSX) || defined(XP_WIN) || defined(XP_LINUX)
+#if defined(XP_MACOSX) || defined(XP_LINUX)
 #define ENABLE_SPS_LEAF_DATA
 #endif
 
@@ -212,13 +208,7 @@ class Thread {
   // prctl().
   static const int kMaxThreadNameLength = 16;
 
-#ifdef XP_WIN
-  HANDLE thread_;
-  typedef DWORD tid_t;
-  tid_t thread_id_;
-#else
   typedef ::pid_t tid_t;
-#endif
 #if defined(XP_MACOSX)
   pthread_t thread_;
 #endif
@@ -366,10 +356,6 @@ class Sampler {
 
   // If we move the backtracing code into the platform files we won't
   // need to have these hacks
-#ifdef XP_WIN
-  // xxxehsan sucky hack :(
-  static uintptr_t GetThreadHandle(PlatformData*);
-#endif
 #ifdef XP_MACOSX
   static pthread_t GetProfiledThread(PlatformData*);
 #endif

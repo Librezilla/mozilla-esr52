@@ -11,9 +11,6 @@
 #include "nsContentUtils.h"
 #include "nsIBidiKeyboard.h"
 #include "nsTArray.h"
-#ifdef XP_WIN
-#include "WinUtils.h"
-#endif
 #if MOZ_WIDGET_GTK == 3
 #include "mozilla/WidgetUtilsGtk.h"
 #endif
@@ -105,9 +102,7 @@ namespace widget {
 uint32_t
 WidgetUtils::IsTouchDeviceSupportPresent()
 {
-#ifdef XP_WIN
-  return WinUtils::IsTouchDeviceSupportPresent();
-#elif MOZ_WIDGET_GTK == 3
+#if MOZ_WIDGET_GTK == 3
   return WidgetUtilsGTK::IsTouchDeviceSupportPresent();
 #else
   return 0;

@@ -2547,11 +2547,9 @@ enum InterruptMode {
 // "random" (except on Windows) or "counter".  If neither is used, the mode is
 // ModeEvent.
 static InterruptMode sInterruptMode = ModeEvent;
-#ifndef XP_WIN
 // Used for the "random" mode.  Controlled by the GECKO_REFLOW_INTERRUPT_SEED
 // env var.
 static uint32_t sInterruptSeed = 1;
-#endif
 // Used for the "counter" mode.  This is the number of unskipped interrupt
 // checks that have to happen before we interrupt.  Controlled by the
 // GECKO_REFLOW_INTERRUPT_FREQUENCY env var.
@@ -2572,7 +2570,6 @@ static void GetInterruptEnv()
 {
   char *ev = PR_GetEnv("GECKO_REFLOW_INTERRUPT_MODE");
   if (ev) {
-#ifndef XP_WIN
     if (PL_strcasecmp(ev, "random") == 0) {
       ev = PR_GetEnv("GECKO_REFLOW_INTERRUPT_SEED");
       if (ev) {
@@ -2581,7 +2578,6 @@ static void GetInterruptEnv()
       srandom(sInterruptSeed);
       sInterruptMode = ModeRandom;
     } else
-#endif
       if (PL_strcasecmp(ev, "counter") == 0) {
       ev = PR_GetEnv("GECKO_REFLOW_INTERRUPT_FREQUENCY");
       if (ev) {
@@ -2605,10 +2601,8 @@ bool
 nsPresContext::HavePendingInputEvent()
 {
   switch (sInterruptMode) {
-#ifndef XP_WIN
     case ModeRandom:
       return (random() & 1);
-#endif
     case ModeCounter:
       if (sInterruptCounter < sInterruptMaxCounter) {
         ++sInterruptCounter;

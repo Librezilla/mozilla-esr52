@@ -2218,33 +2218,6 @@ nsFocusManager::RaiseWindow(nsPIDOMWindowOuter* aWindow)
     return;
   }
 
-#if defined(XP_WIN)
-  // Windows would rather we focus the child widget, otherwise, the toplevel
-  // widget will always end up being focused. Fortunately, focusing the child
-  // widget will also have the effect of raising the window this widget is in.
-  // But on other platforms, we can just focus the toplevel widget to raise
-  // the window.
-  nsCOMPtr<nsPIDOMWindowOuter> childWindow;
-  GetFocusedDescendant(aWindow, true, getter_AddRefs(childWindow));
-  if (!childWindow)
-    childWindow = aWindow;
-
-  nsCOMPtr<nsIDocShell> docShell = aWindow->GetDocShell();
-  if (!docShell)
-    return;
-
-  nsCOMPtr<nsIPresShell> presShell = docShell->GetPresShell();
-  if (!presShell)
-    return;
-
-  nsViewManager* vm = presShell->GetViewManager();
-  if (vm) {
-    nsCOMPtr<nsIWidget> widget;
-    vm->GetRootWidget(getter_AddRefs(widget));
-    if (widget)
-      widget->SetFocus(true);
-  }
-#else
   nsCOMPtr<nsIBaseWindow> treeOwnerAsWin =
     do_QueryInterface(aWindow->GetDocShell());
   if (treeOwnerAsWin) {
@@ -2253,7 +2226,6 @@ nsFocusManager::RaiseWindow(nsPIDOMWindowOuter* aWindow)
     if (widget)
       widget->SetFocus(true);
   }
-#endif
 }
 
 void

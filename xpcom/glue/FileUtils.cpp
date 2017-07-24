@@ -30,8 +30,6 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#elif defined(XP_WIN)
-#include <windows.h>
 #endif
 
 // Functions that are not to be used in standalone glue must be implemented
@@ -43,20 +41,6 @@ mozilla::fallocate(PRFileDesc* aFD, int64_t aLength)
 {
 #if defined(HAVE_POSIX_FALLOCATE)
   return posix_fallocate(PR_FileDesc2NativeHandle(aFD), 0, aLength) == 0;
-#elif defined(XP_WIN)
-  int64_t oldpos = PR_Seek64(aFD, 0, PR_SEEK_CUR);
-  if (oldpos == -1) {
-    return false;
-  }
-
-  if (PR_Seek64(aFD, aLength, PR_SEEK_SET) != aLength) {
-    return false;
-  }
-
-  bool retval = (0 != SetEndOfFile((HANDLE)PR_FileDesc2NativeHandle(aFD)));
-
-  PR_Seek64(aFD, oldpos, PR_SEEK_SET);
-  return retval;
 #elif defined(XP_MACOSX)
   int fd = PR_FileDesc2NativeHandle(aFD);
   fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, aLength};
@@ -220,13 +204,7 @@ mozilla::WriteSysFile(
 void
 mozilla::ReadAheadLib(nsIFile* aFile)
 {
-#if defined(XP_WIN)
-  nsAutoString path;
-  if (!aFile || NS_FAILED(aFile->GetPath(path))) {
-    return;
-  }
-  ReadAheadLib(path.get());
-#elif defined(LINUX) && !defined(ANDROID) || defined(XP_MACOSX)
+#if defined(LINUX) && !defined(ANDROID) || defined(XP_MACOSX)
   nsAutoCString nativePath;
   if (!aFile || NS_FAILED(aFile->GetNativePath(nativePath))) {
     return;
@@ -239,13 +217,7 @@ void
 mozilla::ReadAheadFile(nsIFile* aFile, const size_t aOffset,
                        const size_t aCount, mozilla::filedesc_t* aOutFd)
 {
-#if defined(XP_WIN)
-  nsAutoString path;
-  if (!aFile || NS_FAILED(aFile->GetPath(path))) {
-    return;
-  }
-  ReadAheadFile(path.get(), aOffset, aCount, aOutFd);
-#elif defined(LINUX) && !defined(ANDROID) || defined(XP_MACOSX)
+#if defined(LINUX) && !defined(ANDROID) || defined(XP_MACOSX)
   nsAutoCString nativePath;
   if (!aFile || NS_FAILED(aFile->GetNativePath(nativePath))) {
     return;
@@ -336,53 +308,7 @@ void
 mozilla::ReadAhead(mozilla::filedesc_t aFd, const size_t aOffset,
                    const size_t aCount)
 {
-#if defined(XP_WIN)
-
-  LARGE_INTEGER fpOriginal;
-  LARGE_INTEGER fpOffset;
-#if defined(HAVE_LONG_LONG)
-  fpOffset.QuadPart = 0;
-#else
-  fpOffset.u.LowPart = 0;
-  fpOffset.u.HighPart = 0;
-#endif
-
-  // Get the current file pointer so that we can restore it. This isn't
-  // really necessary other than to provide the same semantics regarding the
-  // file pointer that other platforms do
-  if (!SetFilePointerEx(aFd, fpOffset, &fpOriginal, FILE_CURRENT)) {
-    return;
-  }
-
-  if (aOffset) {
-#if defined(HAVE_LONG_LONG)
-    fpOffset.QuadPart = static_cast<LONGLONG>(aOffset);
-#else
-    fpOffset.u.LowPart = aOffset;
-    fpOffset.u.HighPart = 0;
-#endif
-
-    if (!SetFilePointerEx(aFd, fpOffset, nullptr, FILE_BEGIN)) {
-      return;
-    }
-  }
-
-  char buf[64 * 1024];
-  size_t totalBytesRead = 0;
-  DWORD dwBytesRead;
-  // Do dummy reads to trigger kernel-side readhead via FILE_FLAG_SEQUENTIAL_SCAN.
-  // Abort when underfilling because during testing the buffers are read fully
-  // A buffer that's not keeping up would imply that readahead isn't working right
-  while (totalBytesRead < aCount &&
-         ReadFile(aFd, buf, sizeof(buf), &dwBytesRead, nullptr) &&
-         dwBytesRead == sizeof(buf)) {
-    totalBytesRead += dwBytesRead;
-  }
-
-  // Restore the file pointer
-  SetFilePointerEx(aFd, fpOriginal, nullptr, FILE_BEGIN);
-
-#elif defined(LINUX) && !defined(ANDROID)
+#if defined(LINUX) && !defined(ANDROID)
 
   readahead(aFd, aOffset, aCount);
 
@@ -403,9 +329,7 @@ mozilla::ReadAheadLib(mozilla::pathstr_t aFilePath)
   if (!aFilePath) {
     return;
   }
-#if defined(XP_WIN)
-  ReadAheadFile(aFilePath);
-#elif defined(LINUX) && !defined(ANDROID)
+#if defined(LINUX) && !defined(ANDROID)
   int fd = open(aFilePath, O_RDONLY);
   if (fd < 0) {
     return;
@@ -513,26 +437,7 @@ void
 mozilla::ReadAheadFile(mozilla::pathstr_t aFilePath, const size_t aOffset,
                        const size_t aCount, mozilla::filedesc_t* aOutFd)
 {
-#if defined(XP_WIN)
-  if (!aFilePath) {
-    if (aOutFd) {
-      *aOutFd = INVALID_HANDLE_VALUE;
-    }
-    return;
-  }
-  HANDLE fd = CreateFileW(aFilePath, GENERIC_READ, FILE_SHARE_READ, nullptr,
-                          OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
-  if (aOutFd) {
-    *aOutFd = fd;
-  }
-  if (fd == INVALID_HANDLE_VALUE) {
-    return;
-  }
-  ReadAhead(fd, aOffset, aCount);
-  if (!aOutFd) {
-    CloseHandle(fd);
-  }
-#elif defined(LINUX) && !defined(ANDROID) || defined(XP_MACOSX)
+#if defined(LINUX) && !defined(ANDROID) || defined(XP_MACOSX)
   if (!aFilePath) {
     if (aOutFd) {
       *aOutFd = -1;

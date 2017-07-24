@@ -19,9 +19,6 @@
 #if defined(MOZ_WIDGET_COCOA)
 #include <Carbon/Carbon.h>
 #include "nsILocalFileMac.h"
-#elif defined(XP_WIN)
-#include <windows.h>
-#include <shlobj.h>
 #elif defined(XP_UNIX)
 #include <unistd.h>
 #include <stdlib.h>
@@ -35,8 +32,6 @@
 #if defined(MOZ_WIDGET_COCOA)
 #define APP_REGISTRY_NAME NS_LITERAL_CSTRING("Application Registry")
 #define ESSENTIAL_FILES   NS_LITERAL_CSTRING("Essential Files")
-#elif defined(XP_WIN)
-#define APP_REGISTRY_NAME NS_LITERAL_CSTRING("registry.dat")
 #else
 #define APP_REGISTRY_NAME NS_LITERAL_CSTRING("appreg")
 #endif
@@ -304,17 +299,6 @@ nsAppFileLocationProvider::GetProductDirectory(nsIFile** aLocalFile,
   if (NS_FAILED(rv)) {
     return rv;
   }
-#elif defined(XP_WIN)
-  nsCOMPtr<nsIProperties> directoryService =
-    do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID, &rv);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-  const char* prop = aLocal ? NS_WIN_LOCAL_APPDATA_DIR : NS_WIN_APPDATA_DIR;
-  rv = directoryService->Get(prop, NS_GET_IID(nsIFile), getter_AddRefs(localDir));
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
 #elif defined(XP_UNIX)
   rv = NS_NewNativeLocalFile(nsDependentCString(PR_GetEnv("HOME")), true,
                              getter_AddRefs(localDir));
@@ -368,7 +352,7 @@ nsAppFileLocationProvider::GetDefaultUserProfileRoot(nsIFile** aLocalFile,
     return rv;
   }
 
-#if defined(MOZ_WIDGET_COCOA) || defined(XP_WIN)
+#if defined(MOZ_WIDGET_COCOA)
   // These 3 platforms share this part of the path - do them as one
   rv = localDir->AppendRelativeNativePath(NS_LITERAL_CSTRING("Profiles"));
   if (NS_FAILED(rv)) {
@@ -463,11 +447,7 @@ NS_IMPL_ISUPPORTS(nsAppDirectoryEnumerator, nsISimpleEnumerator)
 /* nsPathsDirectoryEnumerator and PATH_SEPARATOR
  * are not used on MacOS/X. */
 
-#if defined(XP_WIN) /* Win32 */
-#define PATH_SEPARATOR ';'
-#else
 #define PATH_SEPARATOR ':'
-#endif
 
 class nsPathsDirectoryEnumerator final
   : public nsAppDirectoryEnumerator

@@ -14,12 +14,7 @@
 #include "nsIFileStreams.h"
 #include "nsPrintfCString.h"
 
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#else
 #include <unistd.h>
-#endif
 
 #ifdef XP_UNIX
 #define DO_STATUS_REPORT 1

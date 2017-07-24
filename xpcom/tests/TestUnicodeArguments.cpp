@@ -4,49 +4,7 @@
  */
 
 static const int args_length = 4;
-#if defined(XP_WIN) && defined(_MSC_VER)
-#define _UNICODE
-#include <tchar.h>
-#include <stdio.h>
 
-static const _TCHAR* expected_utf16[args_length] = {
-  // Latin-1
-  L"M\xF8z\xEEll\xE5",
-  // Cyrillic
-  L"\x41C\x43E\x437\x438\x43B\x43B\x430",
-  // Bengali
-  L"\x9AE\x9CB\x99C\x9BF\x9B2\x9BE",
-  // Cuneiform
-  L"\xD808\xDE2C\xD808\xDF63\xD808\xDDB7"
-};
-
-int wmain(int argc, _TCHAR* argv[]) {
-  printf("argc = %d\n", argc);
-
-  if (argc != args_length + 1)
-    return -1;
-
-  for (int i = 1; i < argc; ++i) {
-    printf("expected[%d]: ", i - 1);
-    for (size_t j = 0; j < _tcslen(expected_utf16[i - 1]); ++j) {
-      printf("%x ", *(expected_utf16[i - 1] + j));
-    }
-    printf("\n");
-
-    printf("argv[%d]: ", i);
-    for (size_t j = 0; j < _tcslen(argv[i]); ++j) {
-      printf("%x ", *(argv[i] + j));
-    }
-    printf("\n");
-
-    if (_tcscmp(expected_utf16[i - 1], argv[i])) {
-      return i;
-    }
-  }
-
-  return 0;
-}
-#else
 #include <string.h>
 #include <stdio.h>
 
@@ -74,4 +32,3 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
-#endif

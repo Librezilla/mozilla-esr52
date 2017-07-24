@@ -259,31 +259,7 @@ ParseDriverVersion(const nsAString& aVersion, uint64_t *aNumericVersion)
 {
   *aNumericVersion = 0;
 
-#if defined(XP_WIN)
-  int a, b, c, d;
-  char aStr[8], bStr[8], cStr[8], dStr[8];
-  /* honestly, why do I even bother */
-  if (!SplitDriverVersion(NS_LossyConvertUTF16toASCII(aVersion).get(), aStr, bStr, cStr, dStr))
-    return false;
-
-  PadDriverDecimal(bStr);
-  PadDriverDecimal(cStr);
-  PadDriverDecimal(dStr);
-
-  a = atoi(aStr);
-  b = atoi(bStr);
-  c = atoi(cStr);
-  d = atoi(dStr);
-
-  if (a < 0 || a > 0xffff) return false;
-  if (b < 0 || b > 0xffff) return false;
-  if (c < 0 || c > 0xffff) return false;
-  if (d < 0 || d > 0xffff) return false;
-
-  *aNumericVersion = GFX_DRIVER_VERSION(a, b, c, d);
-  MOZ_ASSERT(*aNumericVersion != GfxDriverInfo::allDriverVersions);
-  return true;
-#elif defined(ANDROID)
+#if defined(ANDROID)
   // Can't use aVersion.ToInteger() because that's not compiled into our code
   // unless we have XPCOM_GLUE_AVOID_NSPR disabled.
   *aNumericVersion = atoi(NS_LossyConvertUTF16toASCII(aVersion).get());

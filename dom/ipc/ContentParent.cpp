@@ -33,9 +33,6 @@
 #include "IHistory.h"
 #include "imgIContainer.h"
 #include "mozIApplication.h"
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-#include "mozilla/a11y/AccessibleWrap.h"
-#endif
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StyleSheetInlines.h"
 #include "mozilla/DataStorage.h"
@@ -247,10 +244,6 @@ using namespace mozilla::system;
 #include "nsIProfileSaveEvent.h"
 #endif
 
-#ifdef XP_WIN
-#include "mozilla/widget/AudioSession.h"
-#endif
-
 #ifdef MOZ_CRASHREPORTER
 #include "nsThread.h"
 #endif
@@ -263,11 +256,6 @@ using namespace mozilla::system;
 #include "Benchmark.h"
 
 static NS_DEFINE_CID(kCClipboardCID, NS_CLIPBOARD_CID);
-
-#if defined(XP_WIN)
-// e10s forced enable pref, defined in nsAppRunner.cpp
-extern const char* kForceEnableE10sPref;
-#endif
 
 using base::ChildPrivileges;
 using base::KillProcess;
@@ -834,26 +822,6 @@ ContentParent::GetInitialProcessPriority(Element* aFrameElement)
   return PROCESS_PRIORITY_FOREGROUND;
 }
 
-#if defined(XP_WIN)
-extern const wchar_t* kPluginWidgetContentParentProperty;
-
-/*static*/ void
-ContentParent::SendAsyncUpdate(nsIWidget* aWidget)
-{
-  if (!aWidget || aWidget->Destroyed()) {
-    return;
-  }
-  // Fire off an async request to the plugin to paint its window
-  HWND hwnd = (HWND)aWidget->GetNativeData(NS_NATIVE_WINDOW);
-  NS_ASSERTION(hwnd, "Expected valid hwnd value.");
-  ContentParent* cp = reinterpret_cast<ContentParent*>(
-    ::GetPropW(hwnd, kPluginWidgetContentParentProperty));
-  if (cp && !cp->IsDestroyed()) {
-    Unused << cp->SendUpdateWindow((uintptr_t)hwnd);
-  }
-}
-#endif // defined(XP_WIN)
-
 bool
 ContentParent::PreallocatedProcessReady()
 {
@@ -1350,15 +1318,7 @@ ContentParent::Init()
   // If accessibility is running in chrome process then start it in content
   // process.
   if (nsIPresShell::IsAccessibilityActive()) {
-#if !defined(XP_WIN)
       Unused << SendActivateA11y(0);
-#else
-    // On Windows we currently only enable a11y in the content process
-    // for testing purposes.
-    if (Preferences::GetBool(kForceEnableE10sPref, false)) {
-      Unused << SendActivateA11y(a11y::AccessibleWrap::GetContentProcessIdFor(ChildID()));
-    }
-#endif
   }
 #endif
 
@@ -1933,10 +1893,6 @@ ContentParent::ActorDestroy(ActorDestroyReason why)
   }
 
   mBlobURLs.Clear();
-
-#if defined(XP_WIN32) && defined(ACCESSIBILITY)
-  a11y::AccessibleWrap::ReleaseContentProcessIdFor(ChildID());
-#endif
 }
 
 void
@@ -2145,13 +2101,6 @@ ContentParent::ContentParent(mozIApplication* aApp,
   // PID along with the warning.
   nsDebugImpl::SetMultiprocessMode("Parent");
 
-#if defined(XP_WIN)
-  // Request Windows message deferral behavior on our side of the PContent
-  // channel. Generally only applies to the situation where we get caught in
-  // a deadlock with the plugin process when sending CPOWs.
-  GetIPCChannel()->SetChannelFlags(MessageChannel::REQUIRE_DEFERRED_MESSAGE_PROTECTION);
-#endif
-
   NS_ASSERTION(NS_IsMainThread(), "Wrong thread!");
   ChildPrivileges privs = base::PRIVILEGES_DEFAULT;
   mSubprocess = new GeckoChildProcessHost(GeckoProcessType_Content, privs);
@@ -2312,16 +2261,6 @@ ContentParent::InitInternal(ProcessPriority aInitialPriority,
 #endif
   if (shouldSandbox && !SendSetProcessSandbox(brokerFd)) {
     KillHard("SandboxInitFailed");
-  }
-#endif
-#if defined(XP_WIN)
-  // Send the info needed to join the browser process's audio session.
-  nsID id;
-  nsString sessionName;
-  nsString iconPath;
-  if (NS_SUCCEEDED(mozilla::widget::GetAudioSessionData(id, sessionName,
-                                                        iconPath))) {
-    Unused << SendSetAudioSessionData(id, sessionName, iconPath);
   }
 #endif
 
@@ -2834,15 +2773,7 @@ ContentParent::Observe(nsISupports* aSubject,
     if (*aData == '1') {
       // Make sure accessibility is running in content process when
       // accessibility gets initiated in chrome process.
-#if !defined(XP_WIN)
       Unused << SendActivateA11y(0);
-#else
-      // On Windows we currently only enable a11y in the content process
-      // for testing purposes.
-      if (Preferences::GetBool(kForceEnableE10sPref, false)) {
-        Unused << SendActivateA11y(a11y::AccessibleWrap::GetContentProcessIdFor(ChildID()));
-      }
-#endif
     } else {
       // If possible, shut down accessibility in content process when
       // accessibility gets shutdown in chrome process.
@@ -5081,13 +5012,7 @@ ContentParent::RecvUnstoreAndBroadcastBlobURLUnregistration(const nsCString& aUR
 bool
 ContentParent::RecvGetA11yContentId(uint32_t* aContentId)
 {
-#if defined(XP_WIN32) && defined(ACCESSIBILITY)
-  *aContentId = a11y::AccessibleWrap::GetContentProcessIdFor(ChildID());
-  MOZ_ASSERT(*aContentId);
-  return true;
-#else
   return false;
-#endif
 }
 
 } // namespace dom

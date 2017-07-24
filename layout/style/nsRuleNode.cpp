@@ -3650,32 +3650,6 @@ nsRuleNode::SetFont(nsPresContext* aPresContext, nsStyleContext* aContext,
                                   AppUnitsPerDevPixelAtUnitFullZoom());
       //systemFont.langGroup = fontStyle.langGroup;
       systemFont.sizeAdjust = fontStyle.sizeAdjust;
-
-#ifdef XP_WIN
-      // XXXldb This platform-specific stuff should be in the
-      // LookAndFeel implementation, not here.
-      // XXXzw Should we even still *have* this code?  It looks to be making
-      // old, probably obsolete assumptions.
-
-      if (fontID == LookAndFeel::eFont_Field ||
-          fontID == LookAndFeel::eFont_Button ||
-          fontID == LookAndFeel::eFont_List) {
-        // As far as I can tell the system default fonts and sizes
-        // on MS-Windows for Buttons, Listboxes/Comboxes and Text Fields are
-        // all pre-determined and cannot be changed by either the control panel
-        // or programmatically.
-        // Fields (text fields)
-        // Button and Selects (listboxes/comboboxes)
-        //    We use whatever font is defined by the system. Which it appears
-        //    (and the assumption is) it is always a proportional font. Then we
-        //    always use 2 points smaller than what the browser has defined as
-        //    the default proportional font.
-        // Assumption: system defined font is proportional
-        systemFont.size =
-          std::max(defaultVariableFont->size -
-                 nsPresContext::CSSPointsToAppUnits(2), 0);
-      }
-#endif
     }
   }
 

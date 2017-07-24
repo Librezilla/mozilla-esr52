@@ -25,9 +25,6 @@
 #ifdef MOZ_FMP4
 #include "MP4Decoder.h"
 #endif
-#ifdef XP_WIN
-#include "mozilla/WindowsVersion.h"
-#endif
 #include "nsContentCID.h"
 #include "nsServiceManagerUtils.h"
 #include "mozilla/dom/MediaKeySystemAccess.h"

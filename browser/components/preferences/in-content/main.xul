@@ -100,11 +100,6 @@
     <preference id="browser.sessionstore.restore_on_demand"
                 name="browser.sessionstore.restore_on_demand"
                 type="bool"/>
-#ifdef XP_WIN
-    <preference id="browser.taskbar.previews.enable"
-                name="browser.taskbar.previews.enable"
-                type="bool"/>
-#endif
     <preference id="browser.ctrlTab.previews"
                 name="browser.ctrlTab.previews"
                 type="bool"/>
@@ -292,10 +287,4 @@
     <checkbox id="switchToNewTabs" label="&switchToNewTabs.label;"
               accesskey="&switchToNewTabs.accesskey;"
               preference="browser.tabs.loadInBackground"/>
-
-#ifdef XP_WIN
-    <checkbox id="showTabsInTaskbar" label="&showTabsInTaskbar.label;"
-              accesskey="&showTabsInTaskbar.accesskey;"
-              preference="browser.taskbar.previews.enable"/>
-#endif
 </groupbox>

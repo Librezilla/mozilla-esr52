@@ -738,9 +738,6 @@ InitCharGlobals()
   // per font-family tables for stretchy operators, in order of preference.
   // Do not include the Unicode table in this list.
   if (!glyphTableList->AddGlyphTable(NS_LITERAL_STRING("STIXGeneral"))
-#ifdef XP_WIN
-      || !glyphTableList->AddGlyphTable(NS_LITERAL_STRING("Symbol"))
-#endif
       ) {
     rv = NS_ERROR_OUT_OF_MEMORY;
   }

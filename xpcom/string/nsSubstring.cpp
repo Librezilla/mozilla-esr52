@@ -26,15 +26,8 @@
 #include "nsCOMPtr.h"
 
 #include "mozilla/IntegerPrintfMacros.h"
-#ifdef XP_WIN
-#include <windows.h>
-#include <process.h>
-#define getpid() _getpid()
-#define pthread_self() GetCurrentThreadId()
-#else
 #include <pthread.h>
 #include <unistd.h>
-#endif
 
 using mozilla::Atomic;
 

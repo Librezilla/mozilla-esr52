@@ -124,9 +124,6 @@ public:
 
   // PuppetWidgets don't have native data, as they're purely nonnative.
   virtual void* GetNativeData(uint32_t aDataType) override;
-#if defined(XP_WIN)
-  void SetNativeData(uint32_t aDataType, uintptr_t aVal) override;
-#endif
 
   // PuppetWidgets don't have any concept of titles.
   NS_IMETHOD SetTitle(const nsAString& aTitle) override

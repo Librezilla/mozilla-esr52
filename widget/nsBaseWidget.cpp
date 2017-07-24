@@ -90,7 +90,7 @@ static int32_t gNumWidgets;
 #include "nsCocoaFeatures.h"
 #endif
 
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
 static nsRefPtrHashtable<nsVoidPtrHashKey, nsIWidget>* sPluginWidgetList;
 #endif
 
@@ -177,7 +177,7 @@ nsBaseWidget::nsBaseWidget()
 , mUpdateCursor(true)
 , mUseAttachedEvents(false)
 , mIMEHasFocus(false)
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
+#if defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
 , mAccessibilityInUseFlag(false)
 #endif
 {
@@ -190,7 +190,7 @@ nsBaseWidget::nsBaseWidget()
   debug_RegisterPrefCallbacks();
 #endif
 
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   if (!sPluginWidgetList) {
     sPluginWidgetList = new nsRefPtrHashtable<nsVoidPtrHashKey, nsIWidget>();
   }
@@ -251,7 +251,7 @@ nsBaseWidget::Shutdown()
   RevokeTransactionIdAllocator();
   DestroyCompositor();
   FreeShutdownObserver();
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+#if defined(MOZ_WIDGET_GTK)
   if (sPluginWidgetList) {
     delete sPluginWidgetList;
     sPluginWidgetList = nullptr;
@@ -531,11 +531,6 @@ void nsBaseWidget::Destroy()
   if (parent) {
     parent->RemoveChild(this);
   }
-
-#if defined(XP_WIN)
-  // Allow our scroll capture container to be cleaned up, if we have one.
-  mScrollCaptureContainer = nullptr;
-#endif
 }
 
 
@@ -1889,7 +1884,7 @@ nsBaseWidget::ZoomToRect(const uint32_t& aPresShellId,
 
 #ifdef ACCESSIBILITY
 
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
+#if defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
 // defined in nsAppRunner.cpp
 extern const char* kAccessibilityLastRunDatePref;
 
@@ -1918,7 +1913,7 @@ nsBaseWidget::GetRootAccessible()
   // make sure it's not created at unsafe times.
   nsAccessibilityService* accService = GetOrCreateAccService();
   if (accService) {
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
+#if defined(XP_MACOSX) || defined(MOZ_WIDGET_GTK)
     if (!mAccessibilityInUseFlag) {
       mAccessibilityInUseFlag = true;
       uint32_t now = PRTimeToSeconds(PR_Now());
@@ -2035,14 +2030,6 @@ nsIWidget::OnLongTapTimerCallback(nsITimer* aTimer, void* aClosure)
 
   if ((self->mLongTapTouchPoint->mStamp + self->mLongTapTouchPoint->mDuration) >
       TimeStamp::Now()) {
-#ifdef XP_WIN
-    // Windows needs us to keep pumping feedback to the digitizer, so update
-    // the pointer id with the same position.
-    self->SynthesizeNativeTouchPoint(self->mLongTapTouchPoint->mPointerId,
-                                     TOUCH_CONTACT,
-                                     self->mLongTapTouchPoint->mPosition,
-                                     1.0, 90, nullptr);
-#endif
     return;
   }
 
@@ -2140,7 +2127,7 @@ nsBaseWidget::UpdateSynthesizedTouchState(MultiTouchInput* aState,
 void
 nsBaseWidget::RegisterPluginWindowForRemoteUpdates()
 {
-#if !defined(XP_WIN) && !defined(MOZ_WIDGET_GTK)
+#if !defined(MOZ_WIDGET_GTK)
   NS_NOTREACHED("nsBaseWidget::RegisterPluginWindowForRemoteUpdates not implemented!");
   return;
 #else
@@ -2158,7 +2145,7 @@ nsBaseWidget::RegisterPluginWindowForRemoteUpdates()
 void
 nsBaseWidget::UnregisterPluginWindowForRemoteUpdates()
 {
-#if !defined(XP_WIN) && !defined(MOZ_WIDGET_GTK)
+#if !defined(MOZ_WIDGET_GTK)
   NS_NOTREACHED("nsBaseWidget::UnregisterPluginWindowForRemoteUpdates not implemented!");
   return;
 #else
@@ -2177,7 +2164,7 @@ nsBaseWidget::UnregisterPluginWindowForRemoteUpdates()
 nsIWidget*
 nsIWidget::LookupRegisteredPluginWindow(uintptr_t aWindowID)
 {
-#if !defined(XP_WIN) && !defined(MOZ_WIDGET_GTK)
+#if !defined(MOZ_WIDGET_GTK)
   NS_NOTREACHED("nsBaseWidget::LookupRegisteredPluginWindow not implemented!");
   return nullptr;
 #else
@@ -2192,7 +2179,7 @@ void
 nsIWidget::UpdateRegisteredPluginWindowVisibility(uintptr_t aOwnerWidget,
                                                   nsTArray<uintptr_t>& aPluginIds)
 {
-#if !defined(XP_WIN) && !defined(MOZ_WIDGET_GTK)
+#if !defined(MOZ_WIDGET_GTK)
   NS_NOTREACHED("nsBaseWidget::UpdateRegisteredPluginWindowVisibility not implemented!");
   return;
 #else
@@ -2217,81 +2204,6 @@ nsIWidget::UpdateRegisteredPluginWindowVisibility(uintptr_t aOwnerWidget,
   }
 #endif
 }
-
-#if defined(XP_WIN)
-// static
-void
-nsIWidget::CaptureRegisteredPlugins(uintptr_t aOwnerWidget)
-{
-  MOZ_ASSERT(NS_IsMainThread());
-  MOZ_ASSERT(sPluginWidgetList);
-
-  // Our visible list is associated with a compositor which is associated with
-  // a specific top level window. We use the parent widget during iteration
-  // to skip the plugin widgets owned by other top level windows.
-  for (auto iter = sPluginWidgetList->Iter(); !iter.Done(); iter.Next()) {
-    const void* windowId = iter.Key();
-    nsIWidget* widget = iter.UserData();
-
-    MOZ_ASSERT(windowId);
-    MOZ_ASSERT(widget);
-
-    if (!widget->Destroyed() && widget->IsVisible()) {
-      if ((uintptr_t)widget->GetParent() == aOwnerWidget) {
-        widget->UpdateScrollCapture();
-      }
-    }
-  }
-}
-
-uint64_t
-nsBaseWidget::CreateScrollCaptureContainer()
-{
-  mScrollCaptureContainer =
-    LayerManager::CreateImageContainer(ImageContainer::ASYNCHRONOUS);
-  if (!mScrollCaptureContainer) {
-    NS_WARNING("Failed to create ImageContainer for widget image capture.");
-    return ImageContainer::sInvalidAsyncContainerId;
-  }
-
-  return mScrollCaptureContainer->GetAsyncContainerID();
-}
-
-void
-nsBaseWidget::UpdateScrollCapture()
-{
-  // Don't capture if no container or no size.
-  if (!mScrollCaptureContainer || mBounds.width <= 0 || mBounds.height <= 0) {
-    return;
-  }
-
-  // If the derived class cannot take a snapshot, for example due to clipping,
-  // then it is responsible for creating a fallback. If null is returned, this
-  // means that we want to keep the existing snapshot.
-  RefPtr<gfx::SourceSurface> snapshot = CreateScrollSnapshot();
-  if (!snapshot) {
-    return;
-  }
-
-  ImageContainer::NonOwningImage holder(new SourceSurfaceImage(snapshot));
-
-  AutoTArray<ImageContainer::NonOwningImage, 1> imageList;
-  imageList.AppendElement(holder);
-
-  mScrollCaptureContainer->SetCurrentImages(imageList);
-}
-
-void
-nsBaseWidget::DefaultFillScrollCapture(DrawTarget* aSnapshotDrawTarget)
-{
-  gfx::IntSize dtSize = aSnapshotDrawTarget->GetSize();
-  aSnapshotDrawTarget->FillRect(
-    gfx::Rect(0, 0, dtSize.width, dtSize.height),
-    gfx::ColorPattern(gfx::Color::FromABGR(kScrollCaptureFillColor)),
-    gfx::DrawOptions(1.f, gfx::CompositionOp::OP_SOURCE));
-  aSnapshotDrawTarget->Flush();
-}
-#endif
 
 NS_IMETHODIMP_(nsIWidget::NativeIMEContext)
 nsIWidget::GetNativeIMEContext()

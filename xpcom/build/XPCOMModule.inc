@@ -64,10 +64,6 @@
 
     COMPONENT(UUID_GENERATOR, nsUUIDGeneratorConstructor)
 
-#if defined(XP_WIN)
-    COMPONENT(WINDOWSREGKEY, nsWindowsRegKeyConstructor)
-#endif
-
 #if defined(MOZ_WIDGET_COCOA)
     COMPONENT(MACUTILSIMPL, nsMacUtilsImplConstructor)
 #endif

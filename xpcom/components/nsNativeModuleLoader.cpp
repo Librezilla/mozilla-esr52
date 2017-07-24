@@ -30,10 +30,6 @@
 #include "nsIFile.h"
 #include "mozilla/WindowsDllBlocklist.h"
 
-#ifdef XP_WIN
-#include <windows.h>
-#endif
-
 #ifdef XP_MACOSX
 #include <signal.h>
 #endif

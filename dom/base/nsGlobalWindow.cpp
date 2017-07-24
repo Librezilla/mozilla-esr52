@@ -255,12 +255,7 @@ class nsIScriptTimeoutHandler;
 #include <android/log.h>
 #endif
 
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#else
 #include <unistd.h> // for getpid()
-#endif
 
 static const char kStorageEnabled[] = "dom.storage.enabled";
 
@@ -6951,9 +6946,6 @@ nsGlobalWindow::Dump(const nsAString& aStr)
 
   if (cstr) {
     MOZ_LOG(nsContentUtils::DOMDumpLog(), LogLevel::Debug, ("[Window.Dump] %s", cstr));
-#ifdef XP_WIN
-    PrintToDebugger(cstr);
-#endif
 #ifdef ANDROID
     __android_log_write(ANDROID_LOG_INFO, "GeckoDump", cstr);
 #endif
@@ -10359,10 +10351,8 @@ nsGlobalWindow::SetFocusedNode(nsIContent* aNode,
       // be permanent for the window. On Windows, focus rings are only shown
       // when the FLAG_SHOWRING flag is used. On other platforms, focus rings
       // are only visible on some elements.
-#ifndef XP_WIN
       !(mFocusMethod & nsIFocusManager::FLAG_BYMOUSE) ||
       ShouldShowFocusRingIfFocusedByMouse(aNode) ||
-#endif
       aFocusMethod & nsIFocusManager::FLAG_SHOWRING) {
         mShowFocusRingForContent = true;
     }

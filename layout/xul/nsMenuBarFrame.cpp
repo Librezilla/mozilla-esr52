@@ -19,10 +19,6 @@
 #include "nsPIDOMWindow.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsCSSFrameConstructor.h"
-#ifdef XP_WIN
-#include "nsISound.h"
-#include "nsWidgetsCID.h"
-#endif
 #include "nsContentUtils.h"
 #include "nsUTF8Utils.h"
 #include "mozilla/TextEvents.h"
@@ -217,27 +213,6 @@ nsMenuBarFrame::FindMenuWithShortcut(nsIDOMKeyEvent* aKeyEvent)
   if (foundMenu) {
     return do_QueryFrame(foundMenu);
   }
-
-  // didn't find a matching menu item
-#ifdef XP_WIN
-  // behavior on Windows - this item is on the menu bar, beep and deactivate the menu bar
-  if (mIsActive) {
-    nsCOMPtr<nsISound> soundInterface = do_CreateInstance("@mozilla.org/sound;1");
-    if (soundInterface)
-      soundInterface->Beep();
-  }
-
-  nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
-  if (pm) {
-    nsIFrame* popup = pm->GetTopPopup(ePopupTypeAny);
-    if (popup)
-      pm->HidePopup(popup->GetContent(), true, true, true, false);
-  }
-
-  SetCurrentMenuItem(nullptr);
-  SetActive(false);
-
-#endif  // #ifdef XP_WIN
 
   return nullptr;
 }

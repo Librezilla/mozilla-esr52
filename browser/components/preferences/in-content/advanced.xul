@@ -22,12 +22,6 @@
   <preference id="accessibility.blockautorefresh"
               name="accessibility.blockautorefresh"
               type="bool"/>
-#ifdef XP_WIN
-  <preference id="ui.osk.enabled"
-              name="ui.osk.enabled"
-              type="bool"/>
-#endif
-
   <preference id="general.autoScroll"
               name="general.autoScroll"
               type="bool"/>
@@ -38,12 +32,6 @@
               name="layers.acceleration.disabled"
               type="bool"
               inverted="true"/>
-#ifdef XP_WIN
-  <preference id="gfx.direct2d.disabled"
-              name="gfx.direct2d.disabled"
-              type="bool"
-              inverted="true"/>
-#endif
   <preference id="layout.spellcheckDefault"
               name="layout.spellcheckDefault"
               type="int"/>
@@ -155,13 +143,6 @@
       <groupbox id="accessibilityGroup" align="start">
         <caption><label>&accessibility.label;</label></caption>
 
-#ifdef XP_WIN
-        <checkbox id="useOnScreenKeyboard"
-                  hidden="true"
-                  label="&useOnScreenKeyboard.label;"
-                  accesskey="&useOnScreenKeyboard.accesskey;"
-                  preference="ui.osk.enabled"/>
-#endif
         <checkbox id="useCursorNavigation"
                   label="&useCursorNavigation.label;"
                   accesskey="&useCursorNavigation.accesskey;"

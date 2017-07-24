@@ -2112,14 +2112,6 @@ bool
 nsXULPopupManager::HandleShortcutNavigation(nsIDOMKeyEvent* aKeyEvent,
                                             nsMenuPopupFrame* aFrame)
 {
-  // On Windows, don't check shortcuts when the accelerator key is down.
-#ifdef XP_WIN
-  WidgetInputEvent* evt = aKeyEvent->AsEvent()->WidgetEventPtr()->AsInputEvent();
-  if (evt && evt->IsAccel()) {
-    return false;
-  }
-#endif
-
   nsMenuChainItem* item = GetTopVisibleMenu();
   if (!aFrame && item)
     aFrame = item->Frame();

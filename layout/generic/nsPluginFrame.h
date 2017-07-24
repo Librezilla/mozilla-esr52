@@ -18,19 +18,6 @@
 #include "nsIReflowCallback.h"
 #include "Units.h"
 
-#ifdef XP_WIN
-#include <windows.h> // For HWND :(
-// Undo the windows.h damage
-#undef GetMessage
-#undef CreateEvent
-#undef GetClassName
-#undef GetBinaryType
-#undef RemoveDirectory
-#undef LoadIcon
-#undef LoadImage
-#undef GetObject
-#endif
-
 class nsPresContext;
 class nsRootPresContext;
 class nsDisplayPlugin;
@@ -146,9 +133,6 @@ public:
   // accessibility support
 #ifdef ACCESSIBILITY
   virtual mozilla::a11y::AccType AccessibleType() override;
-#ifdef XP_WIN
-  NS_IMETHOD GetPluginPort(HWND *aPort);
-#endif
 #endif
 
   //local methods

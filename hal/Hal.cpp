@@ -28,11 +28,6 @@
 #include "mozilla/dom/ScreenOrientation.h"
 #include "WindowIdentifier.h"
 
-#ifdef XP_WIN
-#include <process.h>
-#define getpid _getpid
-#endif
-
 using namespace mozilla::services;
 using namespace mozilla::dom;
 

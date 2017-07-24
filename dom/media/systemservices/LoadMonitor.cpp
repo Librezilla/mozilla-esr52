@@ -49,12 +49,6 @@
 #include <sys/sched.h>
 #endif
 
-#ifdef XP_WIN
-#include <pdh.h>
-#include <tchar.h>
-#pragma comment(lib, "pdh.lib")
-#endif
-
 // MOZ_LOG=LoadManager:5
 #undef LOG
 #undef LOG_ENABLED
@@ -167,109 +161,6 @@ void LoadMonitor::Shutdown()
   }
 }
 
-#ifdef XP_WIN
-static LPCTSTR TotalCounterPath = _T("\\Processor(_Total)\\% Processor Time");
-
-class WinProcMon
-{
-public:
-  WinProcMon():
-    mQuery(0), mCounter(0) {};
-  ~WinProcMon();
-  nsresult Init();
-  nsresult QuerySystemLoad(float* load_percent);
-  static const uint64_t TicksPerSec = 10000000; //100nsec tick (10MHz)
-private:
-  PDH_HQUERY mQuery;
-  PDH_HCOUNTER mCounter;
-};
-
-WinProcMon::~WinProcMon()
-{
-  if (mQuery != 0) {
-    PdhCloseQuery(mQuery);
-    mQuery = 0;
-  }
-}
-
-nsresult
-WinProcMon::Init()
-{
-  PDH_HQUERY query;
-  PDH_HCOUNTER counter;
-
-  // Get a query handle to the Performance Data Helper
-  PDH_STATUS status = PdhOpenQuery(
-                        NULL,      // No log file name: use real-time source
-                        0,         // zero out user data token: unsued
-                        &query);
-
-  if (status != ERROR_SUCCESS) {
-    LOG(("PdhOpenQuery error = %X", status));
-    return NS_ERROR_FAILURE;
-  }
-
-  // Add a pre-defined high performance counter to the query.
-  // This one is for the total CPU usage.
-  status = PdhAddCounter(query, TotalCounterPath, 0, &counter);
-
-  if (status != ERROR_SUCCESS) {
-    PdhCloseQuery(query);
-    LOG(("PdhAddCounter (_Total) error = %X", status));
-    return NS_ERROR_FAILURE;
-  }
-
-  // Need to make an initial query call to set up data capture.
-  status = PdhCollectQueryData(query);
-
-  if (status != ERROR_SUCCESS) {
-    PdhCloseQuery(query);
-    LOG(("PdhCollectQueryData (init) error = %X", status));
-    return NS_ERROR_FAILURE;
-  }
-
-  mQuery = query;
-  mCounter = counter;
-  return NS_OK;
-}
-
-nsresult WinProcMon::QuerySystemLoad(float* load_percent)
-{
-  *load_percent = 0;
-
-  if (mQuery == 0) {
-    return NS_ERROR_FAILURE;
-  }
-
-  // Update all counters associated with this query object.
-  PDH_STATUS status = PdhCollectQueryData(mQuery);
-
-  if (status != ERROR_SUCCESS) {
-    LOG(("PdhCollectQueryData error = %X", status));
-    return NS_ERROR_FAILURE;
-  }
-
-  PDH_FMT_COUNTERVALUE counter;
-  // maximum is 100% regardless of CPU core count.
-  status = PdhGetFormattedCounterValue(
-               mCounter,
-               PDH_FMT_DOUBLE,
-               (LPDWORD)NULL,
-               &counter);
-
-  if (ERROR_SUCCESS != status ||
-      // There are multiple success return values.
-      !IsSuccessSeverity(counter.CStatus)) {
-    LOG(("PdhGetFormattedCounterValue error"));
-    return NS_ERROR_FAILURE;
-  }
-
-  // The result is a percent value, reduce to match expected scale.
-  *load_percent = (float)(counter.doubleValue / 100.0f);
-  return NS_OK;
-}
-#endif
-
 // Use a non-generic class name, because otherwise we can get name collisions
 // with other classes in the codebase.  The normal way of dealing with that is
 // to put the class in an anonymous namespace, but this class is used as a
@@ -317,11 +208,6 @@ private:
                      uint64_t current_total_times,
                      uint64_t current_cpu_times,
                      RTCLoadStats* loadStat);
-#ifdef XP_WIN
-  WinProcMon mSysMon;
-  HANDLE mProcHandle;
-  int mNumProcessors;
-#endif
   RTCLoadStats mSystemLoad;
   RTCLoadStats mProcessLoad;
   uint64_t mTicksPerInterval;
@@ -331,16 +217,8 @@ private:
 nsresult RTCLoadInfo::Init(int aLoadUpdateInterval)
 {
   mLoadUpdateInterval = aLoadUpdateInterval;
-#ifdef XP_WIN
-  mTicksPerInterval = (WinProcMon::TicksPerSec /*Hz*/
-                       * mLoadUpdateInterval /*msec*/) / 1000 ;
-  mNumProcessors = PR_GetNumberOfProcessors();
-  mProcHandle = GetCurrentProcess();
-  return mSysMon.Init();
-#else
   mTicksPerInterval = (sysconf(_SC_CLK_TCK) * mLoadUpdateInterval) / 1000;
   return NS_OK;
-#endif
 }
 
 void RTCLoadInfo::UpdateCpuLoad(uint64_t ticks_per_interval,
@@ -367,11 +245,7 @@ void RTCLoadInfo::UpdateCpuLoad(uint64_t ticks_per_interval,
   const uint64_t cpu_diff = current_cpu_times - loadStat->mPrevCpuTimes;
   const uint64_t total_diff = current_total_times - loadStat->mPrevTotalTimes;
   if (total_diff > 0) {
-#ifdef XP_WIN
-    float result =  (float)cpu_diff / (float)total_diff/ (float)mNumProcessors;
-#else
     float result =  (float)cpu_diff / (float)total_diff;
-#endif
     loadStat->mPrevLoad = result;
   }
   loadStat->mPrevTotalTimes = current_total_times;
@@ -469,15 +343,6 @@ nsresult RTCLoadInfo::UpdateSystemLoad()
                 cpu_times,
                 &mSystemLoad);
   return NS_OK;
-#elif defined(XP_WIN)
-  float load;
-  nsresult rv = mSysMon.QuerySystemLoad(&load);
-
-  if (rv == NS_OK) {
-    mSystemLoad.mPrevLoad = load;
-  }
-
-  return rv;
 #else
   // Not implemented
   return NS_OK;
@@ -501,28 +366,6 @@ nsresult RTCLoadInfo::UpdateProcessLoad() {
        usage.ru_utime.tv_usec + usage.ru_stime.tv_usec;
 
   UpdateCpuLoad(PR_USEC_PER_MSEC * mLoadUpdateInterval,
-                total_times,
-                cpu_times,
-                &mProcessLoad);
-#elif defined(XP_WIN)
-  FILETIME clk_time, sys_time, user_time;
-  uint64_t total_times, cpu_times;
-
-  GetSystemTimeAsFileTime(&clk_time);
-  total_times = (((uint64_t)clk_time.dwHighDateTime) << 32)
-                + (uint64_t)clk_time.dwLowDateTime;
-  BOOL ok = GetProcessTimes(mProcHandle, &clk_time, &clk_time, &sys_time, &user_time);
-
-  if (ok == 0) {
-    return NS_ERROR_FAILURE;
-  }
-
-  cpu_times = (((uint64_t)sys_time.dwHighDateTime
-                + (uint64_t)user_time.dwHighDateTime) << 32)
-              + (uint64_t)sys_time.dwLowDateTime
-              + (uint64_t)user_time.dwLowDateTime;
-
-  UpdateCpuLoad(mTicksPerInterval,
                 total_times,
                 cpu_times,
                 &mProcessLoad);

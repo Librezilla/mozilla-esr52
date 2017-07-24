@@ -17,14 +17,6 @@
  * implement things like blocking on vsync.
  */
 
-#ifdef XP_WIN
-#include <windows.h>
-// mmsystem isn't part of WIN32_LEAN_AND_MEAN, so we have
-// to manually include it
-#include <mmsystem.h>
-#include "WinUtils.h"
-#endif
-
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/AutoRestore.h"
 #include "mozilla/IntegerRange.h"
@@ -888,12 +880,6 @@ NS_IMPL_ISUPPORTS(VsyncChildCreateCallback, nsIIPCBackgroundChildCreateCallback)
 static RefreshDriverTimer* sRegularRateTimer;
 static InactiveRefreshDriverTimer* sThrottledRateTimer;
 
-#ifdef XP_WIN
-static int32_t sHighPrecisionTimerRequests = 0;
-// a bare pointer to avoid introducing a static constructor
-static nsITimer *sDisableHighPrecisionTimersTimer = nullptr;
-#endif
-
 static void
 CreateContentVsyncRefreshTimer(void*)
 {
@@ -973,16 +959,6 @@ nsRefreshDriver::Shutdown()
 
   sRegularRateTimer = nullptr;
   sThrottledRateTimer = nullptr;
-
-#ifdef XP_WIN
-  if (sDisableHighPrecisionTimersTimer) {
-    sDisableHighPrecisionTimersTimer->Cancel();
-    NS_RELEASE(sDisableHighPrecisionTimersTimer);
-    timeEndPeriod(1);
-  } else if (sHighPrecisionTimerRequests) {
-    timeEndPeriod(1);
-  }
-#endif
 }
 
 /* static */ int32_t
@@ -1345,15 +1321,6 @@ nsRefreshDriver::StopTimer()
   }
 }
 
-#ifdef XP_WIN
-static void
-DisableHighPrecisionTimersCallback(nsITimer *aTimer, void *aClosure)
-{
-  timeEndPeriod(1);
-  NS_RELEASE(sDisableHighPrecisionTimersTimer);
-}
-#endif
-
 void
 nsRefreshDriver::ConfigureHighPrecision()
 {
@@ -1377,43 +1344,9 @@ nsRefreshDriver::SetHighPrecisionTimersEnabled(bool aEnable)
 
   if (aEnable) {
     NS_ASSERTION(!mRequestedHighPrecision, "SetHighPrecisionTimersEnabled(true) called when already requested!");
-#ifdef XP_WIN
-    if (++sHighPrecisionTimerRequests == 1) {
-      // If we had a timer scheduled to disable it, that means that it's already
-      // enabled; just cancel the timer.  Otherwise, really enable it.
-      if (sDisableHighPrecisionTimersTimer) {
-        sDisableHighPrecisionTimersTimer->Cancel();
-        NS_RELEASE(sDisableHighPrecisionTimersTimer);
-      } else {
-        timeBeginPeriod(1);
-      }
-    }
-#endif
     mRequestedHighPrecision = true;
   } else {
     NS_ASSERTION(mRequestedHighPrecision, "SetHighPrecisionTimersEnabled(false) called when not requested!");
-#ifdef XP_WIN
-    if (--sHighPrecisionTimerRequests == 0) {
-      // Don't jerk us around between high precision and low precision
-      // timers; instead, only allow leaving high precision timers
-      // after 90 seconds.  This is arbitrary, but hopefully good
-      // enough.
-      NS_ASSERTION(!sDisableHighPrecisionTimersTimer, "We shouldn't have an outstanding disable-high-precision timer !");
-
-      nsCOMPtr<nsITimer> timer = do_CreateInstance(NS_TIMER_CONTRACTID);
-      if (timer) {
-        timer.forget(&sDisableHighPrecisionTimersTimer);
-        sDisableHighPrecisionTimersTimer->InitWithFuncCallback(DisableHighPrecisionTimersCallback,
-                                                               nullptr,
-                                                               90 * 1000,
-                                                               nsITimer::TYPE_ONE_SHOT);
-      } else {
-        // might happen if we're shutting down XPCOM; just drop the time period down
-        // immediately
-        timeEndPeriod(1);
-      }
-    }
-#endif
     mRequestedHighPrecision = false;
   }
 }

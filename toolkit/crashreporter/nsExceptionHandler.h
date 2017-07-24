@@ -13,13 +13,6 @@
 #include "nsError.h"
 #include "nsStringGlue.h"
 
-#if defined(XP_WIN32)
-#ifdef WIN32_LEAN_AND_MEAN
-#undef WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#endif
-
 #if defined(XP_MACOSX)
 #include <mach/mach.h>
 #endif
@@ -117,9 +110,6 @@ bool AppendExtraData(nsIFile* extraFile, const AnnotationTable& data);
 void RenameAdditionalHangMinidump(nsIFile* aDumpFile, const nsIFile* aOwnerDumpFile,
                                   const nsACString& aDumpFileProcessType);
 
-#ifdef XP_WIN32
-  nsresult WriteMinidumpForException(EXCEPTION_POINTERS* aExceptionInfo);
-#endif
 #ifdef XP_LINUX
   bool WriteMinidumpForSigInfo(int signo, siginfo_t* info, void* uc);
 #endif
@@ -156,10 +146,7 @@ bool TakeMinidumpForChild(uint32_t childPid,
                           nsIFile** dump,
                           uint32_t* aSequence = nullptr);
 
-#if defined(XP_WIN)
-typedef HANDLE ProcessHandle;
-typedef DWORD ThreadId;
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 typedef task_t ProcessHandle;
 typedef mach_port_t ThreadId;
 #else
@@ -210,7 +197,7 @@ bool CreateAdditionalChildMinidump(ProcessHandle childPid,
                                    nsIFile* parentMinidump,
                                    const nsACString& name);
 
-#  if defined(XP_WIN32) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 // Parent-side API for children
 const char* GetChildNotificationPipe();
 

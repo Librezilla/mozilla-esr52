@@ -267,23 +267,6 @@ toolbar[customizing] > .overflow-button {
 }
 %endif
 
-%ifdef XP_WIN
-#main-window[sizemode="maximized"] #titlebar-buttonbox {
-  -moz-appearance: -moz-window-button-box-maximized;
-}
-
-#main-window[tabletmode] #titlebar-min,
-#main-window[tabletmode] #titlebar-max {
-  display: none !important;
-}
-
-#main-window[tabsintitlebar] #TabsToolbar,
-#main-window[tabsintitlebar] #toolbar-menubar,
-#main-window[tabsintitlebar] #navigator-toolbox > toolbar:-moz-lwtheme {
-  -moz-window-dragging: drag;
-}
-%endif
-
 %endif
 
 #main-window[inFullscreen][inDOMFullscreen] #navigator-toolbox,

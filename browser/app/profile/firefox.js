@@ -542,19 +542,11 @@ pref("browser.gesture.pinch.threshold", 150);
 pref("browser.gesture.pinch.latched", false);
 pref("browser.gesture.pinch.threshold", 25);
 #endif
-#ifdef XP_WIN
-// Enabled for touch input display zoom.
-pref("browser.gesture.pinch.out", "cmd_fullZoomEnlarge");
-pref("browser.gesture.pinch.in", "cmd_fullZoomReduce");
-pref("browser.gesture.pinch.out.shift", "cmd_fullZoomReset");
-pref("browser.gesture.pinch.in.shift", "cmd_fullZoomReset");
-#else
 // Disabled by default due to issues with track pad input.
 pref("browser.gesture.pinch.out", "");
 pref("browser.gesture.pinch.in", "");
 pref("browser.gesture.pinch.out.shift", "");
 pref("browser.gesture.pinch.in.shift", "");
-#endif
 pref("browser.gesture.twist.latched", false);
 pref("browser.gesture.twist.threshold", 0);
 pref("browser.gesture.twist.right", "cmd_gestureRotateRight");
@@ -606,18 +598,12 @@ pref("network.protocol-handler.external.mailto", true); // for mail
 pref("network.protocol-handler.external.news", true);   // for news
 pref("network.protocol-handler.external.snews", true);  // for secure news
 pref("network.protocol-handler.external.nntp", true);   // also news
-#ifdef XP_WIN
-pref("network.protocol-handler.external.ms-windows-store", true);
-#endif
 
 // ...without warning dialogs
 pref("network.protocol-handler.warn-external.mailto", false);
 pref("network.protocol-handler.warn-external.news", false);
 pref("network.protocol-handler.warn-external.snews", false);
 pref("network.protocol-handler.warn-external.nntp", false);
-#ifdef XP_WIN
-pref("network.protocol-handler.warn-external.ms-windows-store", false);
-#endif
 
 // By default, all protocol handlers are exposed.  This means that
 // the browser will respond to openURL commands for all URL types.
@@ -664,11 +650,7 @@ pref("browser.preferences.animateFadeIn", true);
 pref("browser.preferences.animateFadeIn", false);
 #endif
 
-#ifdef XP_WIN
-pref("browser.preferences.instantApply", false);
-#else
 pref("browser.preferences.instantApply", true);
-#endif
 
 pref("browser.download.show_plugins_in_list", true);
 pref("browser.download.hide_plugins_without_extensions", true);
@@ -931,51 +913,6 @@ pref("dom.ipc.shims.enabledWarnings", false);
 pref("browser.tabs.remote.autostart", false);
 pref("browser.tabs.remote.desktopbehavior", true);
 
-#if defined(XP_WIN) && defined(MOZ_SANDBOX)
-// When this pref is true the Windows process sandbox will set up dummy
-// interceptions and log to the browser console when calls fail in the sandboxed
-// process and also if they are subsequently allowed by the broker process.
-// This will require a restart.
-pref("security.sandbox.windows.log", false);
-
-// Controls whether and how the Windows NPAPI plugin process is sandboxed.
-// To get a different setting for a particular plugin replace "default", with
-// the plugin's nice file name, see: nsPluginTag::GetNiceFileName.
-// On windows these levels are:
-// 0 - no sandbox
-// 1 - sandbox with USER_NON_ADMIN access token level
-// 2 - a more strict sandbox, which might cause functionality issues. This now
-//     includes running at low integrity.
-// 3 - the strongest settings we seem to be able to use without breaking
-//     everything, but will probably cause some functionality restrictions
-pref("dom.ipc.plugins.sandbox-level.default", 0);
-#if defined(_AMD64_)
-// The lines in PluginModuleParent.cpp should be changed in line with this.
-pref("dom.ipc.plugins.sandbox-level.flash", 2);
-#else
-pref("dom.ipc.plugins.sandbox-level.flash", 0);
-#endif
-
-#if defined(MOZ_CONTENT_SANDBOX)
-// This controls the strength of the Windows content process sandbox for testing
-// purposes. This will require a restart.
-// On windows these levels are:
-// See - security/sandbox/win/src/sandboxbroker/sandboxBroker.cpp
-// SetSecurityLevelForContentProcess() for what the different settings mean.
-#if defined(NIGHTLY_BUILD)
-pref("security.sandbox.content.level", 2);
-#else
-pref("security.sandbox.content.level", 1);
-#endif
-
-// This controls the depth of stack trace that is logged when Windows sandbox
-// logging is turned on.  This is only currently available for the content
-// process because the only other sandbox (for GMP) has too strict a policy to
-// allow stack tracing.  This does not require a restart to take effect.
-pref("security.sandbox.windows.log.stackTraceDepth", 0);
-#endif
-#endif
-
 #if defined(XP_MACOSX) && defined(MOZ_SANDBOX) && defined(MOZ_CONTENT_SANDBOX)
 // This pref is discussed in bug 1083344, the naming is inspired from its
 // Windows counterpart, but on Mac it's an integer which means:
@@ -1016,7 +953,7 @@ pref("security.sandbox.content.level", 1);
 pref("security.sandbox.content.level", 2);
 #endif
 
-#if defined(XP_MACOSX) || defined(XP_WIN)
+#if defined(XP_MACOSX)
 #if defined(MOZ_SANDBOX) && defined(MOZ_CONTENT_SANDBOX)
 // ID (a UUID when set by gecko) that is used to form the name of a
 // sandbox-writable temporary directory to be used by content processes
@@ -1034,18 +971,6 @@ pref("security.sandbox.content.tempDirSuffix", "");
 // See bug 621117.
 #ifdef XP_MACOSX
 pref("dom.ipc.plugins.nativeCursorSupport", true);
-#endif
-
-#ifdef XP_WIN
-pref("browser.taskbar.previews.enable", false);
-pref("browser.taskbar.previews.max", 20);
-pref("browser.taskbar.previews.cachetime", 5);
-pref("browser.taskbar.lists.enabled", true);
-pref("browser.taskbar.lists.frequent.enabled", true);
-pref("browser.taskbar.lists.recent.enabled", false);
-pref("browser.taskbar.lists.maxListItemCount", 7);
-pref("browser.taskbar.lists.tasks.enabled", true);
-pref("browser.taskbar.lists.refreshInSeconds", 120);
 #endif
 
 // The sync engines to use.
@@ -1261,10 +1186,6 @@ pref("geo.provider.use_corelocation", false);
 #else
 pref("geo.provider.use_corelocation", true);
 #endif
-#endif
-
-#ifdef XP_WIN
-pref("geo.provider.ms-windows-location", false);
 #endif
 
 #ifdef MOZ_WIDGET_GTK

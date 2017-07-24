@@ -44,11 +44,7 @@
         titlemodifier_privatebrowsing="&mainWindow.titlemodifier; &mainWindow.titlePrivateBrowsingSuffix;"
 #endif
 #ifdef CAN_DRAW_IN_TITLEBAR
-#ifdef XP_WIN
-        chromemargin="0,2,2,2"
-#else
         chromemargin="0,-1,-1,-1"
-#endif
         tabsintitlebar="true"
 #endif
         titlemenuseparator="&mainWindow.titlemodifiermenuseparator;"
@@ -178,9 +174,6 @@
     <menulist popuponly="true" id="ContentSelectDropdown" hidden="true">
       <menupopup rolluponmousewheel="true"
                  activateontab="true" position="after_start"
-#ifdef XP_WIN
-                 consumeoutsideclicks="false" ignorekeys="shortcuts"
-#endif
         />
     </menulist>
 
@@ -513,11 +506,6 @@
   <hbox id="titlebar-content">
     <spacer id="titlebar-spacer" flex="1"/>
     <hbox id="titlebar-buttonbox-container">
-#ifdef XP_WIN
-      <hbox id="private-browsing-indicator-titlebar">
-        <hbox class="private-browsing-indicator"/>
-      </hbox>
-#endif
       <hbox id="titlebar-buttonbox">
         <toolbarbutton class="titlebar-button" id="titlebar-min" oncommand="window.minimize();"/>
         <toolbarbutton class="titlebar-button" id="titlebar-max" oncommand="onTitlebarMaxClick();"/>
@@ -1118,11 +1106,6 @@
       <svg:path d="M -11,-5 a 16 16 0 0 1 0,34 l 10000,0 l 0,-34 l -10000,0 z"/>
 #endif
     </svg:clipPath>
-#ifdef XP_WIN
-    <svg:clipPath id="urlbar-back-button-clip-path-win10">
-      <svg:path d="M -6,-2 l 0,1 a 15 15 0 0,1 0,30 l 0,1 l 10000,0 l 0,-32 l -10000,0 z" />
-    </svg:clipPath>
-#endif
   </svg:svg>
 
 </vbox>

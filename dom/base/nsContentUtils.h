@@ -9,10 +9,6 @@
 #ifndef nsContentUtils_h___
 #define nsContentUtils_h___
 
-#if defined(XP_WIN)
-#include <float.h>
-#endif
-
 #if defined(SOLARIS)
 #include <ieeefp.h>
 #endif
@@ -37,11 +33,6 @@
 #include "nsIContentPolicy.h"
 #include "nsIDocument.h"
 #include "nsPIDOMWindow.h"
-
-#if defined(XP_WIN)
-// Undefine LoadImage to prevent naming conflict with Windows.
-#undef LoadImage
-#endif
 
 class imgICache;
 class imgIContainer;

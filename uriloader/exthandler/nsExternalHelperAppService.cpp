@@ -95,10 +95,6 @@
 #include "nsIDocShellTreeItem.h"
 #include "ExternalHelperAppChild.h"
 
-#ifdef XP_WIN
-#include "nsWindowsHelpers.h"
-#endif
-
 #ifdef MOZ_WIDGET_ANDROID
 #include "FennecJNIWrappers.h"
 #endif
@@ -1747,34 +1743,6 @@ NS_IMETHODIMP nsExternalAppHandler::OnStartRequest(nsIRequest *request, nsISuppo
   {
 
     // We need to do the save/open immediately, then.
-#ifdef XP_WIN
-    /* We need to see whether the file we've got here could be
-     * executable.  If it could, we had better not try to open it!
-     * We can skip this check, though, if we have a setting to open in a
-     * helper app.
-     * This code mirrors the code in
-     * nsExternalAppHandler::LaunchWithApplication so that what we
-     * test here is as close as possible to what will really be
-     * happening if we decide to execute
-     */
-    nsCOMPtr<nsIHandlerApp> prefApp;
-    mMimeInfo->GetPreferredApplicationHandler(getter_AddRefs(prefApp));
-    if (action != nsIMIMEInfo::useHelperApp || !prefApp) {
-      nsCOMPtr<nsIFile> fileToTest;
-      GetTargetFile(getter_AddRefs(fileToTest));
-      if (fileToTest) {
-        bool isExecutable;
-        rv = fileToTest->IsExecutable(&isExecutable);
-        if (NS_FAILED(rv) || isExecutable) {  // checking NS_FAILED, because paranoia is good
-          action = nsIMIMEInfo::saveToDisk;
-        }
-      } else {   // Paranoia is good here too, though this really should not happen
-        NS_WARNING("GetDownloadInfo returned a null file after the temp file has been set up! ");
-        action = nsIMIMEInfo::saveToDisk;
-      }
-    }
-
-#endif
     if (action == nsIMIMEInfo::useHelperApp ||
         action == nsIMIMEInfo::useSystemDefault) {
         rv = LaunchWithApplication(nullptr, false);
@@ -2420,11 +2388,7 @@ NS_IMETHODIMP nsExternalAppHandler::LaunchWithApplication(nsIFile * aApplication
     mSuggestedFileName = mTempLeafName;
   }
 
-#ifdef XP_WIN
-  fileToUse->Append(mSuggestedFileName + mTempFileExtension);
-#else
   fileToUse->Append(mSuggestedFileName);  
-#endif
 
   nsresult rv = fileToUse->CreateUnique(nsIFile::NORMAL_FILE_TYPE, 0600);
   if(NS_SUCCEEDED(rv)) {
@@ -2636,16 +2600,6 @@ NS_IMETHODIMP nsExternalHelperAppService::GetFromTypeAndExtension(const nsACStri
   // (3) No match yet. Ask extras.
   if (!found) {
     rv = NS_ERROR_FAILURE;
-#ifdef XP_WIN
-    /* XXX Gross hack to wallpaper over the most common Win32
-     * extension issues caused by the fix for bug 116938.  See bug
-     * 120327, comment 271 for why this is needed.  Not even sure we
-     * want to remove this once we have fixed all this stuff to work
-     * right; any info we get from extras on this type is pretty much
-     * useless....
-     */
-    if (!typeToUse.Equals(APPLICATION_OCTET_STREAM, nsCaseInsensitiveCStringComparator()))
-#endif
       rv = FillMIMEInfoForMimeTypeFromExtras(typeToUse, *_retval);
     LOG(("Searched extras (by type), rv 0x%08X\n", rv));
     // If that didn't work out, try file extension from extras

@@ -12,10 +12,6 @@
 #ifdef MOZ_FMP4
 #include "MP4Decoder.h"
 #endif
-#ifdef XP_WIN
-#include "mozilla/WindowsVersion.h"
-#include "WMFDecoderModule.h"
-#endif
 #include "nsContentCID.h"
 #include "nsServiceManagerUtils.h"
 #include "mozIGeckoMediaPluginService.h"
@@ -140,26 +136,12 @@ MediaKeySystemAccess::GetKeySystemStatus(const nsAString& aKeySystem,
         aOutMessage = NS_LITERAL_CSTRING("Adobe EME disabled");
         return MediaKeySystemStatus::Cdm_disabled;
       }
-#ifdef XP_WIN
-      // Win Vista and later only.
-      if (!IsVistaOrLater()) {
-        aOutMessage = NS_LITERAL_CSTRING("Minimum Windows version (Vista) not met for Adobe EME");
-        return MediaKeySystemStatus::Cdm_not_supported;
-      }
-#endif
       return EnsureCDMInstalled(aKeySystem, aOutMessage);
     }
   }
 
   if (IsWidevineKeySystem(aKeySystem)) {
     if (Preferences::GetBool("media.gmp-widevinecdm.visible", false)) {
-#ifdef XP_WIN
-      // Win Vista and later only.
-      if (!IsVistaOrLater()) {
-        aOutMessage = NS_LITERAL_CSTRING("Minimum Windows version (Vista) not met for Widevine EME");
-        return MediaKeySystemStatus::Cdm_not_supported;
-      }
-#endif
       if (!Preferences::GetBool("media.gmp-widevinecdm.enabled", false)) {
         aOutMessage = NS_LITERAL_CSTRING("Widevine EME disabled");
         return MediaKeySystemStatus::Cdm_disabled;
@@ -297,22 +279,8 @@ GetSupportedKeySystems()
       if (MediaPrefs::ClearKeyPersistentLicenseEnabled()) {
         clearkey.mSessionTypes.AppendElement(MediaKeySessionType::Persistent_license);
       }
-#if defined(XP_WIN)
-      // Clearkey CDM uses WMF decoders on Windows.
-      if (WMFDecoderModule::HasAAC()) {
-        clearkey.mMP4.SetCanDecryptAndDecode(EME_CODEC_AAC);
-      } else {
-        clearkey.mMP4.SetCanDecrypt(EME_CODEC_AAC);
-      }
-      if (WMFDecoderModule::HasH264()) {
-        clearkey.mMP4.SetCanDecryptAndDecode(EME_CODEC_H264);
-      } else {
-        clearkey.mMP4.SetCanDecrypt(EME_CODEC_H264);
-      }
-#else
       clearkey.mMP4.SetCanDecrypt(EME_CODEC_AAC);
       clearkey.mMP4.SetCanDecrypt(EME_CODEC_H264);
-#endif
       clearkey.mWebM.SetCanDecrypt(EME_CODEC_VORBIS);
       clearkey.mWebM.SetCanDecrypt(EME_CODEC_OPUS);
       clearkey.mWebM.SetCanDecrypt(EME_CODEC_VP8);
@@ -335,16 +303,7 @@ GetSupportedKeySystems()
 #endif
       widevine.mAudioRobustness.AppendElement(NS_LITERAL_STRING("SW_SECURE_CRYPTO"));
       widevine.mVideoRobustness.AppendElement(NS_LITERAL_STRING("SW_SECURE_DECODE"));
-#if defined(XP_WIN)
-      // Widevine CDM doesn't include an AAC decoder. So if WMF can't
-      // decode AAC, and a codec wasn't specified, be conservative
-      // and reject the MediaKeys request, since our policy is to prevent
-      //  the Adobe GMP's unencrypted AAC decoding path being used to
-      // decode content decrypted by the Widevine CDM.
-      if (WMFDecoderModule::HasAAC()) {
-        widevine.mMP4.SetCanDecrypt(EME_CODEC_AAC);
-      }
-#elif !defined(MOZ_WIDGET_ANDROID)
+#if !defined(MOZ_WIDGET_ANDROID)
       widevine.mMP4.SetCanDecrypt(EME_CODEC_AAC);
 #endif
 
@@ -464,21 +423,6 @@ CanDecryptAndDecode(const nsString& aKeySystem,
     // Neither the GMP nor Gecko can both decrypt and decode. We don't
     // support this codec.
 
-#if defined(XP_WIN)
-    // Widevine CDM doesn't include an AAC decoder. So if WMF can't
-    // decode AAC, and a codec wasn't specified, be conservative
-    // and reject the MediaKeys request, since our policy is to prevent
-    //  the Adobe GMP's unencrypted AAC decoding path being used to
-    // decode content decrypted by the Widevine CDM.
-    if (codec == EME_CODEC_AAC &&
-        IsWidevineKeySystem(aKeySystem) &&
-        !WMFDecoderModule::HasAAC()) {
-      if (aDiagnostics) {
-        aDiagnostics->SetKeySystemIssue(
-          DecoderDoctorDiagnostics::eWidevineWithNoWMF);
-      }
-    }
-#endif
     return false;
   }
   return true;
@@ -1064,24 +1008,6 @@ GetSupportedConfig(const KeySystemConfig& aKeySystem,
   }
 
   // Note: Omitting steps 20-22. We don't ask for consent.
-
-#if defined(XP_WIN)
-  // Widevine CDM doesn't include an AAC decoder. So if WMF can't decode AAC,
-  // and a codec wasn't specified, be conservative and reject the MediaKeys request.
-  if (IsWidevineKeySystem(aKeySystem.mKeySystem) &&
-      (aCandidate.mAudioCapabilities.IsEmpty() ||
-       aCandidate.mVideoCapabilities.IsEmpty()) &&
-     !WMFDecoderModule::HasAAC()) {
-    if (aDiagnostics) {
-      aDiagnostics->SetKeySystemIssue(
-        DecoderDoctorDiagnostics::eWidevineWithNoWMF);
-    }
-    EME_LOG("MediaKeySystemConfiguration (label='%s') rejected; "
-            "WMF required for Widevine decoding, but it's not available.",
-            NS_ConvertUTF16toUTF8(aCandidate.mLabel).get());
-    return false;
-  }
-#endif
 
   // Return accumulated configuration.
   aOutConfig = config;

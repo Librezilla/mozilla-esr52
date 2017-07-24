@@ -10,16 +10,7 @@
 // Some plugins on Windows, notably Quake Live, implement NP_Initialize using
 // cdecl instead of the documented stdcall. In order to work around this,
 // we force the caller to use a frame pointer.
-#if defined(XP_WIN) && defined(_M_IX86)
-#include <malloc.h>
-
-// gNotOptimized exists so that the compiler will not optimize the alloca
-// below.
-static int gNotOptimized;
-#define CALLING_CONVENTION_HACK void* foo = _alloca(gNotOptimized);
-#else
 #define CALLING_CONVENTION_HACK
-#endif
 
 #ifdef MOZ_WIDGET_ANDROID
 #include "AndroidBridge.h"
@@ -164,7 +155,7 @@ PluginPRLibrary::NP_GetValue(void *future, NPPVariable aVariable,
 #endif
 }
 
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 nsresult
 PluginPRLibrary::NP_GetEntryPoints(NPPluginFuncs* pFuncs, NPError* error)
 {
@@ -280,7 +271,7 @@ PluginPRLibrary::IsRemoteDrawingCoreAnimation(NPP instance, bool *aDrawing)
   return NS_OK;
 }
 #endif
-#if defined(XP_MACOSX) || defined(XP_WIN)
+#if defined(XP_MACOSX)
 nsresult
 PluginPRLibrary::ContentsScaleFactorChanged(NPP instance, double aContentsScaleFactor)
 {
@@ -322,14 +313,6 @@ PluginPRLibrary::EndUpdateBackground(NPP instance, const nsIntRect&)
   NS_RUNTIMEABORT("This should never be called");
   return NS_ERROR_NOT_AVAILABLE;
 }
-
-#if defined(XP_WIN)
-nsresult
-PluginPRLibrary::GetScrollCaptureContainer(NPP aInstance, ImageContainer** aContainer)
-{
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-#endif
 
 nsresult
 PluginPRLibrary::HandledWindowedPluginKeyEvent(

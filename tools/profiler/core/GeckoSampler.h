@@ -169,9 +169,6 @@ protected:
   bool mAddMainThreadIO;
   bool mProfileMemory;
   bool mTaskTracer;
-#if defined(XP_WIN)
-  IntelPowerGadget* mIntelPowerGadget;
-#endif
 
 private:
   RefPtr<mozilla::ProfileGatherer> mGatherer;

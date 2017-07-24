@@ -4,10 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#if defined(XP_WIN)
-#include <windows.h>
-#include <objbase.h>
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 #include <CoreFoundation/CoreFoundation.h>
 #else
 #include <stdlib.h>
@@ -39,7 +36,7 @@ nsUUIDGenerator::Init()
   // We're a service, so we're guaranteed that Init() is not going
   // to be reentered while we're inside Init().
 
-#if !defined(XP_WIN) && !defined(XP_MACOSX) && !defined(HAVE_ARC4RANDOM)
+#if !defined(XP_MACOSX) && !defined(HAVE_ARC4RANDOM)
   /* initialize random number generator using NSPR random noise */
   unsigned int seed;
 
@@ -76,7 +73,7 @@ nsUUIDGenerator::Init()
   }
 #endif
 
-#endif /* non XP_WIN and non XP_MACOSX and non ARC4RANDOM */
+#endif /* non non XP_MACOSX and non ARC4RANDOM */
 
   return NS_OK;
 }
@@ -106,12 +103,7 @@ nsUUIDGenerator::GenerateUUIDInPlace(nsID* aId)
   // across the whole method.
   MutexAutoLock lock(mLock);
 
-#if defined(XP_WIN)
-  HRESULT hr = CoCreateGuid((GUID*)aId);
-  if (FAILED(hr)) {
-    return NS_ERROR_FAILURE;
-  }
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
   CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
   if (!uuid) {
     return NS_ERROR_FAILURE;

@@ -24,13 +24,7 @@
 // Android and Gonk
 #define CODE_MAP_ANDROID(aCPPCodeName, aNativeKey)
 
-#if defined(XP_WIN)
-#undef CODE_MAP_WIN
-// aNativeKey is scan code
-#define CODE_MAP_WIN(aCPPCodeName, aNativeKey) \
-  NS_NATIVE_KEY_TO_DOM_CODE_NAME_INDEX(aNativeKey, \
-                                       CODE_NAME_INDEX_##aCPPCodeName)
-#elif defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 #undef CODE_MAP_MAC
 // aNativeKey is key code starting with kVK_.
 #define CODE_MAP_MAC(aCPPCodeName, aNativeKey) \

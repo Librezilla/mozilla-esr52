@@ -38,10 +38,6 @@
 #include "mozilla/StyleBackendType.h"
 #include <algorithm>
 
-#ifdef XP_WIN
-#include "winuser.h"
-#endif
-
 #include "gfxPrefs.h"
 #include "gfxUserFontSet.h"
 #include "nsPresShell.h"
