@@ -595,19 +595,11 @@ int main(int argc, char** argv)
 
     // Hopefully the settings path exists in the environment. Try that before
     // asking the platform-specific code to guess.
-#ifdef XP_WIN32
-    static const wchar_t kDataDirKey[] = L"MOZ_CRASHREPORTER_DATA_DIRECTORY";
-    const wchar_t *settingsPath = _wgetenv(kDataDirKey);
-    if (settingsPath && *settingsPath) {
-      gSettingsPath = WideToUTF8(settingsPath);
-    }
-#else
     static const char kDataDirKey[] = "MOZ_CRASHREPORTER_DATA_DIRECTORY";
     const char *settingsPath = getenv(kDataDirKey);
     if (settingsPath && *settingsPath) {
       gSettingsPath = settingsPath;
     }
-#endif
     else {
       string product = queryParameters["ProductName"];
       string vendor = queryParameters["Vendor"];
@@ -623,19 +615,11 @@ int main(int argc, char** argv)
 
     OpenLogFile();
 
-#ifdef XP_WIN32
-    static const wchar_t kEventsDirKey[] = L"MOZ_CRASHREPORTER_EVENTS_DIRECTORY";
-    const wchar_t *eventsPath = _wgetenv(kEventsDirKey);
-    if (eventsPath && *eventsPath) {
-      gEventsPath = WideToUTF8(eventsPath);
-    }
-#else
     static const char kEventsDirKey[] = "MOZ_CRASHREPORTER_EVENTS_DIRECTORY";
     const char *eventsPath = getenv(kEventsDirKey);
     if (eventsPath && *eventsPath) {
       gEventsPath = eventsPath;
     }
-#endif
     else {
       gEventsPath.clear();
     }
