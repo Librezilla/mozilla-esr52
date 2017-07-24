@@ -24,15 +24,19 @@ public:
   MessageLoop* GMPMessageLoop();
 
   bool RecvPGMPAudioDecoderConstructor(PGMPAudioDecoderChild* aActor) override;
+#ifdef MOZ_EME_MODULES
   bool RecvPGMPDecryptorConstructor(PGMPDecryptorChild* aActor) override;
+#endif
   bool RecvPGMPVideoDecoderConstructor(PGMPVideoDecoderChild* aActor, const uint32_t& aDecryptorId) override;
   bool RecvPGMPVideoEncoderConstructor(PGMPVideoEncoderChild* aActor) override;
 
   PGMPAudioDecoderChild* AllocPGMPAudioDecoderChild() override;
   bool DeallocPGMPAudioDecoderChild(PGMPAudioDecoderChild* aActor) override;
 
+#ifdef MOZ_EME_MODULES
   PGMPDecryptorChild* AllocPGMPDecryptorChild() override;
   bool DeallocPGMPDecryptorChild(PGMPDecryptorChild* aActor) override;
+#endif
 
   PGMPVideoDecoderChild* AllocPGMPVideoDecoderChild(const uint32_t& aDecryptorId) override;
   bool DeallocPGMPVideoDecoderChild(PGMPVideoDecoderChild* aActor) override;

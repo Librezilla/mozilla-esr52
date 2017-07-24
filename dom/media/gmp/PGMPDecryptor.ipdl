@@ -16,7 +16,6 @@ namespace gmp {
 
 async protocol PGMPDecryptor
 {
-  manager PGMPContent;
 child:
 
   async Init(bool aDistinctiveIdentifierRequired,

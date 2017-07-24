@@ -85,11 +85,14 @@ public:
                                 const nsACString& aNodeId,
                                 UniquePtr<GetGMPAudioDecoderCallback>&& aCallback)
     override;
+
+#ifdef MOZ_EME_MODULES
   NS_IMETHOD GetGMPDecryptor(GMPCrashHelper* aHelper,
                              nsTArray<nsCString>* aTags,
                              const nsACString& aNodeId,
                              UniquePtr<GetGMPDecryptorCallback>&& aCallback)
     override;
+#endif
 
   // Helper for backwards compatibility with WebRTC/tests.
   NS_IMETHOD

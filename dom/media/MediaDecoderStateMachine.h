@@ -156,7 +156,9 @@ public:
   // Enumeration for the valid decoding states
   enum State {
     DECODER_STATE_DECODING_METADATA,
+#ifdef MOZ_EME_MODULES
     DECODER_STATE_WAIT_FOR_CDM,
+#endif
     DECODER_STATE_DORMANT,
     DECODER_STATE_DECODING_FIRSTFRAME,
     DECODER_STATE_DECODING,
@@ -261,7 +263,9 @@ public:
 private:
   class StateObject;
   class DecodeMetadataState;
+#ifdef MOZ_EME_MODULES
   class WaitForCDMState;
+#endif
   class DormantState;
   class DecodingFirstFrameState;
   class DecodingState;
@@ -765,10 +769,12 @@ private:
   // Playback will not start when audio is offloading.
   bool mAudioOffloading;
 
+#ifdef MOZ_EME_MODULES
   void OnCDMProxyReady(RefPtr<CDMProxy> aProxy);
   void OnCDMProxyNotReady();
   RefPtr<CDMProxy> mCDMProxy;
   MozPromiseRequestHolder<MediaDecoder::CDMProxyPromise> mCDMProxyPromise;
+#endif
 
 private:
   // The buffered range. Mirrored from the decoder thread.

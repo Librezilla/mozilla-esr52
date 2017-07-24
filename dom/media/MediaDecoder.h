@@ -8,7 +8,9 @@
 #define MediaDecoder_h_
 
 #include "mozilla/Atomics.h"
+#ifdef MOZ_EME_MODULES
 #include "mozilla/CDMProxy.h"
+#endif
 #include "mozilla/MozPromise.h"
 #include "mozilla/ReentrantMonitor.h"
 #include "mozilla/StateMirroring.h"
@@ -428,6 +430,7 @@ private:
 
   MediaDecoderOwner* GetOwner() const override;
 
+#ifdef MOZ_EME_MODULES
   typedef MozPromise<RefPtr<CDMProxy>, bool /* aIgnored */, /* IsExclusive = */ true> CDMProxyPromise;
 
   // Resolved when a CDMProxy is available and the capabilities are known or
@@ -435,6 +438,7 @@ private:
   RefPtr<CDMProxyPromise> RequestCDMProxy() const;
 
   void SetCDMProxy(CDMProxy* aProxy);
+#endif /* MOZ_EME_MODULES */
 
   void EnsureTelemetryReported();
 
@@ -591,8 +595,10 @@ private:
 
   RefPtr<ResourceCallback> mResourceCallback;
 
+#ifdef MOZ_EME_MODULES
   MozPromiseHolder<CDMProxyPromise> mCDMProxyPromiseHolder;
   RefPtr<CDMProxyPromise> mCDMProxyPromise;
+#endif /* MOZ_EME_MODULES */
 
 protected:
   // The promise resolving/rejection is queued as a "micro-task" which will be

@@ -14,7 +14,9 @@ namespace mozilla {
 namespace gmp {
 
 class GMPAudioDecoderParent;
+#ifdef MOZ_EME_MODULES
 class GMPDecryptorParent;
+#endif
 class GMPParent;
 class GMPVideoDecoderParent;
 class GMPVideoEncoderParent;
@@ -34,8 +36,10 @@ public:
   nsresult GetGMPVideoEncoder(GMPVideoEncoderParent** aGMPVE);
   void VideoEncoderDestroyed(GMPVideoEncoderParent* aEncoder);
 
+#ifdef MOZ_EME_MODULES
   nsresult GetGMPDecryptor(GMPDecryptorParent** aGMPKS);
   void DecryptorDestroyed(GMPDecryptorParent* aSession);
+#endif
 
   nsresult GetGMPAudioDecoder(GMPAudioDecoderParent** aGMPAD);
   void AudioDecoderDestroyed(GMPAudioDecoderParent* aDecoder);
@@ -73,8 +77,10 @@ private:
   PGMPVideoEncoderParent* AllocPGMPVideoEncoderParent() override;
   bool DeallocPGMPVideoEncoderParent(PGMPVideoEncoderParent* aActor) override;
 
+#ifdef MOZ_EME_MODULES
   PGMPDecryptorParent* AllocPGMPDecryptorParent() override;
   bool DeallocPGMPDecryptorParent(PGMPDecryptorParent* aActor) override;
+#endif
 
   PGMPAudioDecoderParent* AllocPGMPAudioDecoderParent() override;
   bool DeallocPGMPAudioDecoderParent(PGMPAudioDecoderParent* aActor) override;
@@ -89,7 +95,9 @@ private:
 
   nsTArray<RefPtr<GMPVideoDecoderParent>> mVideoDecoders;
   nsTArray<RefPtr<GMPVideoEncoderParent>> mVideoEncoders;
+#ifdef MOZ_EME_MODULES
   nsTArray<RefPtr<GMPDecryptorParent>> mDecryptors;
+#endif
   nsTArray<RefPtr<GMPAudioDecoderParent>> mAudioDecoders;
   nsCOMPtr<nsIThread> mGMPThread;
   RefPtr<GMPParent> mParent;

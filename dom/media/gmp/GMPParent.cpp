@@ -41,8 +41,10 @@ using CrashReporter::GetIDFromMinidump;
 #include "WMFDecoderModule.h"
 #endif
 
+#ifdef MOZ_EME_MODULES
 #include "mozilla/dom/WidevineCDMManifestBinding.h"
 #include "widevine-adapter/WidevineAdapter.h"
+#endif
 
 namespace mozilla {
 
@@ -66,7 +68,9 @@ GMPParent::GMPParent()
   , mDeleteProcessOnlyOnUnload(false)
   , mAbnormalShutdownInProgress(false)
   , mIsBlockingDeletion(false)
+#ifdef MOZ_EME_MODULES
   , mCanDecrypt(false)
+#endif
   , mGMPContentChildCount(0)
   , mAsyncShutdownRequired(false)
   , mAsyncShutdownInProgress(false)
@@ -888,6 +892,7 @@ GMPParent::ReadGMPInfoFile(nsIFile* aFile)
       }
     }
 
+#ifdef MOZ_EME_MODULES
     // We support the current GMPDecryptor version, and the previous.
     // We Adapt the previous to the current in the GMPContentChild.
     if (cap.mAPIName.EqualsLiteral(GMP_API_DECRYPTOR_BACKWARDS_COMPAT)) {
@@ -915,6 +920,7 @@ GMPParent::ReadGMPInfoFile(nsIFile* aFile)
       }
 #endif // XP_WIN
     }
+#endif /* MOZ_EME_MODULES */
 
     mCapabilities.AppendElement(Move(cap));
   }
@@ -943,7 +949,7 @@ RefPtr<GenericPromise>
 GMPParent::ParseChromiumManifest(nsString aJSON)
 {
   LOGD("%s: for '%s'", __FUNCTION__, NS_LossyConvertUTF16toASCII(aJSON).get());
-
+#ifdef MOZ_EME_MODULES
   MOZ_ASSERT(NS_IsMainThread());
   mozilla::dom::WidevineCDMManifest m;
   if (!m.Init(aJSON)) {
@@ -979,18 +985,25 @@ GMPParent::ParseChromiumManifest(nsString aJSON)
 #endif
 
   return GenericPromise::CreateAndResolve(true, __func__);
+#else
+  return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+#endif /* MOZ_EME_MODULES */
 }
 
 bool
 GMPParent::CanBeSharedCrossNodeIds() const
 {
   return !mAsyncShutdownInProgress &&
-         mNodeId.IsEmpty() &&
+         mNodeId.IsEmpty()
+#ifdef MOZ_EME_MODULES
+         &&
          // XXX bug 1159300 hack -- maybe remove after openh264 1.4
          // We don't want to use CDM decoders for non-encrypted playback
          // just yet; especially not for WebRTC. Don't allow CDMs to be used
          // without a node ID.
-         !mCanDecrypt;
+         !mCanDecrypt
+#endif
+        ;
 }
 
 bool

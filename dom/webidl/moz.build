@@ -286,15 +286,7 @@ WEBIDL_FILES = [
     'MediaDeviceInfo.webidl',
     'MediaDevices.webidl',
     'MediaElementAudioSourceNode.webidl',
-    'MediaEncryptedEvent.webidl',
     'MediaError.webidl',
-    'MediaKeyError.webidl',
-    'MediaKeyMessageEvent.webidl',
-    'MediaKeys.webidl',
-    'MediaKeySession.webidl',
-    'MediaKeysRequestStatus.webidl',
-    'MediaKeyStatusMap.webidl',
-    'MediaKeySystemAccess.webidl',
     'MediaList.webidl',
     'MediaQueryList.webidl',
     'MediaRecorder.webidl',
@@ -561,7 +553,6 @@ WEBIDL_FILES = [
     'WebGLRenderingContext.webidl',
     'WebKitCSSMatrix.webidl',
     'WheelEvent.webidl',
-    'WidevineCDMManifest.webidl',
     'WindowOrWorkerGlobalScope.webidl',
     'WindowRoot.webidl',
     'Worker.webidl',
@@ -586,6 +577,19 @@ WEBIDL_FILES = [
     'XULDocument.webidl',
     'XULElement.webidl',
 ]
+
+if CONFIG['MOZ_EME_MODULES']:
+    WEBIDL_FILES = [
+        'MediaEncryptedEvent.webidl',
+        'MediaKeyError.webidl',
+        'MediaKeyMessageEvent.webidl',
+        'MediaKeys.webidl',
+        'MediaKeySession.webidl',
+        'MediaKeysRequestStatus.webidl',
+        'MediaKeyStatusMap.webidl',
+        'MediaKeySystemAccess.webidl',
+        'WidevineCDMManifest.webidl',
+    ]
 
 if CONFIG['NECKO_PROTOCOL_websocket']:
     WEBIDL_FILES = [

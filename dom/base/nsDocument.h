@@ -1267,7 +1267,9 @@ public:
 
   js::ExpandoAndGeneration mExpandoAndGeneration;
 
+#ifdef MOZ_EME_MODULES
   bool ContainsEMEContent();
+#endif
 
   bool ContainsMSEContent();
 

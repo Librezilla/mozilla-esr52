@@ -50,8 +50,7 @@ interface HTMLMediaElement : HTMLElement {
   [Throws]
   void fastSeek(double time);
   readonly attribute unrestricted double duration;
-  [ChromeOnly]
-  readonly attribute boolean isEncrypted;
+
   // TODO: Bug 847376 - readonly attribute any startDate;
   readonly attribute boolean paused;
   [SetterThrows]
@@ -153,6 +152,7 @@ partial interface HTMLMediaElement {
   attribute EventHandler onmozinterruptend;
 };
 
+#ifdef MOZ_EME_MODULES
 // Encrypted Media Extensions
 partial interface HTMLMediaElement {
   [Pref="media.eme.apiVisible"]
@@ -168,6 +168,7 @@ partial interface HTMLMediaElement {
   [Pref="media.eme.apiVisible"]
   attribute EventHandler onwaitingforkey;
 };
+#endif /* MOZ_EME_MODULES */
 
 // This is just for testing
 partial interface HTMLMediaElement {

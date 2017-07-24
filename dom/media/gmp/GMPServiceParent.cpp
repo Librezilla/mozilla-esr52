@@ -22,7 +22,9 @@
 #include "nsNativeCharsetUtils.h"
 #include "nsIConsoleService.h"
 #include "mozilla/Unused.h"
+#ifdef MOZ_EME_MODULES
 #include "GMPDecryptorParent.h"
+#endif
 #include "GMPAudioDecoderParent.h"
 #include "nsComponentManagerUtils.h"
 #include "runnable_utils.h"

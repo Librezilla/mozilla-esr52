@@ -4329,6 +4329,7 @@ nsDocument::SetScopeObject(nsIGlobalObject* aGlobal)
   }
 }
 
+#if MOZ_EME_MODULES
 static void
 CheckIfContainsEMEContent(nsISupports* aSupports, void* aContainsEME)
 {
@@ -4352,6 +4353,7 @@ nsDocument::ContainsEMEContent()
                              static_cast<void*>(&containsEME));
   return containsEME;
 }
+#endif /* MOZ_EME_MODULES */
 
 static void
 CheckIfContainsMSEContent(nsISupports* aSupports, void* aContainsMSE)
@@ -8379,11 +8381,13 @@ nsDocument::CanSavePresentation(nsIRequest *aNewRequest)
   }
 #endif // MOZ_WEBRTC
 
+#ifdef MOZ_EME_MODULES
   // Don't save presentations for documents containing EME content, so that
   // CDMs reliably shutdown upon user navigation.
   if (ContainsEMEContent()) {
     return false;
   }
+#endif /* MOZ_EME_MODULES */
 
   // Don't save presentations for documents containing MSE content, to
   // reduce memory usage.

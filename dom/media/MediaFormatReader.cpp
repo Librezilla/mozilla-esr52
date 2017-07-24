@@ -4,7 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifdef MOZ_EME_MODULES
 #include "mozilla/CDMProxy.h"
+#endif
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/dom/HTMLMediaElement.h"
 #include "mozilla/Preferences.h"
@@ -345,10 +347,12 @@ MediaFormatReader::DecoderFactory::DoCreateDecoder(TrackType aTrack)
 
   if (!mOwner->mPlatform) {
     mOwner->mPlatform = new PDMFactory();
+#ifdef MOZ_EME_MODULES
     if (mOwner->IsEncrypted()) {
       MOZ_ASSERT(mOwner->mCDMProxy);
       mOwner->mPlatform->SetCDMProxy(mOwner->mCDMProxy);
     }
+#endif
   }
 
   switch (aTrack) {
@@ -577,6 +581,7 @@ MediaFormatReader::InitInternal()
   return NS_OK;
 }
 
+#ifdef MOZ_EME_MODULES
 class DispatchKeyNeededEvent : public Runnable {
 public:
   DispatchKeyNeededEvent(AbstractMediaDecoder* aDecoder,
@@ -620,6 +625,7 @@ MediaFormatReader::IsWaitingOnCDMResource() {
   MOZ_ASSERT(OnTaskQueue());
   return IsEncrypted() && !mCDMProxy;
 }
+#endif /* MOZ_EME_MODULES */
 
 RefPtr<MediaDecoderReader::MetadataPromise>
 MediaFormatReader::AsyncReadMetadata()
@@ -656,9 +662,10 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
   UniquePtr<MetadataTags> tags(MakeUnique<MetadataTags>());
 
   RefPtr<PDMFactory> platform;
-  if (!IsWaitingOnCDMResource()) {
+#ifdef MOZ_EME_MODULES
+  if (!IsWaitingOnCDMResource())
+#endif
     platform = new PDMFactory();
-  }
 
   // To decode, we need valid video and a place to put it.
   bool videoActive = !!mDemuxer->GetNumberTracks(TrackInfo::kVideoTrack) &&
@@ -723,6 +730,7 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
     }
   }
 
+#ifdef MOZ_EME_MODULES
   UniquePtr<EncryptionInfo> crypto = mDemuxer->GetCrypto();
   if (mDecoder && crypto && crypto->IsEncrypted()) {
     // Try and dispatch 'encrypted'. Won't go if ready state still HAVE_NOTHING.
@@ -732,6 +740,7 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
     }
     mInfo.mCrypto = *crypto;
   }
+#endif /* MOZ_EME_MODULES */
 
   int64_t videoDuration = HasVideo() ? mInfo.mVideo.mDuration : 0;
   int64_t audioDuration = HasAudio() ? mInfo.mAudio.mDuration : 0;
@@ -757,12 +766,14 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
   mMetadataPromise.Resolve(metadata, __func__);
 }
 
+#ifdef MOZ_EME_MODULES
 bool
 MediaFormatReader::IsEncrypted() const
 {
   return (HasAudio() && mInfo.mAudio.mCrypto.mValid) ||
          (HasVideo() && mInfo.mVideo.mCrypto.mValid);
 }
+#endif /* MOZ_EME_MODULES */
 
 void
 MediaFormatReader::OnDemuxerInitFailed(const MediaResult& aError)

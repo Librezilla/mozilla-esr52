@@ -6,7 +6,9 @@
 #include "GMPContentChild.h"
 #include "GMPChild.h"
 #include "GMPAudioDecoderChild.h"
+#ifdef MOZ_EME_MODULES
 #include "GMPDecryptorChild.h"
+#endif
 #include "GMPVideoDecoderChild.h"
 #include "GMPVideoEncoderChild.h"
 #include "base/task.h"
@@ -62,6 +64,7 @@ GMPContentChild::DeallocPGMPAudioDecoderChild(PGMPAudioDecoderChild* aActor)
   return true;
 }
 
+#ifdef MOZ_EME_MODULES
 PGMPDecryptorChild*
 GMPContentChild::AllocPGMPDecryptorChild()
 {
@@ -78,6 +81,7 @@ GMPContentChild::DeallocPGMPDecryptorChild(PGMPDecryptorChild* aActor)
   static_cast<GMPDecryptorChild*>(aActor)->Release();
   return true;
 }
+#endif
 
 PGMPVideoDecoderChild*
 GMPContentChild::AllocPGMPVideoDecoderChild(const uint32_t& aDecryptorId)
@@ -109,6 +113,7 @@ GMPContentChild::DeallocPGMPVideoEncoderChild(PGMPVideoEncoderChild* aActor)
   return true;
 }
 
+#ifdef MOZ_EME_MODULES
 // Adapts GMPDecryptor7 to the current GMPDecryptor version.
 class GMPDecryptor7BackwardsCompat : public GMPDecryptor {
 public:
@@ -226,6 +231,7 @@ GMPContentChild::RecvPGMPDecryptorConstructor(PGMPDecryptorChild* aActor)
 
   return true;
 }
+#endif
 
 bool
 GMPContentChild::RecvPGMPAudioDecoderConstructor(PGMPAudioDecoderChild* aActor)
@@ -288,11 +294,13 @@ GMPContentChild::CloseActive()
     iter.Get()->GetKey()->SendShutdown();
   }
 
+#ifdef MOZ_EME_MODULES
   const ManagedContainer<PGMPDecryptorChild>& decryptors =
     ManagedPGMPDecryptorChild();
   for (auto iter = decryptors.ConstIter(); !iter.Done(); iter.Next()) {
     iter.Get()->GetKey()->SendShutdown();
   }
+#endif
 
   const ManagedContainer<PGMPVideoDecoderChild>& videoDecoders =
     ManagedPGMPVideoDecoderChild();
@@ -311,7 +319,9 @@ bool
 GMPContentChild::IsUsed()
 {
   return !ManagedPGMPAudioDecoderChild().IsEmpty() ||
+#ifdef MOZ_EME_MODULES
          !ManagedPGMPDecryptorChild().IsEmpty() ||
+#endif
          !ManagedPGMPVideoDecoderChild().IsEmpty() ||
          !ManagedPGMPVideoEncoderChild().IsEmpty();
 }

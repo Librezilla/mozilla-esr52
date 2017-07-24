@@ -20,7 +20,9 @@
 #include "nsNativeCharsetUtils.h"
 #include "nsIConsoleService.h"
 #include "mozilla/Unused.h"
+#ifdef MOZ_EME_MODULES
 #include "GMPDecryptorParent.h"
+#endif
 #include "GMPAudioDecoderParent.h"
 #include "nsComponentManagerUtils.h"
 #include "runnable_utils.h"
@@ -455,6 +457,7 @@ GeckoMediaPluginService::GetGMPVideoEncoder(GMPCrashHelper* aHelper,
   return NS_OK;
 }
 
+#ifdef MOZ_EME_MODULES
 class GetGMPContentParentForDecryptorDone : public GetGMPContentParentCallback
 {
 public:
@@ -513,6 +516,7 @@ GeckoMediaPluginService::GetGMPDecryptor(GMPCrashHelper* aHelper,
 
   return NS_OK;
 }
+#endif
 
 void
 GeckoMediaPluginService::ConnectCrashHelper(uint32_t aPluginId, GMPCrashHelper* aHelper)

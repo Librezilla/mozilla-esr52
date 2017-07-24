@@ -20,7 +20,6 @@ with Files('GetUserMedia*'):
     BUG_COMPONENT = component_av
 
 DIRS += [
-    'eme',
     'encoder',
     'flac',
     'gmp',
@@ -41,6 +40,9 @@ DIRS += [
     'webvtt',
     'standalone',
 ]
+
+if CONFIG['MOZ_EME_MODULES']:
+    DIRS += ['eme'];
 
 if CONFIG['MOZ_DIRECTSHOW']:
     DIRS += ['directshow']

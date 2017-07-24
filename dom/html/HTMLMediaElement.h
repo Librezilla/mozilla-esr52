@@ -20,7 +20,9 @@
 #include "mozilla/dom/TextTrackManager.h"
 #include "mozilla/WeakPtr.h"
 #include "MediaDecoder.h"
+#ifdef MOZ_EME_MODULES
 #include "mozilla/dom/MediaKeys.h"
+#endif
 #include "mozilla/StateWatching.h"
 #include "nsGkAtoms.h"
 #include "PrincipalChangeObserver.h"
@@ -50,7 +52,9 @@ class MediaDecoder;
 class VideoFrameContainer;
 namespace dom {
 class AudioChannelAgent;
+#ifdef MOZ_EME_MODULES
 class MediaKeys;
+#endif
 class TextTrack;
 class TimeRanges;
 class WakeLock;
@@ -497,10 +501,12 @@ public:
     return mMediaInfo.HasVideo();
   }
 
+#ifdef MOZ_EME_MODULES
   bool IsEncrypted() const
   {
     return mIsEncrypted;
   }
+#endif
 
   bool Paused() const
   {
@@ -630,6 +636,7 @@ public:
 
   // XPCOM MozPreservesPitch() is OK
 
+#ifdef MOZ_EME_MODULES
   MediaKeys* GetMediaKeys() const;
 
   already_AddRefed<Promise> SetMediaKeys(MediaKeys* mediaKeys,
@@ -643,6 +650,7 @@ public:
 
   void DispatchEncrypted(const nsTArray<uint8_t>& aInitData,
                          const nsAString& aInitDataType) override;
+#endif
 
   bool IsEventAttributeName(nsIAtom* aName) override;
 
@@ -1198,7 +1206,9 @@ protected:
    */
   void HiddenVideoStop();
 
+#ifdef MOZ_EME_MODULES
   void ReportEMETelemetry();
+#endif
 
   void ReportTelemetry();
 
@@ -1471,8 +1481,10 @@ protected:
   // Timer used to simulate video-suspend.
   nsCOMPtr<nsITimer> mVideoDecodeSuspendTimer;
 
+#ifdef MOZ_EME_MODULES
   // Encrypted Media Extension media keys.
   RefPtr<MediaKeys> mMediaKeys;
+#endif
 
   // Stores the time at the start of the current 'played' range.
   double mCurrentPlayRangeStart;
@@ -1610,6 +1622,7 @@ protected:
   // Info about the played media.
   MediaInfo mMediaInfo;
 
+#ifdef MOZ_EME_MODULES
   // True if the media has encryption information.
   bool mIsEncrypted;
 
@@ -1629,6 +1642,7 @@ protected:
 
   // Init Data that needs to be sent in 'encrypted' events in MetadataLoaded().
   EncryptionInfo mPendingEncryptedInitData;
+#endif
 
   // True if the media's channel's download has been suspended.
   Watchable<bool> mDownloadSuspendedByCache;

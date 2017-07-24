@@ -96,8 +96,10 @@
 #endif
 #include "mozilla/dom/ContentChild.h"
 
+#ifdef MOZ_EME_MODULES
 #include "mozilla/EMEUtils.h"
 #include "mozilla/DetailedPromise.h"
+#endif
 
 namespace mozilla {
 namespace dom {
@@ -200,7 +202,9 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(Navigator)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mServiceWorkerContainer)
 
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mWindow)
+#ifdef MOZ_EME_MODULES
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mMediaKeySystemAccessManager)
+#endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPresentation)
 #ifdef MOZ_GAMEPAD
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mGamepadServiceTest)
@@ -267,10 +271,12 @@ Navigator::Invalidate()
 
   mServiceWorkerContainer = nullptr;
 
+#ifdef MOZ_EME_MODULES
   if (mMediaKeySystemAccessManager) {
     mMediaKeySystemAccessManager->Shutdown();
     mMediaKeySystemAccessManager = nullptr;
   }
+#endif
 
 #ifdef MOZ_GAMEPAD
   if (mGamepadServiceTest) {
@@ -1629,6 +1635,7 @@ ToCString(const nsString& aString)
   return str;
 }
 
+#ifdef MOZ_EME_MODULES
 static nsCString
 ToCString(const MediaKeysRequirement aValue)
 {
@@ -1649,6 +1656,7 @@ ToCString(const MediaKeySystemMediaCapability& aValue)
   str.AppendLiteral("}");
   return str;
 }
+#endif /* MOZ_EME_MODULES */
 
 template<class Type>
 static nsCString
@@ -1679,6 +1687,7 @@ ToCString(const Optional<Sequence<Type>>& aOptional)
   return str;
 }
 
+#ifdef MOZ_EME_MODULES
 static nsCString
 ToCString(const MediaKeySystemConfiguration& aConfig)
 {
@@ -1745,6 +1754,7 @@ Navigator::RequestMediaKeySystemAccess(const nsAString& aKeySystem,
   mMediaKeySystemAccessManager->Request(promise, aKeySystem, aConfigs);
   return promise.forget();
 }
+#endif /* MOZ_EME_MODULES */
 
 Presentation*
 Navigator::GetPresentation(ErrorResult& aRv)

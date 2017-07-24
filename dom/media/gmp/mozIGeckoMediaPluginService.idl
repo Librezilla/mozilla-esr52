@@ -11,7 +11,9 @@
 #include "nsTArray.h"
 #include "nsStringGlue.h"
 class GMPAudioDecoderProxy;
+#ifdef MOZ_EME_MODULES
 class GMPDecryptorProxy;
+#endif
 class GMPVideoDecoderProxy;
 class GMPVideoEncoderProxy;
 class GMPVideoHost;
@@ -33,7 +35,9 @@ public:
   virtual ~GMPVideoGetterCallback() { MOZ_COUNT_DTOR(GMPVideoGetterCallback<T>); }
   virtual void Done(T*, GMPVideoHost*) = 0;
 };
+#ifdef MOZ_EME_MODULES
 typedef GMPGetterCallback<GMPDecryptorProxy> GetGMPDecryptorCallback;
+#endif
 typedef GMPGetterCallback<GMPAudioDecoderProxy> GetGMPAudioDecoderCallback;
 typedef GMPVideoGetterCallback<GMPVideoDecoderProxy> GetGMPVideoDecoderCallback;
 typedef GMPVideoGetterCallback<GMPVideoEncoderProxy> GetGMPVideoEncoderCallback;
@@ -47,7 +51,9 @@ public:
 %}
 
 [ptr] native TagArray(nsTArray<nsCString>);
+#ifdef MOZ_EME_MODULES
 native GetGMPDecryptorCallback(mozilla::UniquePtr<GetGMPDecryptorCallback>&&);
+#endif
 native GetGMPAudioDecoderCallback(mozilla::UniquePtr<GetGMPAudioDecoderCallback>&&);
 native GetGMPVideoDecoderCallback(mozilla::UniquePtr<GetGMPVideoDecoderCallback>&&);
 native GetGMPVideoEncoderCallback(mozilla::UniquePtr<GetGMPVideoEncoderCallback>&&);
@@ -151,11 +157,13 @@ interface mozIGeckoMediaPluginService : nsISupports
    * object, but if this method returns an error then the Done method of the
    * callback object will not be called at all.
    */
+#ifdef MOZ_EME_MODULES
   [noscript]
   void getGMPDecryptor(in GMPCrashHelperPtr helper,
                        in TagArray tags,
                        in ACString nodeId,
                        in GetGMPDecryptorCallback callback);
+#endif
 
   /**
    * Gets the NodeId for a (origin, urlbarOrigin, isInprivateBrowsing) tuple.

@@ -9,7 +9,7 @@
 #ifdef XP_WIN
 #include "WMFDecoderModule.h"
 #endif
-#ifdef MOZ_FFVPX
+#if defined(MOZ_FFVPX) && defined(MOZ_FFMP4)
 #include "FFVPXRuntimeLinker.h"
 #endif
 #ifdef MOZ_FFMPEG
@@ -23,7 +23,11 @@
 #endif
 #include "GMPDecoderModule.h"
 
+#ifdef MOZ_EME_MODULES
 #include "mozilla/CDMProxy.h"
+#include "EMEDecoderModule.h"
+#endif
+
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/SharedThreadPool.h"
 #include "mozilla/StaticPtr.h"
@@ -36,18 +40,22 @@
 #include "H264Converter.h"
 
 #include "AgnosticDecoderModule.h"
-#include "EMEDecoderModule.h"
 
 #include "DecoderDoctorDiagnostics.h"
 
+#ifdef MOZ_FMP4
 #include "MP4Decoder.h"
+#endif
+
 #include "mozilla/dom/RemoteVideoDecoder.h"
 
 #ifdef XP_WIN
 #include "mozilla/WindowsVersion.h"
 #endif
 
+#ifdef MOZ_FMP4
 #include "mp4_demuxer/H264.h"
+#endif
 
 namespace mozilla {
 
@@ -64,7 +72,7 @@ public:
 #ifdef MOZ_APPLEMEDIA
     AppleDecoderModule::Init();
 #endif
-#ifdef MOZ_FFVPX
+#if defined(MOZ_FFMP4) && defined(MOZ_FFVPX)
     FFVPXRuntimeLinker::Init();
 #endif
 #ifdef MOZ_FFMPEG
@@ -116,6 +124,7 @@ public:
     if (aTrackConfig.IsVideo()) {
     auto mimeType = aTrackConfig.GetAsVideoInfo()->mMimeType;
     RefPtr<MediaByteBuffer> extraData = aTrackConfig.GetAsVideoInfo()->mExtraData;
+#ifdef MOZ_FMP4
     AddToCheckList(
       [mimeType, extraData]() {
         if (MP4Decoder::IsH264(mimeType)) {
@@ -137,6 +146,7 @@ public:
         }
         return CheckResult(SupportChecker::Reason::kSupported);
       });
+#endif /* MOZ_FMP4 */
     }
   }
 
@@ -208,11 +218,13 @@ PDMFactory::CreateDecoder(const CreateDecoderParams& aParams)
   }
 
   const TrackInfo& config = aParams.mConfig;
+#ifdef MOZ_EME_MODULES
   bool isEncrypted = mEMEPDM && config.mCrypto.mValid;
 
   if (isEncrypted) {
     return CreateDecoderWithPDM(mEMEPDM, aParams);
   }
+#endif
 
   DecoderDoctorDiagnostics* diagnostics = aParams.mDiagnostics;
   if (diagnostics) {
@@ -299,6 +311,7 @@ PDMFactory::CreateDecoderWithPDM(PlatformDecoderModule* aPDM,
   CreateDecoderParams params = aParams;
   params.mCallback = callback;
 
+#ifdef MOZ_FMP4
   if (MP4Decoder::IsH264(config.mMimeType) && !aParams.mUseBlankDecoder) {
     RefPtr<H264Converter> h = new H264Converter(aPDM, params);
     const nsresult rv = h->GetLastError();
@@ -308,9 +321,9 @@ PDMFactory::CreateDecoderWithPDM(PlatformDecoderModule* aPDM,
       // problem, for example WMF DLLs were missing.
       m = h.forget();
     }
-  } else {
+  } else
+#endif
     m = aPDM->CreateVideoDecoder(params);
-  }
 
   if (callbackWrapper && m) {
     m = new DecoderFuzzingWrapper(m.forget(), callbackWrapper.forget());
@@ -334,9 +347,11 @@ bool
 PDMFactory::Supports(const TrackInfo& aTrackInfo,
                      DecoderDoctorDiagnostics* aDiagnostics) const
 {
+#ifdef MOZ_EME_MODULES
   if (mEMEPDM) {
     return mEMEPDM->Supports(aTrackInfo, aDiagnostics);
   }
+#endif
   RefPtr<PlatformDecoderModule> current = GetDecoder(aTrackInfo, aDiagnostics);
   return !!current;
 }
@@ -379,7 +394,7 @@ PDMFactory::CreatePDMs()
     mWMFFailedToLoad = MediaPrefs::DecoderDoctorWMFDisabledIsFailure();
   }
 #endif
-#ifdef MOZ_FFVPX
+#if defined(MOZ_FFMP4) && defined(MOZ_FFVPX)
   if (MediaPrefs::PDMFFVPXEnabled()) {
     m = FFVPXRuntimeLinker::CreateDecoderModule();
     StartupPDM(m);
@@ -460,11 +475,13 @@ PDMFactory::GetDecoder(const TrackInfo& aTrackInfo,
   return pdm.forget();
 }
 
+#ifdef MOZ_EME_MODULES
 void
 PDMFactory::SetCDMProxy(CDMProxy* aProxy)
 {
   RefPtr<PDMFactory> m = new PDMFactory();
   mEMEPDM = new EMEDecoderModule(aProxy, m);
 }
+#endif
 
 }  // namespace mozilla

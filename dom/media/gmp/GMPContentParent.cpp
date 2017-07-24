@@ -5,7 +5,9 @@
 
 #include "GMPContentParent.h"
 #include "GMPAudioDecoderParent.h"
+#ifdef MOZ_EME_MODULES
 #include "GMPDecryptorParent.h"
+#endif
 #include "GMPParent.h"
 #include "GMPServiceChild.h"
 #include "GMPVideoDecoderParent.h"
@@ -67,7 +69,9 @@ void
 GMPContentParent::ActorDestroy(ActorDestroyReason aWhy)
 {
   MOZ_ASSERT(mAudioDecoders.IsEmpty() &&
+#ifdef MOZ_EME_MODULES
              mDecryptors.IsEmpty() &&
+#endif
              mVideoDecoders.IsEmpty() &&
              mVideoEncoders.IsEmpty());
   NS_DispatchToCurrentThread(new ReleaseGMPContentParent(this));
@@ -108,6 +112,7 @@ GMPContentParent::VideoEncoderDestroyed(GMPVideoEncoderParent* aEncoder)
   CloseIfUnused();
 }
 
+#ifdef MOZ_EME_MODULES
 void
 GMPContentParent::DecryptorDestroyed(GMPDecryptorParent* aSession)
 {
@@ -116,12 +121,15 @@ GMPContentParent::DecryptorDestroyed(GMPDecryptorParent* aSession)
   MOZ_ALWAYS_TRUE(mDecryptors.RemoveElement(aSession));
   CloseIfUnused();
 }
+#endif /* MOZ_EME_MODULES */
 
 void
 GMPContentParent::CloseIfUnused()
 {
   if (mAudioDecoders.IsEmpty() &&
+#ifdef MOZ_EME_MODULES
       mDecryptors.IsEmpty() &&
+#endif
       mVideoDecoders.IsEmpty() &&
       mVideoEncoders.IsEmpty()) {
     RefPtr<GMPContentParent> toClose;
@@ -138,6 +146,7 @@ GMPContentParent::CloseIfUnused()
   }
 }
 
+#ifdef MOZ_EME_MODULES
 nsresult
 GMPContentParent::GetGMPDecryptor(GMPDecryptorParent** aGMPDP)
 {
@@ -154,6 +163,7 @@ GMPContentParent::GetGMPDecryptor(GMPDecryptorParent** aGMPDP)
 
   return NS_OK;
 }
+#endif /* MOZ_EME_MODULES */
 
 nsIThread*
 GMPContentParent::GMPThread()
@@ -262,6 +272,7 @@ GMPContentParent::DeallocPGMPVideoEncoderParent(PGMPVideoEncoderParent* aActor)
   return true;
 }
 
+#ifdef MOZ_EME_MODULES
 PGMPDecryptorParent*
 GMPContentParent::AllocPGMPDecryptorParent()
 {
@@ -277,6 +288,7 @@ GMPContentParent::DeallocPGMPDecryptorParent(PGMPDecryptorParent* aActor)
   NS_RELEASE(ksp);
   return true;
 }
+#endif /* MOZ_EME_MODULES */
 
 PGMPAudioDecoderParent*
 GMPContentParent::AllocPGMPAudioDecoderParent()
