@@ -25,12 +25,18 @@
 
 #include "mozilla/StyleSheetInlines.h"
 #include "mozilla/Preferences.h"
+
+#ifndef MOZ_DISABLE_STARTUPCACHE
 #include "mozilla/scache/StartupCache.h"
 #include "mozilla/scache/StartupCacheUtils.h"
+#endif
+
 #include "mozilla/Telemetry.h"
 
 using namespace mozilla;
+#ifndef MOZ_DISABLE_STARTUPCACHE
 using namespace mozilla::scache;
+#endif
 
 static bool gDisableXULCache = false; // enabled by default
 static const char kDisableXULCachePref[] = "nglayout.debug.disable_xul_cache";
@@ -312,7 +318,9 @@ nsresult
 nsXULPrototypeCache::WritePrototype(nsXULPrototypeDocument* aPrototypeDocument)
 {
     nsresult rv = NS_OK, rv2 = NS_OK;
-
+#ifdef MOZ_DISABLE_STARTUPCACHE
+    return NS_OK;
+#else
     if (!StartupCache::GetSingleton())
         return NS_OK;
 
@@ -326,11 +334,15 @@ nsXULPrototypeCache::WritePrototype(nsXULPrototypeDocument* aPrototypeDocument)
     NS_ENSURE_SUCCESS(rv, rv);
     FinishOutputStream(protoURI);
     return NS_FAILED(rv) ? rv : rv2;
+#endif /* MOZ_DISABLE_STARTUPCACHE */
 }
 
 nsresult
 nsXULPrototypeCache::GetInputStream(nsIURI* uri, nsIObjectInputStream** stream)
 {
+#ifdef MOZ_DISABLE_STARTUPCACHE
+    return NS_ERROR_NOT_AVAILABLE;
+#else
     nsAutoCString spec(kXULCachePrefix);
     nsresult rv = PathifyURI(uri, spec);
     if (NS_FAILED(rv))
@@ -354,6 +366,7 @@ nsXULPrototypeCache::GetInputStream(nsIURI* uri, nsIObjectInputStream** stream)
 
     ois.forget(stream);
     return NS_OK;
+#endif /* MOZ_DISABLE_STARTUPCACHE */
 }
 
 nsresult
@@ -389,6 +402,9 @@ nsXULPrototypeCache::GetOutputStream(nsIURI* uri, nsIObjectOutputStream** stream
 nsresult
 nsXULPrototypeCache::FinishOutputStream(nsIURI* uri)
 {
+#ifdef MOZ_DISABLE_STARTUPCACHE
+    return NS_ERROR_NOT_AVAILABLE;
+#else
     nsresult rv;
     StartupCache* sc = StartupCache::GetSingleton();
     if (!sc)
@@ -420,6 +436,7 @@ nsXULPrototypeCache::FinishOutputStream(nsIURI* uri)
     }
 
     return rv;
+#endif /* MOZ_DISABLE_STARTUPCACHE */
 }
 
 // We have data if we're in the middle of writing it or we already
@@ -439,6 +456,11 @@ nsXULPrototypeCache::HasData(nsIURI* uri, bool* exists)
     }
     UniquePtr<char[]> buf;
     uint32_t len;
+
+#ifdef MOZ_DISABLE_STARTUPCACHE
+    *exists = false;
+    return NS_OK;
+#else
     StartupCache* sc = StartupCache::GetSingleton();
     if (sc) {
         rv = sc->GetBuffer(spec.get(), &buf, &len);
@@ -448,11 +470,15 @@ nsXULPrototypeCache::HasData(nsIURI* uri, bool* exists)
     }
     *exists = NS_SUCCEEDED(rv);
     return NS_OK;
+#endif
 }
 
 nsresult
 nsXULPrototypeCache::BeginCaching(nsIURI* aURI)
 {
+#ifdef MOZ_DISABLE_STARTUPCACHE
+    return NS_ERROR_NOT_AVAILABLE;
+#else
     nsresult rv, tmp;
 
     nsAutoCString path;
@@ -576,6 +602,7 @@ nsXULPrototypeCache::BeginCaching(nsIURI* aURI)
     }
 
     return NS_OK;
+#endif
 }
 
 void

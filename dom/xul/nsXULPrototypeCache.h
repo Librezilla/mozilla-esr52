@@ -17,7 +17,9 @@
 #include "nsIInputStream.h"
 #include "nsIStorageStream.h"
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
 #include "mozilla/scache/StartupCache.h"
+#endif
 
 namespace mozilla {
 class CSSStyleSheet;

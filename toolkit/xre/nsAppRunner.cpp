@@ -87,7 +87,9 @@
 #include "nsIWidget.h"
 #include "nsIDocShell.h"
 #include "nsAppShellCID.h"
+#ifndef MOZ_DISABLE_STARTUPCACHE
 #include "mozilla/scache/StartupCache.h"
+#endif
 #include "gfxPrefs.h"
 
 #include "mozilla/Unused.h"
@@ -282,7 +284,9 @@ int (*RunGTest)() = 0;
 
 using namespace mozilla;
 using mozilla::Unused;
+#ifndef MOZ_DISABLE_STARTUPCACHE
 using mozilla::scache::StartupCache;
+#endif
 using mozilla::dom::ContentParent;
 using mozilla::dom::ContentChild;
 
@@ -2730,9 +2734,13 @@ RemoveComponentRegistries(nsIFile* aProfileDir, nsIFile* aLocalProfileDir,
   file->SetNativeLeafName(NS_LITERAL_CSTRING("XPC" PLATFORM_FASL_SUFFIX));
   file->Remove(false);
 
+#ifndef MOZ_DISABLE_STARTUPCACHE
   file->SetNativeLeafName(NS_LITERAL_CSTRING("startupCache"));
   nsresult rv = file->Remove(true);
   return NS_SUCCEEDED(rv) || rv == NS_ERROR_FILE_TARGET_DOES_NOT_EXIST;
+#else
+  return true;
+#endif
 }
 
 // To support application initiated restart via nsIAppStartup.quit, we
@@ -4066,6 +4074,7 @@ XREMain::XRE_mainStartup(bool* aExitFlag)
   // profile in different builds the component registry must be
   // re-generated to prevent mysterious component loading failures.
   //
+#ifndef MOZ_DISABLE_STARTUPCACHE
   bool startupCacheValid = true;
   if (gSafeMode) {
     startupCacheValid = RemoveComponentRegistries(mProfD, mProfLD, false);
@@ -4102,6 +4111,7 @@ XREMain::XRE_mainStartup(bool* aExitFlag)
   if (flagFile) {
     flagFile->Remove(true);
   }
+#endif /* !MOZ_DISABLE_STARTUPCACHE */
 
   return 0;
 }
