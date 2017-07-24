@@ -127,14 +127,6 @@ auto GeckoAppShell::DisableNetworkNotifications() -> void
     return mozilla::jni::Method<DisableNetworkNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
-constexpr char GeckoAppShell::DisableSensor_t::name[];
-constexpr char GeckoAppShell::DisableSensor_t::signature[];
-
-auto GeckoAppShell::DisableSensor(int32_t a0) -> void
-{
-    return mozilla::jni::Method<DisableSensor_t>::Call(GeckoAppShell::Context(), nullptr, a0);
-}
-
 constexpr char GeckoAppShell::EnableLocation_t::name[];
 constexpr char GeckoAppShell::EnableLocation_t::signature[];
 
@@ -157,14 +149,6 @@ constexpr char GeckoAppShell::EnableNetworkNotifications_t::signature[];
 auto GeckoAppShell::EnableNetworkNotifications() -> void
 {
     return mozilla::jni::Method<EnableNetworkNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::EnableSensor_t::name[];
-constexpr char GeckoAppShell::EnableSensor_t::signature[];
-
-auto GeckoAppShell::EnableSensor(int32_t a0) -> void
-{
-    return mozilla::jni::Method<EnableSensor_t>::Call(GeckoAppShell::Context(), nullptr, a0);
 }
 
 constexpr char GeckoAppShell::GetApplicationContext_t::name[];
@@ -445,9 +429,6 @@ constexpr char GeckoAppShell::OnFullScreenPluginHidden_t::signature[];
 
 constexpr char GeckoAppShell::OnLocationChanged_t::name[];
 constexpr char GeckoAppShell::OnLocationChanged_t::signature[];
-
-constexpr char GeckoAppShell::OnSensorChanged_t::name[];
-constexpr char GeckoAppShell::OnSensorChanged_t::signature[];
 
 constexpr char GeckoAppShell::OpenUriExternal_t::name[];
 constexpr char GeckoAppShell::OpenUriExternal_t::signature[];

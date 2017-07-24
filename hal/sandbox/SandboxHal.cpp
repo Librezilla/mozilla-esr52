@@ -148,16 +148,6 @@ DisableSystemTimezoneChangeNotifications()
 }
 
 void
-EnableSensorNotifications(SensorType aSensor) {
-  Hal()->SendEnableSensorNotifications(aSensor);
-}
-
-void
-DisableSensorNotifications(SensorType aSensor) {
-  Hal()->SendDisableSensorNotifications(aSensor);
-}
-
-void
 EnableWakeLockNotifications()
 {
   Hal()->SendEnableWakeLockNotifications();
@@ -261,7 +251,6 @@ bool SystemServiceIsRunning(const char* aSvcName)
 
 class HalParent : public PHalParent
                 , public NetworkObserver
-                , public ISensorObserver
                 , public WakeLockObserver
                 , public ScreenConfigurationObserver
                 , public SystemClockChangeObserver
@@ -275,10 +264,6 @@ public:
     // if it *may* be registered below.
     hal::UnregisterNetworkObserver(this);
     hal::UnregisterScreenConfigurationObserver(this);
-    for (int32_t sensor = SENSOR_UNKNOWN + 1;
-         sensor < NUM_SENSOR_TYPE; ++sensor) {
-      hal::UnregisterSensorObserver(SensorType(sensor), this);
-    }
     hal::UnregisterWakeLockObserver(this);
     hal::UnregisterSystemClockChangeObserver(this);
     hal::UnregisterSystemTimezoneChangeObserver(this);
@@ -418,24 +403,6 @@ public:
   }
 
   virtual bool
-  RecvEnableSensorNotifications(const SensorType &aSensor) override {
-    // We currently allow any content to register device-sensor
-    // listeners.
-    hal::RegisterSensorObserver(aSensor, this);
-    return true;
-  }
-
-  virtual bool
-  RecvDisableSensorNotifications(const SensorType &aSensor) override {
-    hal::UnregisterSensorObserver(aSensor, this);
-    return true;
-  }
-
-  void Notify(const SensorData& aSensorData) override {
-    Unused << SendNotifySensorChange(aSensorData);
-  }
-
-  virtual bool
   RecvModifyWakeLock(const nsString& aTopic,
                      const WakeLockControl& aLockAdjust,
                      const WakeLockControl& aHiddenAdjust,
@@ -495,9 +462,6 @@ public:
   }
 
   virtual bool
-  RecvNotifySensorChange(const hal::SensorData &aSensorData) override;
-
-  virtual bool
   RecvNotifyNetworkChange(const NetworkInformation& aNetworkInfo) override {
     hal::NotifyNetworkChange(aNetworkInfo);
     return true;
@@ -528,13 +492,6 @@ public:
     return true;
   }
 };
-
-bool
-HalChild::RecvNotifySensorChange(const hal::SensorData &aSensorData) {
-  hal::NotifySensorChange(aSensorData);
-
-  return true;
-}
 
 PHalChild* CreateHalChild() {
   return new HalChild();

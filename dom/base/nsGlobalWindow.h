@@ -621,15 +621,6 @@ public:
   virtual nsresult DispatchAsyncHashchange(nsIURI *aOldURI, nsIURI *aNewURI) override;
   virtual nsresult DispatchSyncPopState() override;
 
-  // Inner windows only.
-  virtual void EnableDeviceSensor(uint32_t aType) override;
-  virtual void DisableDeviceSensor(uint32_t aType) override;
-
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-  virtual void EnableOrientationChangeListener() override;
-  virtual void DisableOrientationChangeListener() override;
-#endif
-
   virtual void EnableTimeChangeNotifications() override;
   virtual void DisableTimeChangeNotifications() override;
 
@@ -1957,8 +1948,6 @@ protected:
   bool                          mAreDialogsEnabled;
 
   nsTHashtable<nsPtrHashKey<mozilla::DOMEventTargetHelper> > mEventTargetObjects;
-
-  nsTArray<uint32_t> mEnabledSensors;
 
 #ifdef MOZ_WEBSPEECH
   // mSpeechSynthesis is only used on inner windows.

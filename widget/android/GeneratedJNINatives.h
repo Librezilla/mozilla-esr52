@@ -81,10 +81,6 @@ const JNINativeMethod GeckoAppShell::Natives<Impl>::methods[] = {
             mozilla::jni::NativeStub<GeckoAppShell::OnLocationChanged_t, Impl>
             ::template Wrap<&Impl::OnLocationChanged>),
 
-    mozilla::jni::MakeNativeMethod<GeckoAppShell::OnSensorChanged_t>(
-            mozilla::jni::NativeStub<GeckoAppShell::OnSensorChanged_t, Impl>
-            ::template Wrap<&Impl::OnSensorChanged>),
-
     mozilla::jni::MakeNativeMethod<GeckoAppShell::ReportJavaCrash_t>(
             mozilla::jni::NativeStub<GeckoAppShell::ReportJavaCrash_t, Impl>
             ::template Wrap<&Impl::ReportJavaCrash>),
