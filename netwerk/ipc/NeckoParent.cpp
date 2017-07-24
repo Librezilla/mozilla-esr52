@@ -11,7 +11,9 @@
 #include "mozilla/net/HttpChannelParent.h"
 #include "mozilla/net/CookieServiceParent.h"
 #include "mozilla/net/WyciwygChannelParent.h"
+#ifdef NECKO_PROTOCOL_ftp
 #include "mozilla/net/FTPChannelParent.h"
+#endif
 #include "mozilla/net/WebSocketChannelParent.h"
 #include "mozilla/net/WebSocketEventListenerParent.h"
 #include "mozilla/net/DataChannelParent.h"
@@ -132,6 +134,7 @@ GetRequestingPrincipal(const HttpChannelCreationArgs& aArgs)
   return GetRequestingPrincipal(args.loadInfo());
 }
 
+#ifdef NECKO_PROTOCOL_ftp
 static already_AddRefed<nsIPrincipal>
 GetRequestingPrincipal(const FTPChannelCreationArgs& aArgs)
 {
@@ -142,6 +145,7 @@ GetRequestingPrincipal(const FTPChannelCreationArgs& aArgs)
   const FTPChannelOpenArgs& args = aArgs.get_FTPChannelOpenArgs();
   return GetRequestingPrincipal(args.loadInfo());
 }
+#endif /* NECKO_PROTOCOL_ftp */
 
 // Bug 1289001 - If GetValidatedOriginAttributes returns an error string, that
 // usually leads to a content crash with very little info about the cause.
@@ -347,6 +351,7 @@ NeckoParent::DeallocPAltDataOutputStreamParent(PAltDataOutputStreamParent* aActo
   return true;
 }
 
+#ifdef NECKO_PROTOCOL_ftp
 PFTPChannelParent*
 NeckoParent::AllocPFTPChannelParent(const PBrowserOrId& aBrowser,
                                     const SerializedLoadContext& aSerialized,
@@ -389,6 +394,7 @@ NeckoParent::RecvPFTPChannelConstructor(
   FTPChannelParent* p = static_cast<FTPChannelParent*>(aActor);
   return p->Init(aOpenArgs);
 }
+#endif /* NECKO_PROTOCOL_ftp */
 
 PCookieServiceParent*
 NeckoParent::AllocPCookieServiceParent()

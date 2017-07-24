@@ -8,10 +8,13 @@
 #include "mozilla/net/ChannelDiverterChild.h"
 #include "nsIDivertableChannel.h"
 #include "nsIInputStream.h"
-#include "nsIFTPChannel.h"
 #include "nsIRequest.h"
 #include "nsIResumableChannel.h"
 #include "nsNetUtil.h"
+
+#ifdef NECKO_PROTOCOL_ftp
+#include "nsIFTPChannel.h"
+#endif
 
 namespace mozilla {
 namespace dom {

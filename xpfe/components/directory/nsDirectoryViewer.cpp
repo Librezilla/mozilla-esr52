@@ -36,7 +36,9 @@
 #include "nsITextToSubURI.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIInterfaceRequestorUtils.h"
+#ifdef NECKO_PROTOCOL_ftp
 #include "nsIFTPChannel.h"
+#endif
 #include "nsIWindowWatcher.h"
 #include "nsIPrompt.h"
 #include "nsIAuthPrompt.h"
@@ -79,7 +81,9 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsHTTPIndex)
     NS_INTERFACE_MAP_ENTRY(nsIDirIndexListener)
     NS_INTERFACE_MAP_ENTRY(nsIRequestObserver)
     NS_INTERFACE_MAP_ENTRY(nsIInterfaceRequestor)
+#ifdef NECKO_PROTOCOL_ftp
     NS_INTERFACE_MAP_ENTRY(nsIFTPEventSink)
+#endif
     NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIHTTPIndex)
 NS_INTERFACE_MAP_END
 
@@ -90,6 +94,7 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(nsHTTPIndex)
 NS_IMETHODIMP
 nsHTTPIndex::GetInterface(const nsIID &anIID, void **aResult ) 
 {
+#ifdef NECKO_PROTOCOL_ftp
     if (anIID.Equals(NS_GET_IID(nsIFTPEventSink))) {
         // If we don't have a container to store the logged data
         // then don't report ourselves back to the caller
@@ -100,6 +105,7 @@ nsHTTPIndex::GetInterface(const nsIID &anIID, void **aResult )
         NS_ADDREF(this);
         return NS_OK;
     }
+#endif
 
     if (anIID.Equals(NS_GET_IID(nsIPrompt))) {
         
@@ -146,6 +152,7 @@ nsHTTPIndex::GetInterface(const nsIID &anIID, void **aResult )
     return NS_ERROR_NO_INTERFACE;
 }
 
+#ifdef NECKO_PROTOCOL_ftp
 NS_IMETHODIMP 
 nsHTTPIndex::OnFTPControlLog(bool server, const char *msg)
 {
@@ -180,6 +187,7 @@ nsHTTPIndex::OnFTPControlLog(bool server, const char *msg)
                         &val);
     return NS_OK;
 }
+#endif
 
 NS_IMETHODIMP
 nsHTTPIndex::SetEncoding(const char *encoding)

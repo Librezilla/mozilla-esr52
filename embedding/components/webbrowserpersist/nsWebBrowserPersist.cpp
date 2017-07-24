@@ -46,7 +46,9 @@
 
 #include "nsIImageLoadingContent.h"
 
+#ifdef NECKO_PROTOCOL_ftp
 #include "ftpCore.h"
+#endif
 #include "nsITransport.h"
 #include "nsISocketTransport.h"
 #include "nsIStringBundle.h"
@@ -1114,8 +1116,10 @@ NS_IMETHODIMP nsWebBrowserPersist::OnStatus(
         {
         case NS_NET_STATUS_RESOLVING_HOST:
         case NS_NET_STATUS_RESOLVED_HOST:
+#ifdef NECKO_PROTOCOL_ftp
         case NS_NET_STATUS_BEGIN_FTP_TRANSACTION:
         case NS_NET_STATUS_END_FTP_TRANSACTION:
+#endif
         case NS_NET_STATUS_CONNECTING_TO:
         case NS_NET_STATUS_CONNECTED_TO:
         case NS_NET_STATUS_SENDING_TO:
