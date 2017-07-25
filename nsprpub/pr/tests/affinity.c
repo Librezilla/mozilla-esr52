@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef XP_BEOS
-
 /*
  * Test PR_GetThreadAffinityMask
  *		The function is called by each of local, global and global bound threads
@@ -81,12 +79,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
-#else /* !XP_BEOS */
-
-int main()
-{
-	printf( "This test is not supported on the BeOS\n" );
-	return 0;
-}
-#endif /* !XP_BEOS */

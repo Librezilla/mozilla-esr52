@@ -62,7 +62,7 @@ PRStatus PR_CALLBACK _PR_SocketGetSocketOption(PRFileDesc *fd, PRSocketOptionDat
         {
             case PR_SockOpt_Linger:
             {
-#if !defined(XP_BEOS) || defined(BONE_VERSION)
+#if defined(BONE_VERSION)
                 struct linger linger;
                 length = sizeof(linger);
                 rv = _PR_MD_GETSOCKOPT(
@@ -221,7 +221,7 @@ PRStatus PR_CALLBACK _PR_SocketSetSocketOption(PRFileDesc *fd, const PRSocketOpt
         {
             case PR_SockOpt_Linger:
             {
-#if !defined(XP_BEOS) || defined(BONE_VERSION)
+#if defined(BONE_VERSION)
                 struct linger linger;
                 linger.l_onoff = data->value.linger.polarity;
                 linger.l_linger = PR_IntervalToSeconds(data->value.linger.linger);

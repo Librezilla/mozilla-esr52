@@ -1279,7 +1279,6 @@ case "${host}" in
 			fi ;;
 	*-*-nto*)	platform=U_QNX ;;
 	*-dec-osf*) 	platform=U_OSF ;;
-	*-*-beos)		platform=U_BEOS ;;
 	*-*-irix*)		platform=U_IRIX ;;
 	*-ncr-*)		platform=U_MPRAS ;;
 	*) 		platform=U_UNKNOWN_PLATFORM ;;
