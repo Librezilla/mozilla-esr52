@@ -14,7 +14,7 @@
 #include "sslimpl.h"
 #include "sslproto.h"
 #include "nssilock.h"
-#if defined(XP_UNIX) || defined(XP_WIN) || defined(_WINDOWS) || defined(XP_BEOS)
+#if defined(XP_UNIX) || defined(XP_WIN) || defined(_WINDOWS)
 #include <time.h>
 #endif
 
@@ -445,7 +445,7 @@ ssl_Time(void)
 #endif
 
     PRUint32 myTime;
-#if defined(XP_UNIX) || defined(XP_WIN) || defined(_WINDOWS) || defined(XP_BEOS)
+#if defined(XP_UNIX) || defined(XP_WIN) || defined(_WINDOWS)
     myTime = time(NULL); /* accurate until the year 2038. */
 #else
     /* portable, but possibly slower */

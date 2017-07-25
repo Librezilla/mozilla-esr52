@@ -1309,8 +1309,6 @@ static nsresult pref_InitInitialObjects()
 #if defined(_AIX)
     , "aix.js"
 #endif
-#elif defined(XP_BEOS)
-    "beos.js"
 #endif
   };
 

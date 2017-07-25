@@ -241,7 +241,6 @@ byteswap.h
 pixman.h
 cairo.h
 cairo-atsui.h
-cairo-beos.h
 cairo-ft.h
 cairo-glitz.h
 cairo-gobject.h

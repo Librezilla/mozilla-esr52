@@ -2129,23 +2129,6 @@ extern PRSize _pr_CopyLowBits( void *dest, PRSize dstlen, void *src, PRSize srcl
 
 /* end PR_GetRandomNoise() related */
 
-#ifdef XP_BEOS
-
-extern PRLock *_connectLock;
-
-typedef struct _ConnectListNode {
-	PRInt32		osfd;
-	PRNetAddr	addr;
-	PRUint32	addrlen;
-	PRIntervalTime	timeout;
-} ConnectListNode;
-
-extern ConnectListNode connectList[64];
-
-extern PRUint32 connectCount;
-
-#endif /* XP_BEOS */
-
 PR_END_EXTERN_C
 
 #endif /* primpl_h___ */
