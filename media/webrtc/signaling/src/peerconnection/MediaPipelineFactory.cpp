@@ -28,10 +28,6 @@
 #endif
 
 #include "GmpVideoCodec.h"
-#ifdef MOZ_WEBRTC_OMX
-#include "OMXVideoCodec.h"
-#include "OMXCodecWrapper.h"
-#endif
 
 #ifdef MOZ_WEBRTC_MEDIACODEC
 #include "MediaCodecVideoCodec.h"
@@ -1044,24 +1040,14 @@ MediaPipelineFactory::EnsureExternalCodec(VideoSessionConduit& aConduit,
     // Register H.264 codec.
     if (aIsSend) {
       VideoEncoder* encoder = nullptr;
-#ifdef MOZ_WEBRTC_OMX
-      encoder =
-          OMXVideoCodec::CreateEncoder(OMXVideoCodec::CodecType::CODEC_H264);
-#else
       encoder = GmpVideoCodec::CreateEncoder();
-#endif
       if (encoder) {
         return aConduit.SetExternalSendCodec(aConfig, encoder);
       }
       return kMediaConduitInvalidSendCodec;
     }
     VideoDecoder* decoder = nullptr;
-#ifdef MOZ_WEBRTC_OMX
-    decoder =
-      OMXVideoCodec::CreateDecoder(OMXVideoCodec::CodecType::CODEC_H264);
-#else
     decoder = GmpVideoCodec::CreateDecoder();
-#endif
     if (decoder) {
       return aConduit.SetExternalRecvCodec(aConfig, decoder);
     }

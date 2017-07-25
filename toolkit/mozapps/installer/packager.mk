@@ -29,9 +29,6 @@ endif
 	$(call MAKE_SIGN_EME_VOUCHER,$(DEPTH)/installer-stage/core)
 	@(cd $(DEPTH)/installer-stage/core && $(CREATE_PRECOMPLETE_CMD))
 
-ifeq (gonk,$(MOZ_WIDGET_TOOLKIT))
-ELF_HACK_FLAGS = --fill
-endif
 export USE_ELF_HACK ELF_HACK_FLAGS
 
 # Override the value of OMNIJAR_NAME from config.status with the value

@@ -139,7 +139,7 @@ int VideoEngine::SetTraceCallback(TraceCallback* callback) {
   return Trace::SetTraceCallback(callback);
 }
 
-#if defined(ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD) && !defined(WEBRTC_GONK)
+#if defined(ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD)
 int VideoEngine::SetAndroidObjects(JavaVM* javaVM) {
   WEBRTC_TRACE(kTraceApiCall, kTraceVideo, kModuleId,
                "SetAndroidObjects()");

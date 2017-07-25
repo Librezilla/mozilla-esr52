@@ -30,11 +30,8 @@
     #include <dlfcn.h>
     #include "audio_device_utility_android.h"
     #include "webrtc/modules/audio_device/android/audio_device_template.h"
-#if !defined(WEBRTC_GONK)
-// GONK only supports opensles; android can use that or jni
     #include "webrtc/modules/audio_device/android/audio_record_jni.h"
     #include "webrtc/modules/audio_device/android/audio_track_jni.h"
-#endif
     #include "webrtc/modules/audio_device/android/opensles_input.h"
     #include "webrtc/modules/audio_device/android/opensles_output.h"
 #elif defined(WEBRTC_AUDIO_SNDIO)
@@ -284,7 +281,7 @@ int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects()
 
     // Create the *Android OpenSLES* implementation of the Audio Device
     //
-#if defined(WEBRTC_ANDROID) || defined (WEBRTC_GONK)
+#if defined(WEBRTC_ANDROID)
     if (audioLayer == kPlatformDefaultAudio) {
     // AudioRecordJni provides hardware AEC and OpenSlesOutput low latency.
 #if defined (WEBRTC_ANDROID_OPENSLES)
@@ -303,7 +300,6 @@ int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects()
           }
       }
 #endif // defined (WEBRTC_ANDROID_OPENSLES)
-#if !defined(WEBRTC_GONK)
       // Fall back to this case if on Android 2.2/OpenSLES not available.
       if (ptrAudioDevice == NULL) {
         // Create the *Android Java* implementation of the Audio Device
@@ -314,7 +310,6 @@ int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects()
             WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, "Android JNI Audio APIs will be utilized");
           }
       }
-#endif // !defined (WEBRTC_GONK)
     }
 
     if (ptrAudioDevice != NULL) {

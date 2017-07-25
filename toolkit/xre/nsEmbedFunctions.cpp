@@ -79,7 +79,7 @@
 #include "mozilla/sandboxing/loggingCallbacks.h"
 #endif
 
-#if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_CONTENT_SANDBOX)
 #include "mozilla/Preferences.h"
 #endif
 
@@ -294,7 +294,7 @@ SetTaskbarGroupId(const nsString& aId)
 #endif
 
 #if defined(MOZ_CRASHREPORTER)
-#if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_CONTENT_SANDBOX)
 void
 AddContentSandboxLevelAnnotation()
 {
@@ -306,7 +306,7 @@ AddContentSandboxLevelAnnotation()
       NS_LITERAL_CSTRING("ContentSandboxLevel"), levelString);
   }
 }
-#endif /* MOZ_CONTENT_SANDBOX && !MOZ_WIDGET_GONK */
+#endif /* MOZ_CONTENT_SANDBOX */
 #endif /* MOZ_CRASHREPORTER */
 
 nsresult
@@ -324,7 +324,7 @@ XRE_InitChildProcess(int aArgc,
   setupProfilingStuff();
 #endif
 
-#if !defined(MOZ_WIDGET_ANDROID) && !defined(MOZ_WIDGET_GONK)
+#if !defined(MOZ_WIDGET_ANDROID)
   // On non-Fennec Gecko, the GMPLoader code resides in plugin-container,
   // and we must forward it through to the GMP code here.
   GMPProcessChild::SetGMPLoader(aChildData->gmpLoader.get());
@@ -689,7 +689,7 @@ XRE_InitChildProcess(int aArgc,
       OverrideDefaultLocaleIfNeeded();
 
 #if defined(MOZ_CRASHREPORTER)
-#if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_CONTENT_SANDBOX)
       AddContentSandboxLevelAnnotation();
 #endif
 #endif

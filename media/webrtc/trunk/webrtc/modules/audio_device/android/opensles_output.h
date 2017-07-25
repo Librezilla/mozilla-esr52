@@ -16,10 +16,8 @@
 #include <SLES/OpenSLES_AndroidConfiguration.h>
 
 #include "webrtc/base/scoped_ptr.h"
-#if !defined(WEBRTC_GONK)
 #include "webrtc/modules/audio_device/android/audio_manager.h"
 #include "webrtc/modules/audio_device/android/audio_manager_jni.h"
-#endif
 #include "webrtc/modules/audio_device/android/low_latency_event.h"
 #include "webrtc/modules/audio_device/android/audio_common.h"
 #include "webrtc/modules/audio_device/include/audio_device_defines.h"
@@ -194,10 +192,8 @@ class OpenSlesOutput : public PlayoutDelayProvider {
   // Thread-compatible.
   bool CbThreadImpl();
 
-#if !defined(WEBRTC_GONK)
   // Java API handle
   AudioManagerJni audio_manager_;
-#endif
 
   bool initialized_;
   bool speaker_initialized_;

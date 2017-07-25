@@ -4,12 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-XPIDL_SOURCES += [
-    'gonk/nsIRecoveryService.idl',
-]
-
-XPIDL_MODULE = 'hal'
-
 EXPORTS.mozilla += [
     'Hal.h',
     'HalImpl.h',
@@ -43,24 +37,6 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
     # AndroidHal.cpp cannot be built in unified mode because it relies on HalImpl.h.
     SOURCES += [
         'android/AndroidHal.cpp',
-    ]
-elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
-    UNIFIED_SOURCES += [
-        'gonk/GonkDiskSpaceWatcher.cpp',
-        'gonk/GonkSensor.cpp',
-        'gonk/GonkSensorsHelpers.cpp',
-        'gonk/GonkSensorsInterface.cpp',
-        'gonk/GonkSensorsPollInterface.cpp',
-        'gonk/GonkSensorsRegistryInterface.cpp',
-        'gonk/GonkSwitch.cpp',
-        'gonk/SystemService.cpp',
-        'gonk/UeventPoller.cpp',
-        'linux/LinuxMemory.cpp',
-        'linux/LinuxPower.cpp',
-    ]
-    # GonkHal.cpp cannot be built in unified mode because it relies on HalImpl.h.
-    SOURCES += [
-        'gonk/GonkHal.cpp',
     ]
 elif CONFIG['OS_TARGET'] == 'Linux':
     UNIFIED_SOURCES += [
@@ -97,8 +73,7 @@ else:
     ]
 
 # Fallbacks for backends implemented on Gonk only.
-if CONFIG['MOZ_WIDGET_TOOLKIT'] != 'gonk':
-    UNIFIED_SOURCES += [
+UNIFIED_SOURCES += [
         'fallback/FallbackDiskSpaceWatcher.cpp',
         'fallback/FallbackProcessPriority.cpp',
         'fallback/FallbackSystemService.cpp',
@@ -130,16 +105,6 @@ if CONFIG['MOZ_GAMEPAD']:
     LOCAL_INCLUDES += [
         '/dom/base',
     ]
-
-if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
-    # So that we can call nsScreenManagerGonk::GetConfiguration().
-    LOCAL_INCLUDES += [
-        '/widget',
-        '/widget/gonk',
-    ]
-
-if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
-    LOCAL_INCLUDES += ['%' + '%s/hardware/libhardware_legacy/include' % CONFIG['ANDROID_SOURCE']]
 
 CFLAGS += CONFIG['GLIB_CFLAGS']
 CFLAGS += CONFIG['MOZ_DBUS_GLIB_CFLAGS']

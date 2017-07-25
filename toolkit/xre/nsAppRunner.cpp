@@ -4107,7 +4107,7 @@ XREMain::XRE_mainStartup(bool* aExitFlag)
 }
 
 #if defined(MOZ_CRASHREPORTER)
-#if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_CONTENT_SANDBOX)
 void AddSandboxAnnotations()
 {
   // Include the sandbox content level, regardless of platform
@@ -4136,7 +4136,7 @@ void AddSandboxAnnotations()
     NS_LITERAL_CSTRING("ContentSandboxCapable"),
     sandboxCapable ? NS_LITERAL_CSTRING("1") : NS_LITERAL_CSTRING("0"));
 }
-#endif /* MOZ_CONTENT_SANDBOX && !MOZ_WIDGET_GONK */
+#endif /* MOZ_CONTENT_SANDBOX */
 #endif /* MOZ_CRASHREPORTER */
 
 /*
@@ -4453,7 +4453,7 @@ XREMain::XRE_mainRun()
   }
 #endif /* MOZ_INSTRUMENT_EVENT_LOOP */
 
-#if defined(MOZ_SANDBOX) && defined(XP_LINUX) && !defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_SANDBOX) && defined(XP_LINUX)
   // If we're on Linux, we now have information about the OS capabilities
   // available to us.
   SandboxInfo sandboxInfo = SandboxInfo::Get();
@@ -4476,12 +4476,12 @@ XREMain::XRE_mainRun()
   CrashReporter::AnnotateCrashReport(
     NS_LITERAL_CSTRING("ContentSandboxCapabilities"), flagsString);
 #endif /* MOZ_CRASHREPORTER */
-#endif /* MOZ_SANDBOX && XP_LINUX && !MOZ_WIDGET_GONK */
+#endif /* MOZ_SANDBOX && XP_LINUX */
 
 #if defined(MOZ_CRASHREPORTER)
-#if defined(MOZ_CONTENT_SANDBOX) && !defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_CONTENT_SANDBOX)
   AddSandboxAnnotations();
-#endif /* MOZ_CONTENT_SANDBOX && !MOZ_WIDGET_GONK */
+#endif /* MOZ_CONTENT_SANDBOX */
 #endif /* MOZ_CRASHREPORTER */
 
   {

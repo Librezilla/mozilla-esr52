@@ -89,8 +89,6 @@ AssertMainProcess()
   MOZ_ASSERT(GeckoProcessType_Default == XRE_GetProcessType());
 }
 
-#if !defined(MOZ_WIDGET_GONK)
-
 bool
 WindowIsActive(nsPIDOMWindowInner* aWindow)
 {
@@ -99,10 +97,6 @@ WindowIsActive(nsPIDOMWindowInner* aWindow)
 
   return !document->Hidden();
 }
-
-#endif // !defined(MOZ_WIDGET_GONK)
-
-} // namespace
 
 template <class InfoType>
 class ObserversManager

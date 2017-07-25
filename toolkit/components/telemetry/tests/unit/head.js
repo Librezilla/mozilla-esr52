@@ -20,7 +20,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "OS",
 const gIsWindows = AppConstants.platform == "win";
 const gIsMac = AppConstants.platform == "macosx";
 const gIsAndroid = AppConstants.platform == "android";
-const gIsGonk = AppConstants.platform == "gonk";
 const gIsLinux = AppConstants.platform == "linux";
 
 const Telemetry = Cc["@mozilla.org/base/telemetry;1"].getService(Ci.nsITelemetry);

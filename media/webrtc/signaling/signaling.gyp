@@ -39,16 +39,6 @@
     'chromium_code': 1,
   },
 
-  'target_defaults': {
-    'conditions': [
-      ['moz_widget_toolkit_gonk==1', {
-        'defines' : [
-          'WEBRTC_GONK',
-       ],
-      }],
-    ],
-  },
-
   'targets': [
 
     #
@@ -224,27 +214,6 @@
             '../../../netwerk/srtp/src/crypto/include',
           ],
         }],
-        ['moz_webrtc_omx==1', {
-          'sources': [
-            './src/media-conduit/WebrtcOMXH264VideoCodec.cpp',
-            './src/media-conduit/OMXVideoCodec.cpp',
-          ],
-          'include_dirs': [
-            # hack on hack to re-add it after SrtpFlow removes it
-            '../../../dom/media/omx',
-            '../../../gfx/layers/client',
-          ],
-          'cflags_mozilla': [
-            '-I$(ANDROID_SOURCE)/frameworks/av/include/media/stagefright',
-            '-I$(ANDROID_SOURCE)/frameworks/av/include',
-            '-I$(ANDROID_SOURCE)/frameworks/native/include/media/openmax',
-            '-I$(ANDROID_SOURCE)/frameworks/native/include',
-            '-I$(ANDROID_SOURCE)/frameworks/native/opengl/include',
-          ],
-          'defines' : [
-            'MOZ_WEBRTC_OMX'
-          ],
-        }],
         ['moz_webrtc_mediacodec==1', {
           'include_dirs': [
             '../../../widget/android',
@@ -316,7 +285,7 @@
           'cflags_mozilla': [
           ],
         }],
-        ['OS=="android" or moz_widget_toolkit_gonk==1', {
+        ['OS=="android"', {
           'cflags_mozilla': [
             # This warning complains about important MOZ_EXPORT attributes
             # on forward declarations for Android API types.

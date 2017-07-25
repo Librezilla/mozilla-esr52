@@ -74,11 +74,7 @@ static const int kMagicAndroidSystemPropFd = 5;
 static const bool kLowRightsSubprocesses =
   // We currently only attempt to drop privileges on gonk, because we
   // have no plugins or extensions to worry about breaking.
-#ifdef MOZ_WIDGET_GONK
-  true
-#else
   false
-#endif
   ;
 
 static bool
@@ -834,12 +830,6 @@ GeckoChildProcessHost::PerformAsyncLaunchInternal(std::vector<std::string>& aExt
     newEnvVars["ANDROID_PROPERTY_WORKSPACE"] = buf;
   }
 #endif  // ANDROID
-
-#ifdef MOZ_WIDGET_GONK
-  if (const char *ldPreloadPath = getenv("LD_PRELOAD")) {
-    newEnvVars["LD_PRELOAD"] = ldPreloadPath;
-  }
-#endif // MOZ_WIDGET_GONK
 
 #if defined(XP_LINUX) && defined(MOZ_SANDBOX)
   // Preload libmozsandbox.so so that sandbox-related interpositions

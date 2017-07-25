@@ -165,8 +165,6 @@
  *
  * Mac:        ~/Library/Caches/Mozilla/updates/<absolute path to app dir>
  *
- * Gonk:       /data/local
- *
  * All others: Parent directory of XRE_EXECUTABLE_FILE.
  */
 #define XRE_UPDATE_ROOT_DIR "UpdRootD"

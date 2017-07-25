@@ -97,18 +97,6 @@
 #include "mozilla/dom/nsSynthVoiceRegistry.h"
 #endif
 
-#ifdef MOZ_WIDGET_GONK
-#include "SystemWorkerManager.h"
-using mozilla::dom::gonk::SystemWorkerManager;
-#define SYSTEMWORKERMANAGER_CID \
-  {0xd53b6524, 0x6ac3, 0x42b0, {0xae, 0xca, 0x62, 0xb3, 0xc4, 0xe5, 0x2b, 0x04}}
-#endif
-
-#ifdef MOZ_WIDGET_GONK
-#include "AudioManager.h"
-using mozilla::dom::gonk::AudioManager;
-#endif
-
 #include "mozilla/dom/PushNotifier.h"
 using mozilla::dom::PushNotifier;
 #define PUSHNOTIFIER_CID \
@@ -130,10 +118,8 @@ using mozilla::dom::AudioChannelAgent;
 #include "nsSystemPrincipal.h"
 #include "nsNullPrincipal.h"
 #include "nsNetCID.h"
-#ifndef MOZ_WIDGET_GONK
 #if defined(MOZ_WIDGET_ANDROID)
 #include "nsHapticFeedback.h"
-#endif
 #endif
 #include "nsParserUtils.h"
 
@@ -275,27 +261,15 @@ NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(ServiceWorkerManager,
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(WorkerDebuggerManager,
                                          WorkerDebuggerManager::GetInstance)
 
-#ifdef MOZ_WIDGET_GONK
-NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(SystemWorkerManager,
-                                         SystemWorkerManager::FactoryCreate)
-#endif
-
 #ifdef MOZ_WEBSPEECH
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(nsSynthVoiceRegistry,
                                          nsSynthVoiceRegistry::GetInstanceForService)
 #endif
 
-#ifdef MOZ_WIDGET_GONK
-NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(AudioManager,
-                                         AudioManager::GetInstance)
-#endif
-
 NS_GENERIC_FACTORY_CONSTRUCTOR(AudioChannelAgent)
 
-#ifndef MOZ_WIDGET_GONK
 #if defined(ANDROID)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsHapticFeedback)
-#endif
 #endif
 NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(ThirdPartyUtil, Init)
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(nsIPowerManagerService,
@@ -678,12 +652,6 @@ NS_DEFINE_NAMED_CID(NOTIFICATIONTELEMETRYSERVICE_CID);
 NS_DEFINE_NAMED_CID(PUSHNOTIFIER_CID);
 
 NS_DEFINE_NAMED_CID(WORKERDEBUGGERMANAGER_CID);
-#ifdef MOZ_WIDGET_GONK
-NS_DEFINE_NAMED_CID(SYSTEMWORKERMANAGER_CID);
-#endif
-#ifdef MOZ_WIDGET_GONK
-NS_DEFINE_NAMED_CID(NS_AUDIOMANAGER_CID);
-#endif
 
 NS_DEFINE_NAMED_CID(NS_AUDIOCHANNELAGENT_CID);
 
@@ -714,10 +682,8 @@ NS_DEFINE_NAMED_CID(NS_NULLPRINCIPAL_CID);
 NS_DEFINE_NAMED_CID(THIRDPARTYUTIL_CID);
 NS_DEFINE_NAMED_CID(NS_STRUCTUREDCLONECONTAINER_CID);
 
-#ifndef MOZ_WIDGET_GONK
 #if defined(ANDROID)
 NS_DEFINE_NAMED_CID(NS_HAPTICFEEDBACK_CID);
-#endif
 #endif
 NS_DEFINE_NAMED_CID(NS_POWERMANAGERSERVICE_CID);
 NS_DEFINE_NAMED_CID(OSFILECONSTANTSSERVICE_CID);
@@ -743,10 +709,6 @@ NS_DEFINE_NAMED_CID(PRESENTATION_DEVICE_MANAGER_CID);
 NS_DEFINE_NAMED_CID(PRESENTATION_TCP_SESSION_TRANSPORT_CID);
 
 NS_DEFINE_NAMED_CID(TEXT_INPUT_PROCESSOR_CID);
-
-#ifdef MOZ_B2G
-NS_DEFINE_NAMED_CID(NS_HARDWARE_KEY_HANDLER_CID);
-#endif
 
 static nsresult
 CreateWindowCommandTableConstructor(nsISupports *aOuter,
@@ -953,12 +915,6 @@ static const mozilla::Module::CIDEntry kLayoutCIDs[] = {
   { &kNOTIFICATIONTELEMETRYSERVICE_CID, false, nullptr, NotificationTelemetryServiceConstructor },
   { &kPUSHNOTIFIER_CID, false, nullptr, PushNotifierConstructor },
   { &kWORKERDEBUGGERMANAGER_CID, true, nullptr, WorkerDebuggerManagerConstructor },
-#ifdef MOZ_WIDGET_GONK
-  { &kSYSTEMWORKERMANAGER_CID, true, nullptr, SystemWorkerManagerConstructor },
-#endif
-#ifdef MOZ_WIDGET_GONK
-  { &kNS_AUDIOMANAGER_CID, true, nullptr, AudioManagerConstructor },
-#endif
   { &kNS_AUDIOCHANNELAGENT_CID, true, nullptr, AudioChannelAgentConstructor },
   { &kNS_HTMLEDITOR_CID, false, nullptr, HTMLEditorConstructor },
   { &kNS_EDITORCONTROLLER_CID, false, nullptr, EditorControllerConstructor },
@@ -990,10 +946,8 @@ static const mozilla::Module::CIDEntry kLayoutCIDs[] = {
   { &kNS_PRINCIPAL_CID, false, nullptr, nsPrincipalConstructor },
   { &kNS_SYSTEMPRINCIPAL_CID, false, nullptr, nsSystemPrincipalConstructor },
   { &kNS_NULLPRINCIPAL_CID, false, nullptr, nsNullPrincipalConstructor },
-#ifndef MOZ_WIDGET_GONK
 #if defined(ANDROID)
   { &kNS_HAPTICFEEDBACK_CID, false, nullptr, nsHapticFeedbackConstructor },
-#endif
 #endif
   { &kTHIRDPARTYUTIL_CID, false, nullptr, ThirdPartyUtilConstructor },
   { &kNS_STRUCTUREDCLONECONTAINER_CID, false, nullptr, nsStructuredCloneContainerConstructor },
@@ -1089,12 +1043,6 @@ static const mozilla::Module::ContractIDEntry kLayoutContracts[] = {
   { NOTIFICATIONTELEMETRYSERVICE_CONTRACTID, &kNOTIFICATIONTELEMETRYSERVICE_CID },
   { PUSHNOTIFIER_CONTRACTID, &kPUSHNOTIFIER_CID },
   { WORKERDEBUGGERMANAGER_CONTRACTID, &kWORKERDEBUGGERMANAGER_CID },
-#ifdef MOZ_WIDGET_GONK
-  { SYSTEMWORKERMANAGER_CONTRACTID, &kSYSTEMWORKERMANAGER_CID },
-#endif
-#ifdef MOZ_WIDGET_GONK
-  { NS_AUDIOMANAGER_CONTRACTID, &kNS_AUDIOMANAGER_CID },
-#endif
   { NS_AUDIOCHANNELAGENT_CONTRACTID, &kNS_AUDIOCHANNELAGENT_CID },
   { "@mozilla.org/editor/htmleditor;1", &kNS_HTMLEDITOR_CID },
   { "@mozilla.org/editor/editorcontroller;1", &kNS_EDITORCONTROLLER_CID },
@@ -1125,10 +1073,8 @@ static const mozilla::Module::ContractIDEntry kLayoutContracts[] = {
   { NS_PRINCIPAL_CONTRACTID, &kNS_PRINCIPAL_CID },
   { NS_SYSTEMPRINCIPAL_CONTRACTID, &kNS_SYSTEMPRINCIPAL_CID },
   { NS_NULLPRINCIPAL_CONTRACTID, &kNS_NULLPRINCIPAL_CID },
-#ifndef MOZ_WIDGET_GONK
 #if defined(ANDROID)
   { "@mozilla.org/widget/hapticfeedback;1", &kNS_HAPTICFEEDBACK_CID },
-#endif
 #endif
   { THIRDPARTYUTIL_CONTRACTID, &kTHIRDPARTYUTIL_CID },
   { NS_STRUCTUREDCLONECONTAINER_CONTRACTID, &kNS_STRUCTUREDCLONECONTAINER_CID },
@@ -1147,9 +1093,6 @@ static const mozilla::Module::ContractIDEntry kLayoutContracts[] = {
   { PRESENTATION_DEVICE_MANAGER_CONTRACTID, &kPRESENTATION_DEVICE_MANAGER_CID },
   { PRESENTATION_TCP_SESSION_TRANSPORT_CONTRACTID, &kPRESENTATION_TCP_SESSION_TRANSPORT_CID },
   { "@mozilla.org/text-input-processor;1", &kTEXT_INPUT_PROCESSOR_CID },
-#ifdef MOZ_B2G
-  { NS_HARDWARE_KEY_HANDLER_CONTRACTID, &kNS_HARDWARE_KEY_HANDLER_CID },
-#endif
   { nullptr }
 };
 
@@ -1166,9 +1109,6 @@ static const mozilla::Module::CategoryEntry kLayoutCategories[] = {
   { "clear-origin-attributes-data", "QuotaManagerService", "service," QUOTAMANAGER_SERVICE_CONTRACTID },
   { OBSERVER_TOPIC_IDLE_DAILY, "QuotaManagerService", QUOTAMANAGER_SERVICE_CONTRACTID },
   CONTENTDLF_CATEGORIES
-#ifdef MOZ_WIDGET_GONK
-  { "profile-after-change", "Gonk System Worker Manager", SYSTEMWORKERMANAGER_CONTRACTID },
-#endif
   { "profile-after-change", "PresentationDeviceManager", PRESENTATION_DEVICE_MANAGER_CONTRACTID },
   { "profile-after-change", "PresentationService", PRESENTATION_SERVICE_CONTRACTID },
   { "profile-after-change", "Notification Telemetry Service", NOTIFICATIONTELEMETRYSERVICE_CONTRACTID },

@@ -1246,7 +1246,7 @@ BuildTempPath(char* aBuf, size_t aBufLen)
 static size_t
 BuildTempPath(char* aBuf, size_t aBufLen)
 {
-  // GeckoAppShell or Gonk's init.rc sets this in the environment
+  // GeckoAppShell sets this in the environment
   const char *tempenv = PR_GetEnv("TMPDIR");
   if (!tempenv) {
     return false;
@@ -1527,7 +1527,7 @@ nsresult SetExceptionHandler(nsIFile* aXREDirectory,
   if (gExceptionHandler)
     return NS_ERROR_ALREADY_INITIALIZED;
 
-#if !defined(DEBUG) || defined(MOZ_WIDGET_GONK)
+#if !defined(DEBUG)
   // In non-debug builds, enable the crash reporter by default, and allow
   // disabling it with the MOZ_CRASHREPORTER_DISABLE environment variable.
   // Also enable it by default in debug gonk builds as it is difficult to
@@ -1543,10 +1543,7 @@ nsresult SetExceptionHandler(nsIFile* aXREDirectory,
     return NS_OK;
 #endif
 
-#if defined(MOZ_WIDGET_GONK)
-  doReport = false;
-  headlessClient = true;
-#elif defined(XP_WIN)
+#if defined(XP_WIN)
   doReport = ShouldReport();
 #else
   // this environment variable prevents us from launching
