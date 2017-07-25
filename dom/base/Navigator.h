@@ -71,7 +71,9 @@ namespace network {
 class Connection;
 } // namespace network
 
+#ifdef MOZ_POWER
 class PowerManager;
+#endif
 class Presentation;
 class LegacyMozTCPSocket;
 class VRDisplay;
@@ -280,7 +282,9 @@ private:
   RefPtr<Geolocation> mGeolocation;
 #endif
   RefPtr<DesktopNotificationCenter> mNotification;
+#ifdef MOZ_POWER
   RefPtr<PowerManager> mPowerManager;
+#endif
   RefPtr<network::Connection> mConnection;
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
   RefPtr<system::AudioChannelManager> mAudioChannelManager;

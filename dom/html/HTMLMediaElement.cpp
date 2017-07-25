@@ -83,7 +83,9 @@
 
 #include "AudioChannelService.h"
 
+#ifdef MOZ_POWER
 #include "mozilla/dom/power/PowerManagerService.h"
+#endif
 
 #ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"

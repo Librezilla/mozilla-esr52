@@ -64,7 +64,6 @@ DIRS += [
     'media',
     'notification',
     'offline',
-    'power',
     'push',
     'quota',
     'security',
@@ -101,6 +100,9 @@ DIRS += [
     'xhr',
     'worklet',
 ]
+
+if CONFIG['MOZ_POWER']:
+    DIRS += ['power']
 
 if CONFIG['MOZ_FLYWEB']:
     DIRS += ['flyweb']
