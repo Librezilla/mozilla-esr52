@@ -6,12 +6,8 @@
 #include <stdio.h>
 #include "prthread.h"
 #include "prinit.h"
-#ifndef XP_OS2
 #include "private/pprmisc.h"
 #include <windows.h>
-#else
-#include "primpl.h"
-#include <os2.h>
 #endif
 
 #define THREADS 10

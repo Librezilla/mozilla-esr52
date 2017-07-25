@@ -383,11 +383,6 @@ PR_IMPLEMENT(PRInt32) PR_GetSysfdTableMax(void)
     return 16384;
 #elif defined (WIN16)
     return FOPEN_MAX;
-#elif defined(XP_OS2)
-    ULONG ulReqCount = 0;
-    ULONG ulCurMaxFH = 0;
-    DosSetRelMaxFH(&ulReqCount, &ulCurMaxFH);
-    return ulCurMaxFH;
 #elif defined(XP_BEOS)
     PR_SetError(PR_NOT_IMPLEMENTED_ERROR, 0);
    return -1;
@@ -422,17 +417,6 @@ PR_IMPLEMENT(PRInt32) PR_SetSysfdTableSize(int table_size)
     }
 
     return rlim.rlim_cur;
-#elif defined(XP_OS2)
-    PRInt32 tableMax = PR_GetSysfdTableMax();
-    if (table_size > tableMax) {
-      APIRET rc = NO_ERROR;
-      rc = DosSetMaxFH(table_size);
-      if (rc == NO_ERROR)
-        return table_size;
-      else
-        return -1;
-    } 
-    return tableMax;
 #elif defined(AIX) || defined(QNX) \
         || defined(WIN32) || defined(WIN16) || defined(XP_BEOS)
     PR_SetError(PR_NOT_IMPLEMENTED_ERROR, 0);
@@ -692,20 +676,12 @@ PR_IMPLEMENT(PRStatus) PR_CreatePipe(
     (*readPipe)->secret->inheritable = _PR_TRI_TRUE;
     (*writePipe)->secret->inheritable = _PR_TRI_TRUE;
     return PR_SUCCESS;
-#elif defined(XP_UNIX) || defined(XP_OS2) || defined(XP_BEOS)
-#ifdef XP_OS2
-    HFILE pipefd[2];
-#else
+#elif defined(XP_UNIX) || defined(XP_BEOS)
     int pipefd[2];
-#endif
 
     if (!_pr_initialized) _PR_ImplicitInitialization();
 
-#ifdef XP_OS2
-    if (DosCreatePipe(&pipefd[0], &pipefd[1], 4096) != 0) {
-#else
     if (pipe(pipefd) == -1) {
-#endif
         /* XXX map pipe error */
         PR_SetError(PR_UNKNOWN_ERROR, errno);
         return PR_FAILURE;

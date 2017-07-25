@@ -528,7 +528,7 @@ static struct tm *MT_safe_localtime(const time_t *clock, struct tm *result)
     
     tmPtr = localtime(clock);
 
-#if defined(WIN16) || defined(XP_OS2)
+#if defined(WIN16)
     if ( (PRInt32) *clock < 0 ||
          ( (PRInt32) *clock == 0 && tmPtr->tm_year != 70))
         result = NULL;

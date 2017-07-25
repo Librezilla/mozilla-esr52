@@ -155,9 +155,6 @@
 #if defined(__MSDOS__) && !defined(MSDOS)
 #  define MSDOS
 #endif
-#if (defined(OS_2) || defined(__OS2__)) && !defined(OS2)
-#  define OS2
-#endif
 #if defined(_WINDOWS) && !defined(WINDOWS)
 #  define WINDOWS
 #endif
@@ -166,7 +163,7 @@
 #    define WIN32
 #  endif
 #endif
-#if (defined(MSDOS) || defined(OS2) || defined(WINDOWS)) && !defined(WIN32)
+#if (defined(MSDOS) || defined(WINDOWS)) && !defined(WIN32)
 #  if !defined(__GNUC__) && !defined(__FLAT__) && !defined(__386__)
 #    ifndef SYS16BIT
 #      define SYS16BIT
@@ -204,7 +201,7 @@
 #if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))
 #  define STDC
 #endif
-#if !defined(STDC) && (defined(OS2) || defined(__HOS_AIX__))
+#if !defined(STDC) && (defined(__HOS_AIX__))
 #  define STDC
 #endif
 

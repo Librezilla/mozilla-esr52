@@ -12,13 +12,6 @@
 */
 #include "nspr.h"
 
-#if defined(XP_OS2)
-#define INCL_DOS
-#define INCL_DOSERRORS
-#define INCL_WIN
-#include <os2.h>
-#endif
-
 PR_BEGIN_EXTERN_C
 
 /*---------------------------------------------------------------------------
@@ -302,16 +295,6 @@ NSPR_API(PRMonitor*) PR_CTestAndEnterMonitor(void *address);
 NSPR_API(void) _PR_Irix_Set_Arena_Params(PRInt32 initusers, PRInt32 initsize);
 
 #endif /* IRIX */
-
-#if defined(XP_OS2)
-/*
-** These functions need to be called at the start and end of a thread.
-** An EXCEPTIONREGISTRATIONRECORD must be declared on the stack and its
-** address passed to the two functions.
-*/
-NSPR_API(void) PR_OS2_SetFloatExcpHandler(EXCEPTIONREGISTRATIONRECORD* e);
-NSPR_API(void) PR_OS2_UnsetFloatExcpHandler(EXCEPTIONREGISTRATIONRECORD* e);
-#endif /* XP_OS2 */
 
 /* I think PR_GetMonitorEntryCount is useless. All you really want is this... */
 #define PR_InMonitor(m)		(PR_GetMonitorEntryCount(m) > 0)

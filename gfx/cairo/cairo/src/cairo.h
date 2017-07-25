@@ -2068,7 +2068,6 @@ cairo_surface_status (cairo_surface_t *surface);
  * @CAIRO_SURFACE_TYPE_BEOS: The surface is of type beos
  * @CAIRO_SURFACE_TYPE_DIRECTFB: The surface is of type directfb
  * @CAIRO_SURFACE_TYPE_SVG: The surface is of type svg
- * @CAIRO_SURFACE_TYPE_OS2: The surface is of type os2
  * @CAIRO_SURFACE_TYPE_WIN32_PRINTING: The surface is a win32 printing surface
  * @CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: The surface is of type quartz_image
  * @CAIRO_SURFACE_TYPE_SCRIPT: The surface is of type script, since 1.10
@@ -2119,7 +2118,6 @@ typedef enum _cairo_surface_type {
     CAIRO_SURFACE_TYPE_BEOS,
     CAIRO_SURFACE_TYPE_DIRECTFB,
     CAIRO_SURFACE_TYPE_SVG,
-    CAIRO_SURFACE_TYPE_OS2,
     CAIRO_SURFACE_TYPE_WIN32_PRINTING,
     CAIRO_SURFACE_TYPE_QUARTZ_IMAGE,
     CAIRO_SURFACE_TYPE_SCRIPT,
