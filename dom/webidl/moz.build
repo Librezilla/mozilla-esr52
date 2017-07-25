@@ -301,7 +301,6 @@ WEBIDL_FILES = [
     'MimeTypeArray.webidl',
     'MouseEvent.webidl',
     'MouseScrollEvent.webidl',
-    'MozPowerManager.webidl',
     'MozSelfSupport.webidl',
     'MozTimeManager.webidl',
     'MutationEvent.webidl',
@@ -606,6 +605,11 @@ if CONFIG['MOZ_GEOLOCATION']:
         'Geolocation.webidl',
         'Position.webidl',
         'PositionError.webidl'
+    ]
+
+if CONFIG['MOZ_POWER']:
+    WEBIDL_FILES += [
+        'MozPowerManager.webidl'
     ]
 
 if CONFIG['MOZ_AUDIO_CHANNEL_MANAGER']:

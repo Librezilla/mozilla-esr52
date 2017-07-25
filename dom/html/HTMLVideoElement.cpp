@@ -30,7 +30,11 @@
 #ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
 #endif /* MOZ_WAKELOCK */
+
+#ifdef MOZ_POWER
 #include "mozilla/dom/power/PowerManagerService.h"
+#endif /* MOZ_POWER */
+
 #include "mozilla/dom/Performance.h"
 #include "mozilla/dom/VideoPlaybackQuality.h"
 

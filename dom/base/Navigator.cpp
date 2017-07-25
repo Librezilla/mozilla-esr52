@@ -35,11 +35,15 @@
 #ifdef MOZ_GAMEPAD
 #include "mozilla/dom/GamepadServiceTest.h"
 #endif
+
+#ifdef MOZ_POWER
 #include "mozilla/dom/PowerManager.h"
+#include "mozilla/dom/power/PowerManagerService.h"
+#endif /* MOZ_POWER */
+
 #ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
 #endif
-#include "mozilla/dom/power/PowerManagerService.h"
 
 #ifdef MOZ_FLYWEB
 #include "mozilla/dom/FlyWebPublishedServer.h"
@@ -201,7 +205,9 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(Navigator)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mGeolocation)
 #endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mNotification)
+#ifdef MOZ_POWER
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPowerManager)
+#endif /* MOZ_POWER */
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mConnection)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mStorageManager)
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
@@ -255,10 +261,12 @@ Navigator::Invalidate()
     mNotification = nullptr;
   }
 
+#if MOZ_POWER
   if (mPowerManager) {
     mPowerManager->Shutdown();
     mPowerManager = nullptr;
   }
+#endif /* MOZ_POWER */
 
   if (mConnection) {
     mConnection->Shutdown();
