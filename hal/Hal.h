@@ -10,15 +10,18 @@
 #include "base/basictypes.h"
 #include "base/platform_thread.h"
 #include "nsTArray.h"
-#include "mozilla/dom/MozPowerManagerBinding.h"
 #include "mozilla/dom/network/Types.h"
-#include "mozilla/dom/power/Types.h"
 #include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/hal_sandbox/PHal.h"
 #include "mozilla/HalScreenConfiguration.h"
 #include "mozilla/HalTypes.h"
 #include "mozilla/Observer.h"
 #include "mozilla/Types.h"
+
+#ifdef MOZ_POWER
+#include "mozilla/dom/MozPowerManagerBinding.h"
+#include "mozilla/dom/power/Types.h"
+#endif
 
 /*
  * Hal.h contains the public Hal API.

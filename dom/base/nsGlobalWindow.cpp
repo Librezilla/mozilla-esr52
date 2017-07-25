@@ -38,7 +38,9 @@
 #ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
 #endif
+#ifdef MOZ_POWER
 #include "mozilla/dom/power/PowerManagerService.h"
+#endif
 #include "nsIDocShellTreeOwner.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIPermissionManager.h"

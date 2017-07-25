@@ -54,7 +54,6 @@
 #include "mozilla/dom/PCycleCollectWithLogsParent.h"
 #include "mozilla/dom/PMemoryReportRequestParent.h"
 #include "mozilla/dom/ServiceWorkerRegistrar.h"
-#include "mozilla/dom/power/PowerManagerService.h"
 #include "mozilla/dom/Permissions.h"
 #include "mozilla/dom/PresentationParent.h"
 #include "mozilla/dom/PPresentationParent.h"
@@ -269,7 +268,6 @@ using mozilla::ProfileGatherer;
 #ifdef MOZ_CRASHREPORTER
 using namespace CrashReporter;
 #endif
-using namespace mozilla::dom::power;
 using namespace mozilla::media;
 using namespace mozilla::embedding;
 using namespace mozilla::gfx;

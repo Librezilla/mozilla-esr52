@@ -315,7 +315,6 @@ WEBIDL_FILES = [
     'MimeTypeArray.webidl',
     'MouseEvent.webidl',
     'MouseScrollEvent.webidl',
-    'MozPowerManager.webidl',
     'MozSelfSupport.webidl',
     'MozTimeManager.webidl',
     'MozWakeLock.webidl',
@@ -587,6 +586,11 @@ WEBIDL_FILES = [
     'XULDocument.webidl',
     'XULElement.webidl',
 ]
+
+if CONFIG['MOZ_POWER']:
+    WEBIDL_FILES += [
+        'MozPowerManager.webidl'
+    ]
 
 if CONFIG['MOZ_AUDIO_CHANNEL_MANAGER']:
     WEBIDL_FILES += [
