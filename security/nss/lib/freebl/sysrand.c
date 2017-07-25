@@ -12,7 +12,7 @@
 static size_t rng_systemFromNoise(unsigned char *dest, size_t maxLen);
 #endif
 
-#if defined(XP_UNIX) || defined(XP_BEOS)
+#if defined(XP_UNIX)
 #include "unix_rand.c"
 #endif
 #ifdef XP_WIN

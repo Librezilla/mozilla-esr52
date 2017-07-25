@@ -564,7 +564,7 @@ void _PR_CleanupTime(void)
 #endif
 }
 
-#if defined(XP_UNIX) || defined(XP_PC) || defined(XP_BEOS)
+#if defined(XP_UNIX) || defined(XP_PC)
 
 PR_IMPLEMENT(PRTimeParameters)
 PR_LocalTimeParameters(const PRExplodedTime *gmt)
@@ -709,7 +709,7 @@ PR_LocalTimeParameters(const PRExplodedTime *gmt)
     return retVal;
 }
 
-#endif    /* defined(XP_UNIX) || defined(XP_PC) || defined(XP_BEOS) */
+#endif    /* defined(XP_UNIX) || defined(XP_PC) */
 
 /*
  *------------------------------------------------------------------------
@@ -1688,7 +1688,7 @@ PR_FormatTime(char *buf, int buflen, const char *fmt,
          * additional fields: tm_zone and tm_gmtoff.
          */
 
-#if (__GLIBC__ >= 2) || defined(XP_BEOS) \
+#if (__GLIBC__ >= 2) \
         || defined(NETBSD) || defined(OPENBSD) || defined(FREEBSD) \
         || defined(DARWIN) || defined(SYMBIAN) || defined(ANDROID)
         a.tm_zone = NULL;

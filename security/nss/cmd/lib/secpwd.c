@@ -15,7 +15,7 @@
 #include <termios.h>
 #endif
 
-#if defined(XP_UNIX) || defined(XP_BEOS)
+#if defined(XP_UNIX)
 #include <unistd.h> /* for isatty() */
 #endif
 

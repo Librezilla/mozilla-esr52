@@ -60,8 +60,6 @@
     #include <inttypes.h>
     #include <stdbool.h>
   #endif
-#elif defined(BEOS)
-  #include <inttypes.h>
 #else
   /*
    * For those that ship a standard C99 stdint.h header file, include

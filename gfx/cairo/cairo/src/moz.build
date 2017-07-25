@@ -67,13 +67,6 @@ elif CONFIG['MOZ_WIDGET_TOOLKIT'] in {'cocoa', 'uikit'}:
         'cairo-quartz-image-surface.c',
         'cairo-quartz-surface.c',
     ]
-elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'beos':
-    EXPORTS.cairo += [
-        'cairo-beos.h',
-    ]
-    SOURCES += [
-        'cairo-beos-surface.cpp',
-    ]
 elif 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
     EXPORTS.cairo += [
         'cairo-ps.h',

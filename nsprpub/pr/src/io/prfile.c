@@ -381,9 +381,6 @@ PR_IMPLEMENT(PRInt32) PR_GetSysfdTableMax(void)
      * There is a systemwide limit of 65536 user handles.
      */
     return 16384;
-#elif defined(XP_BEOS)
-    PR_SetError(PR_NOT_IMPLEMENTED_ERROR, 0);
-   return -1;
 #else
     write me;
 #endif
@@ -416,7 +413,7 @@ PR_IMPLEMENT(PRInt32) PR_SetSysfdTableSize(int table_size)
 
     return rlim.rlim_cur;
 #elif defined(AIX) || defined(QNX) \
-        || defined(WIN32) || defined(XP_BEOS)
+        || defined(WIN32)
     PR_SetError(PR_NOT_IMPLEMENTED_ERROR, 0);
     return -1;
 #else
@@ -672,7 +669,7 @@ PR_IMPLEMENT(PRStatus) PR_CreatePipe(
     (*readPipe)->secret->inheritable = _PR_TRI_TRUE;
     (*writePipe)->secret->inheritable = _PR_TRI_TRUE;
     return PR_SUCCESS;
-#elif defined(XP_UNIX) || defined(XP_BEOS)
+#elif defined(XP_UNIX)
     int pipefd[2];
 
     if (!_pr_initialized) _PR_ImplicitInitialization();
@@ -694,13 +691,9 @@ PR_IMPLEMENT(PRStatus) PR_CreatePipe(
         close(pipefd[1]);
         return PR_FAILURE;
     }
-#ifndef XP_BEOS /* Pipes are nonblocking on BeOS */
     _PR_MD_MAKE_NONBLOCK(*readPipe);
-#endif
     _PR_MD_INIT_FD_INHERITABLE(*readPipe, PR_FALSE);
-#ifndef XP_BEOS /* Pipes are nonblocking on BeOS */
     _PR_MD_MAKE_NONBLOCK(*writePipe);
-#endif
     _PR_MD_INIT_FD_INHERITABLE(*writePipe, PR_FALSE);
     return PR_SUCCESS;
 #else
