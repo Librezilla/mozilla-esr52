@@ -6596,7 +6596,7 @@ GetABI(JSContext* cx, HandleValue abiType, ffi_abi* result)
 #endif
   case ABI_STDCALL:
   case ABI_WINAPI:
-#if (defined(_WIN32) && !defined(_WIN64)) || defined(_OS2)
+#if (defined(_WIN32) && !defined(_WIN64))
     *result = FFI_STDCALL;
     return true;
 #elif (defined(_WIN64))
@@ -6747,7 +6747,7 @@ FunctionType::BuildSymbolName(JSString* name,
     break;
 
   case ABI_STDCALL: {
-#if (defined(_WIN32) && !defined(_WIN64)) || defined(_OS2)
+#if (defined(_WIN32) && !defined(_WIN64))
     // On WIN32, stdcall functions look like:
     //   _foo@40
     // where 'foo' is the function name, and '40' is the aligned size of the

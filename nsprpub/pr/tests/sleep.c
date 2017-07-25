@@ -5,13 +5,11 @@
 
 #include "nspr.h"
 
-#if defined(XP_UNIX) || defined(XP_OS2)
+#if defined(XP_UNIX)
 
 #include <stdio.h>
 
-#ifndef XP_OS2
 #include <unistd.h>
-#endif
 #include <sys/time.h>
 
 #if defined(HAVE_SVID_GETTOD)
