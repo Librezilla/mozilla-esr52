@@ -132,7 +132,10 @@
 #include "nsChromeRegistryContent.h"
 #include "nsFrameMessageManager.h"
 
+#ifdef MOZ_GEOLOCATION
 #include "nsIGeolocationProvider.h"
+#endif
+
 #include "mozilla/dom/PMemoryReportRequestChild.h"
 #include "mozilla/dom/PCycleCollectWithLogsChild.h"
 
@@ -2260,6 +2263,7 @@ ContentChild::RecvAsyncMessage(const nsString& aMsg,
   return true;
 }
 
+#ifdef MOZ_GEOLOCATION
 bool
 ContentChild::RecvGeolocationUpdate(const GeoPosition& somewhere)
 {
@@ -2284,6 +2288,7 @@ ContentChild::RecvGeolocationError(const uint16_t& errorCode)
   gs->NotifyError(errorCode);
   return true;
 }
+#endif /* MOZ_GEOLOCATION */
 
 bool
 ContentChild::RecvUpdateDictionaryList(InfallibleTArray<nsString>&& aDictionaries)

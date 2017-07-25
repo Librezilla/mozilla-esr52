@@ -45,7 +45,9 @@
 #include "nsIDOMFileList.h"
 #include "nsIDOMFocusEvent.h"
 #include "nsIDOMFormData.h"
+#ifdef MOZ_GEOLOCATION
 #include "nsIDOMGeoPositionError.h"
+#endif
 #include "nsIDOMHistory.h"
 #include "nsIDOMHTMLAnchorElement.h"
 #include "nsIDOMHTMLAppletElement.h"
@@ -362,7 +364,9 @@ const ComponentsInterfaceShimEntry kComponentsInterfaceShimMap[] =
   DEFINE_SHIM(FileList),
   DEFINE_SHIM(FocusEvent),
   DEFINE_SHIM(FormData),
+#ifdef MOZ_GEOLOCATION
   DEFINE_SHIM_WITH_CUSTOM_INTERFACE(nsIDOMGeoPositionError, PositionError),
+#endif
   DEFINE_SHIM(History),
   DEFINE_SHIM(HTMLAnchorElement),
   DEFINE_SHIM(HTMLAppletElement),

@@ -25,7 +25,6 @@ interfaces = [
     'storage',
     'json',
     'offline',
-    'geolocation',
     'notification',
     'permission',
     'svg',
@@ -33,6 +32,9 @@ interfaces = [
     'apps',
     'push',
 ]
+
+if CONFIG['MOZ_GEOLOCATION']:
+    interfaces += ['geolocation']
 
 DIRS += ['interfaces/' + i for i in interfaces]
 
@@ -52,7 +54,6 @@ DIRS += [
     'filehandle',
     'filesystem',
     'gamepad',
-    'geolocation',
     'grid',
     'html',
     'json',
@@ -99,6 +100,9 @@ DIRS += [
     'xhr',
     'worklet',
 ]
+
+if CONFIG['MOZ_GEOLOCATION']:
+    DIRS += ['geolocation']
 
 if CONFIG['MOZ_FLYWEB']:
     DIRS += ['flyweb']
