@@ -439,7 +439,6 @@ static const SurfaceMemoryReporterAttrs sSurfaceMemoryReporterAttrs[] = {
     {"gfx-surface-glitz???", nullptr},       // should never be used
     {"gfx-surface-quartz", nullptr},
     {"gfx-surface-win32", nullptr},
-    {"gfx-surface-beos", nullptr},
     {"gfx-surface-directfb???", nullptr},    // should never be used
     {"gfx-surface-svg", nullptr},
     {"gfx-surface-os2", nullptr},

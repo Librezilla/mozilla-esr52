@@ -8,10 +8,6 @@
 #include "prprf.h"
 #include "prlong.h"
 
-#if defined(BEOS)
-#include <kernel/OS.h>
-#endif
-
 /* BSD-derived systems use sysctl() to get the number of processors */
 #if defined(BSDI) || defined(FREEBSD) || defined(NETBSD) \
     || defined(OPENBSD) || defined(DRAGONFLY) || defined(DARWIN)
@@ -155,11 +151,6 @@ PR_IMPLEMENT(PRInt32) PR_GetNumberOfProcessors( void )
 
     GetSystemInfo( &info );
     numCpus = info.dwNumberOfProcessors;
-#elif defined(BEOS)
-    system_info sysInfo;
-
-    get_system_info(&sysInfo);
-    numCpus = sysInfo.cpu_count;
 #elif defined(_PR_HAVE_SYSCTL)
     int mib[2];
     int rc;
