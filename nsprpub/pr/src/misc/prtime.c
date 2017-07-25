@@ -528,19 +528,11 @@ static struct tm *MT_safe_localtime(const time_t *clock, struct tm *result)
     
     tmPtr = localtime(clock);
 
-#if defined(WIN16)
-    if ( (PRInt32) *clock < 0 ||
-         ( (PRInt32) *clock == 0 && tmPtr->tm_year != 70))
-        result = NULL;
-    else
-        *result = *tmPtr;
-#else
     if (tmPtr) {
         *result = *tmPtr;
     } else {
         result = NULL;
     }
-#endif /* WIN16 */
 
     if (needLock) PR_Unlock(monitor);
 
