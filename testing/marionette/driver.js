@@ -97,7 +97,7 @@ this.Context.fromString = function (s) {
  * object.
  *
  * @param {string} appName
- *     Description of the product, for example "B2G" or "Firefox".
+ *     Description of the product, for example "Firefox".
  * @param {MarionetteServer} server
  *     The instance of Marionette server.
  */
@@ -604,7 +604,7 @@ GeckoDriver.prototype.newSession = function* (cmd, resp) {
       win.addEventListener("load", listener, true);
     } else {
       let clickToStart = Preferences.get(CLICK_TO_START_PREF);
-      if (clickToStart && (this.appName != "B2G")) {
+      if (clickToStart) {
         let pService = Cc["@mozilla.org/embedcomp/prompt-service;1"]
             .getService(Ci.nsIPromptService);
         pService.alert(win, "", "Click to start execution of marionette tests");
@@ -627,7 +627,7 @@ GeckoDriver.prototype.newSession = function* (cmd, resp) {
     this.switchToGlobalMessageManager();
   };
 
-  if (!delayedBrowserStarted && this.appName != "B2G") {
+  if (!delayedBrowserStarted) {
     let self = this;
     Services.obs.addObserver(function onStart() {
       Services.obs.removeObserver(onStart, BROWSER_STARTUP_FINISHED);
@@ -980,8 +980,7 @@ GeckoDriver.prototype.getCurrentUrl = function (cmd) {
       return this.getCurrentWindow().location.href;
 
     case Context.CONTENT:
-      let isB2G = this.appName == "B2G";
-      return this.listener.getCurrentUrl(isB2G);
+      return this.listener.getCurrentUrl(false);
   }
 };
 
@@ -2487,7 +2486,7 @@ GeckoDriver.prototype.setWindowSize = function (cmd, resp) {
  * Maximizes the user agent window as if the user pressed the maximise
  * button.
  *
- * Not Supported on B2G or Fennec.
+ * Not Supported on Fennec.
  */
 GeckoDriver.prototype.maximizeWindow = function (cmd, resp) {
   assert.firefox()
@@ -2631,7 +2630,7 @@ GeckoDriver.prototype.uninstallAddon = function (cmd, resp) {
  * tracks.
  */
 GeckoDriver.prototype.generateFrameId = function (id) {
-  let uid = id + (this.appName == "B2G" ? "-b2g" : "");
+  let uid = id;
   return uid;
 };
 

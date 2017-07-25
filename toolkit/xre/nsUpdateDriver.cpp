@@ -77,9 +77,6 @@ GetUpdateLog()
 #if defined(MOZ_WIDGET_GONK)
 #include <linux/ioprio.h>
 
-static const int kB2GServiceArgc = 2;
-static const char *kB2GServiceArgv[] = { "/system/bin/start", "b2g" };
-
 static const char kAppUpdaterPrio[]        = "app.update.updater.prio";
 static const char kAppUpdaterOomScoreAdj[] = "app.update.updater.oom_score_adj";
 static const char kAppUpdaterIOPrioClass[] = "app.update.updater.ioprio.class";
@@ -503,15 +500,9 @@ SwitchToUpdatedApp(nsIFile *greDir, nsIFile *updateDir,
 #else
 
   nsAutoCString appFilePath;
-#if defined(MOZ_WIDGET_GONK)
-  appFilePath.Assign(kB2GServiceArgv[0]);
-  appArgc = kB2GServiceArgc;
-  appArgv = const_cast<char**>(kB2GServiceArgv);
-#else
   rv = appFile->GetNativePath(appFilePath);
   if (NS_FAILED(rv))
     return;
-#endif
 
   nsAutoCString updaterPath;
   rv = updater->GetNativePath(updaterPath);

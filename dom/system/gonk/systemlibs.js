@@ -35,8 +35,7 @@ this.libcutils = (function() {
   try {
     lib = ctypes.open("libcutils.so");
   } catch(ex) {
-    // Return a fallback option in case libcutils.so isn't present (e.g.
-    // when building Firefox with MOZ_B2G_RIL.
+    // Return a fallback option in case libcutils.so isn't present
     if (DEBUG) {
       dump("Could not load libcutils.so. Using fake propdb.\n");
     }

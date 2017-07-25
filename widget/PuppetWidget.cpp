@@ -63,11 +63,7 @@ MightNeedIMEFocus(const nsWidgetInitData* aInitData)
 {
   // In the puppet-widget world, popup widgets are just dummies and
   // shouldn't try to mess with IME state.
-#ifdef MOZ_CROSS_PROCESS_IME
   return !IsPopup(aInitData);
-#else
-  return false;
-#endif
 }
 
 // Arbitrary, fungible.
@@ -612,7 +608,6 @@ PuppetWidget::RecreateLayerManager(PLayerTransactionChild* aShadowManager)
 nsresult
 PuppetWidget::RequestIMEToCommitComposition(bool aCancel)
 {
-#ifdef MOZ_CROSS_PROCESS_IME
   if (!mTabChild) {
     return NS_ERROR_FAILURE;
   }
@@ -652,8 +647,6 @@ PuppetWidget::RequestIMEToCommitComposition(bool aCancel)
   DispatchEvent(&compositionCommitEvent, status);
 
   // NOTE: PuppetWidget might be destroyed already.
-
-#endif // #ifdef MOZ_CROSS_PROCESS_IME
 
   return NS_OK;
 }
@@ -724,10 +717,6 @@ PuppetWidget::SetInputContext(const InputContext& aContext,
   // open state on some platforms.
   mInputContext.mIMEState.mOpen = IMEState::OPEN_STATE_NOT_SUPPORTED;
 
-#ifndef MOZ_CROSS_PROCESS_IME
-  return;
-#endif
-
   if (!mTabChild) {
     return;
   }
@@ -744,10 +733,6 @@ PuppetWidget::SetInputContext(const InputContext& aContext,
 NS_IMETHODIMP_(InputContext)
 PuppetWidget::GetInputContext()
 {
-#ifndef MOZ_CROSS_PROCESS_IME
-  return InputContext();
-#endif
-
   // XXX Currently, we don't support retrieving IME open state from child
   //     process.
 
@@ -783,10 +768,6 @@ PuppetWidget::GetNativeIMEContext()
 nsresult
 PuppetWidget::NotifyIMEOfFocusChange(const IMENotification& aIMENotification)
 {
-#ifndef MOZ_CROSS_PROCESS_IME
-  return NS_OK;
-#endif
-
   if (!mTabChild)
     return NS_ERROR_FAILURE;
 
@@ -822,10 +803,6 @@ nsresult
 PuppetWidget::NotifyIMEOfCompositionUpdate(
                 const IMENotification& aIMENotification)
 {
-#ifndef MOZ_CROSS_PROCESS_IME
-  return NS_OK;
-#endif
-
   NS_ENSURE_TRUE(mTabChild, NS_ERROR_FAILURE);
 
   if (mInputContext.mIMEState.mEnabled != IMEState::PLUGIN &&
@@ -839,7 +816,6 @@ PuppetWidget::NotifyIMEOfCompositionUpdate(
 nsIMEUpdatePreference
 PuppetWidget::GetIMEUpdatePreference()
 {
-#ifdef MOZ_CROSS_PROCESS_IME
   // e10s requires IME content cache in in the TabParent for handling query
   // content event only with the parent process.  Therefore, this process
   // needs to receive a lot of information from the focused editor to sent
@@ -854,10 +830,6 @@ PuppetWidget::GetIMEUpdatePreference()
   return nsIMEUpdatePreference(mIMEPreferenceOfParent.mWantUpdates |
                                nsIMEUpdatePreference::NOTIFY_TEXT_CHANGE |
                                nsIMEUpdatePreference::NOTIFY_POSITION_CHANGE );
-#else
-  // B2G doesn't handle IME as widget-level.
-  return nsIMEUpdatePreference();
-#endif
 }
 
 nsresult
@@ -865,10 +837,6 @@ PuppetWidget::NotifyIMEOfTextChange(const IMENotification& aIMENotification)
 {
   MOZ_ASSERT(aIMENotification.mMessage == NOTIFY_IME_OF_TEXT_CHANGE,
              "Passed wrong notification");
-
-#ifndef MOZ_CROSS_PROCESS_IME
-  return NS_OK;
-#endif
 
   if (!mTabChild)
     return NS_ERROR_FAILURE;
@@ -902,10 +870,6 @@ PuppetWidget::NotifyIMEOfSelectionChange(
 {
   MOZ_ASSERT(aIMENotification.mMessage == NOTIFY_IME_OF_SELECTION_CHANGE,
              "Passed wrong notification");
-
-#ifndef MOZ_CROSS_PROCESS_IME
-  return NS_OK;
-#endif
 
   if (!mTabChild)
     return NS_ERROR_FAILURE;
@@ -957,9 +921,6 @@ PuppetWidget::NotifyIMEOfMouseButtonEvent(
 nsresult
 PuppetWidget::NotifyIMEOfPositionChange(const IMENotification& aIMENotification)
 {
-#ifndef MOZ_CROSS_PROCESS_IME
-  return NS_OK;
-#endif
   if (NS_WARN_IF(!mTabChild)) {
     return NS_ERROR_FAILURE;
   }

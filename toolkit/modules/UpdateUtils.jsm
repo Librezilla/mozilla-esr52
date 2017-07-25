@@ -16,7 +16,6 @@ Cu.import("resource://gre/modules/ctypes.jsm");
 const FILE_UPDATE_LOCALE                  = "update.locale";
 const PREF_APP_DISTRIBUTION               = "distribution.id";
 const PREF_APP_DISTRIBUTION_VERSION       = "distribution.version";
-const PREF_APP_B2G_VERSION                = "b2g.version";
 const PREF_APP_UPDATE_CUSTOM              = "app.update.custom";
 const PREF_APP_UPDATE_IMEI_HASH           = "app.update.imei_hash";
 
@@ -99,8 +98,6 @@ this.UpdateUtils = {
       } else {
         url = url.replace(/%PRODUCT_DEVICE%/g, productDevice + "-" + buildType);
       }
-      url = url.replace(/%B2G_VERSION%/g,
-                        Preferences.get(PREF_APP_B2G_VERSION, null));
       url = url.replace(/%IMEI%/g,
                         Preferences.get(PREF_APP_UPDATE_IMEI_HASH, "default"));
     }

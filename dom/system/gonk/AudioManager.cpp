@@ -457,89 +457,6 @@ AudioManager::HandleBluetoothStatusChanged(nsISupports* aSubject,
                                            const char* aTopic,
                                            const nsCString aAddress)
 {
-#ifdef MOZ_B2G_BT
-  bool isConnected = false;
-  if (!strcmp(aTopic, BLUETOOTH_SCO_STATUS_CHANGED_ID)) {
-    BluetoothHfpManagerBase* hfp =
-      static_cast<BluetoothHfpManagerBase*>(aSubject);
-    isConnected = hfp->IsScoConnected();
-  } else {
-    BluetoothProfileManagerBase* profile =
-      static_cast<BluetoothProfileManagerBase*>(aSubject);
-    isConnected = profile->IsConnected();
-  }
-
-  if (!strcmp(aTopic, BLUETOOTH_SCO_STATUS_CHANGED_ID)) {
-    if (isConnected) {
-      String8 cmd;
-      cmd.appendFormat("bt_samplerate=%d", kBtSampleRate);
-      AudioSystem::setParameters(0, cmd);
-      SetForceForUse(nsIAudioManager::USE_COMMUNICATION, nsIAudioManager::FORCE_BT_SCO);
-    } else {
-      int32_t force;
-      GetForceForUse(nsIAudioManager::USE_COMMUNICATION, &force);
-      if (force == nsIAudioManager::FORCE_BT_SCO) {
-        SetForceForUse(nsIAudioManager::USE_COMMUNICATION, nsIAudioManager::FORCE_NONE);
-      }
-    }
-  } else if (!strcmp(aTopic, BLUETOOTH_A2DP_STATUS_CHANGED_ID)) {
-    if (!isConnected && mA2dpSwitchDone) {
-      RefPtr<AudioManager> self = this;
-      nsCOMPtr<nsIRunnable> runnable =
-        NS_NewRunnableFunction([self, isConnected, aAddress]() {
-          if (self->mA2dpSwitchDone) {
-            return;
-          }
-          self->UpdateDeviceConnectionState(isConnected,
-                                            AUDIO_DEVICE_OUT_BLUETOOTH_A2DP,
-                                            aAddress);
-
-          String8 cmd("bluetooth_enabled=false");
-          AudioSystem::setParameters(0, cmd);
-          cmd.setTo("A2dpSuspended=true");
-          AudioSystem::setParameters(0, cmd);
-          self->mA2dpSwitchDone = true;
-        });
-      MessageLoop::current()->PostDelayedTask(
-        MakeAndAddRef<RunnableCallTask>(runnable), 1000);
-
-      mA2dpSwitchDone = false;
-    } else {
-      UpdateDeviceConnectionState(isConnected,
-                                  AUDIO_DEVICE_OUT_BLUETOOTH_A2DP,
-                                  aAddress);
-      String8 cmd("bluetooth_enabled=true");
-      AudioSystem::setParameters(0, cmd);
-      cmd.setTo("A2dpSuspended=false");
-      AudioSystem::setParameters(0, cmd);
-      mA2dpSwitchDone = true;
-#if ANDROID_VERSION >= 17
-      if (AudioSystem::getForceUse(AUDIO_POLICY_FORCE_FOR_MEDIA) == AUDIO_POLICY_FORCE_NO_BT_A2DP) {
-        SetForceForUse(AUDIO_POLICY_FORCE_FOR_MEDIA, AUDIO_POLICY_FORCE_NONE);
-      }
-#endif
-    }
-    mBluetoothA2dpEnabled = isConnected;
-  } else if (!strcmp(aTopic, BLUETOOTH_HFP_STATUS_CHANGED_ID)) {
-    UpdateDeviceConnectionState(isConnected,
-                                AUDIO_DEVICE_OUT_BLUETOOTH_SCO_HEADSET,
-                                aAddress);
-    UpdateDeviceConnectionState(isConnected,
-                                AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET,
-                                aAddress);
-  } else if (!strcmp(aTopic, BLUETOOTH_HFP_NREC_STATUS_CHANGED_ID)) {
-      String8 cmd;
-      BluetoothHfpManagerBase* hfp =
-          static_cast<BluetoothHfpManagerBase*>(aSubject);
-      if (hfp->IsNrecEnabled()) {
-          cmd.setTo("bt_headset_name=<unknown>;bt_headset_nrec=on");
-          AudioSystem::setParameters(0, cmd);
-      } else {
-          cmd.setTo("bt_headset_name=<unknown>;bt_headset_nrec=off");
-          AudioSystem::setParameters(0, cmd);
-      }
-  }
-#endif
 }
 
 void
@@ -684,11 +601,8 @@ AudioManager::AudioManager()
   , mIsVolumeInited(false)
   , mAudioOutDevicesUpdated(0)
   , mSwitchDone(true)
-#if defined(MOZ_B2G_BT) || ANDROID_VERSION >= 17
+#if ANDROID_VERSION >= 17
   , mBluetoothA2dpEnabled(false)
-#endif
-#ifdef MOZ_B2G_BT
-  , mA2dpSwitchDone(true)
 #endif
   , mObserver(new HeadphoneSwitchObserver())
 {

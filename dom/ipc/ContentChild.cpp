@@ -2159,7 +2159,7 @@ ContentChild::ProcessingError(Result aCode, const char* aReason)
       NS_RUNTIMEABORT("not reached");
   }
 
-#if defined(MOZ_CRASHREPORTER) && !defined(MOZ_B2G)
+#if defined(MOZ_CRASHREPORTER)
   if (PCrashReporterChild* c = LoneManagedOrNullAsserts(ManagedPCrashReporterChild())) {
     CrashReporterChild* crashReporter =
       static_cast<CrashReporterChild*>(c);

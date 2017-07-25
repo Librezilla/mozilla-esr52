@@ -2143,7 +2143,7 @@ ContentParent::ContentParent(mozIApplication* aApp,
   // PID along with the warning.
   nsDebugImpl::SetMultiprocessMode("Parent");
 
-#if defined(XP_WIN) && !defined(MOZ_B2G)
+#if defined(XP_WIN)
   // Request Windows message deferral behavior on our side of the PContent
   // channel. Generally only applies to the situation where we get caught in
   // a deadlock with the plugin process when sending CPOWs.
@@ -3090,7 +3090,7 @@ ContentParent::KillHard(const char* aReason)
   mCalledKillHard = true;
   mForceKillTimer = nullptr;
 
-#if defined(MOZ_CRASHREPORTER) && !defined(MOZ_B2G)
+#if defined(MOZ_CRASHREPORTER)
   // We're about to kill the child process associated with this content.
   // Something has gone wrong to get us here, so we generate a minidump
   // of the parent and child for submission to the crash server.

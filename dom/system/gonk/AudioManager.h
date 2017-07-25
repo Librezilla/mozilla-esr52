@@ -116,11 +116,8 @@ protected:
 
   bool mSwitchDone;
 
-#if defined(MOZ_B2G_BT) || ANDROID_VERSION >= 17
+#if ANDROID_VERSION >= 17
   bool mBluetoothA2dpEnabled;
-#endif
-#ifdef MOZ_B2G_BT
-  bool mA2dpSwitchDone;
 #endif
   nsTArray<UniquePtr<VolumeStreamState> > mStreamStates;
   uint32_t mLastChannelVolume[AUDIO_STREAM_CNT];
