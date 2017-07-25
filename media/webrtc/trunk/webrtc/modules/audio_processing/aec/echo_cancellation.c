@@ -772,7 +772,7 @@ static void ProcessExtended(Aec* self,
     // measurement.
     int startup_size_ms =
         reported_delay_ms < kFixedDelayMs ? kFixedDelayMs : reported_delay_ms;
-#if defined(WEBRTC_ANDROID) || defined(WEBRTC_GONK)
+#if defined(WEBRTC_ANDROID)
     int target_delay = startup_size_ms * self->rate_factor * 8;
 #else
     // To avoid putting the AEC in a non-causal state we're being slightly

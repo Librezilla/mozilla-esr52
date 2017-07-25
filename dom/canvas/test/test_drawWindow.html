@@ -37,9 +37,7 @@
     // Run the tests on the same source document, but in a window opened
     // by window.open.  We do not expect this to have transparency...
     // except on B2G.  (This is *probably* a bug in B2G.)
-    var isB2G = /Mobile|Tablet/.test(navigator.userAgent) &&
-                !navigator.userAgent.includes("Android");
-    runDrawWindowTests(sourceWindow, 0, isB2G);
+    runDrawWindowTests(sourceWindow, 0, false);
 
     sourceWindow.close();
 

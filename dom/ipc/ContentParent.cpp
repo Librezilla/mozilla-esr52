@@ -16,11 +16,6 @@
 # include <sys/resource.h>
 #endif
 
-#ifdef MOZ_WIDGET_GONK
-#include <sys/types.h>
-#include <sys/wait.h>
-#endif
-
 #include "chrome/common/process_watcher.h"
 
 #include "mozilla/a11y/PDocAccessible.h"
@@ -208,12 +203,6 @@
 
 #ifdef MOZ_WIDGET_ANDROID
 # include "AndroidBridge.h"
-#endif
-
-#ifdef MOZ_WIDGET_GONK
-#include "nsIVolume.h"
-#include "SpeakerManagerService.h"
-using namespace mozilla::system;
 #endif
 
 #ifdef MOZ_WIDGET_GTK
@@ -540,11 +529,6 @@ static const char* sObserverTopics[] = {
   "child-mmu-request",
   "last-pb-context-exited",
   "file-watcher-update",
-#ifdef MOZ_WIDGET_GONK
-  NS_VOLUME_STATE_CHANGED,
-  NS_VOLUME_REMOVED,
-  "phone-state-changed",
-#endif
 #ifdef ACCESSIBILITY
   "a11y-init-or-shutdown",
 #endif
@@ -641,18 +625,6 @@ ContentParent::StartUp()
   if (!XRE_IsParentProcess()) {
     return;
   }
-
-#if defined(MOZ_CONTENT_SANDBOX) && defined(MOZ_WIDGET_GONK) && ANDROID_VERSION >= 19
-  // Require sandboxing on B2G >= KitKat.  This condition must stay
-  // in sync with ContentChild::RecvSetProcessSandbox.
-  if (!SandboxInfo::Get().CanSandboxContent()) {
-    // MOZ_CRASH strings are only for debug builds; make sure the
-    // message is clear on non-debug builds as well:
-    printf_stderr("Sandboxing support is required on this platform.  "
-                  "Recompile kernel with CONFIG_SECCOMP_FILTER=y\n");
-    MOZ_CRASH("Sandboxing support is required on this platform.");
-  }
-#endif
 
   // Note: This reporter measures all ContentParents.
   RegisterStrongMemoryReporter(new ContentParentsMemoryReporter());
@@ -1444,14 +1416,6 @@ ContentParent::SetPriorityAndCheckIsAlive(ProcessPriority aPriority)
   // Bug 943174: use waitid() with WNOWAIT so that, if the process
   // did exit, we won't consume its zombie and confuse the
   // GeckoChildProcessHost dtor.
-#ifdef MOZ_WIDGET_GONK
-  siginfo_t info;
-  info.si_pid = 0;
-  if (waitid(P_PID, Pid(), &info, WNOWAIT | WNOHANG | WEXITED) == 0
-    && info.si_pid != 0) {
-    return false;
-  }
-#endif
 
   return true;
 }
@@ -2133,7 +2097,7 @@ ContentParent::ContentParent(mozIApplication* aApp,
   // PID along with the warning.
   nsDebugImpl::SetMultiprocessMode("Parent");
 
-#if defined(XP_WIN) && !defined(MOZ_B2G)
+#if defined(XP_WIN)
   // Request Windows message deferral behavior on our side of the PContent
   // channel. Generally only applies to the situation where we get caught in
   // a deadlock with the plugin process when sending CPOWs.
@@ -2773,16 +2737,6 @@ ContentParent::Observe(nsISupports* aSubject,
   else if (!strcmp(aTopic, "last-pb-context-exited")) {
     Unused << SendLastPrivateDocShellDestroyed();
   }
-#ifdef MOZ_WIDGET_GONK
-  } else if (!strcmp(aTopic, "phone-state-changed")) {
-    nsString state(aData);
-    Unused << SendNotifyPhoneStateChange(state);
-  }
-  else if(!strcmp(aTopic, NS_VOLUME_REMOVED)) {
-    nsString volName(aData);
-    Unused << SendVolumeRemoved(volName);
-  }
-#endif
 #ifdef ACCESSIBILITY
   else if (aData && !strcmp(aTopic, "a11y-init-or-shutdown")) {
     if (*aData == '1') {
@@ -3046,7 +3000,7 @@ ContentParent::KillHard(const char* aReason)
   mCalledKillHard = true;
   mForceKillTimer = nullptr;
 
-#if defined(MOZ_CRASHREPORTER) && !defined(MOZ_B2G)
+#if defined(MOZ_CRASHREPORTER)
   // We're about to kill the child process associated with this content.
   // Something has gone wrong to get us here, so we generate a minidump
   // of the parent and child for submission to the crash server.
@@ -3475,29 +3429,12 @@ ContentParent::RecvPSpeechSynthesisConstructor(PSpeechSynthesisParent* aActor)
 bool
 ContentParent::RecvSpeakerManagerGetSpeakerStatus(bool* aValue)
 {
-#ifdef MOZ_WIDGET_GONK
-  *aValue = false;
-  RefPtr<SpeakerManagerService> service =
-  SpeakerManagerService::GetOrCreateSpeakerManagerService();
-  MOZ_ASSERT(service);
-
-  *aValue = service->GetSpeakerStatus();
-  return true;
-#endif
   return false;
 }
 
 bool
 ContentParent::RecvSpeakerManagerForceSpeaker(const bool& aEnable)
 {
-#ifdef MOZ_WIDGET_GONK
-  RefPtr<SpeakerManagerService> service =
-  SpeakerManagerService::GetOrCreateSpeakerManagerService();
-  MOZ_ASSERT(service);
-  service->ForceSpeaker(aEnable, mChildID);
-
-  return true;
-#endif
   return false;
 }
 
@@ -4047,29 +3984,6 @@ ContentParent::SendPBrowserConstructor(PBrowserParent* aActor,
                                                  aCpId,
                                                  aIsForApp,
                                                  aIsForBrowser);
-}
-
-bool
-ContentParent::RecvCreateFakeVolume(const nsString& fsName,
-                                    const nsString& mountPoint)
-{
-#ifdef MOZ_WIDGET_GONK
-  return true;
-#else
-  NS_WARNING("ContentParent::RecvCreateFakeVolume shouldn't be called when MOZ_WIDGET_GONK is not defined");
-  return false;
-#endif
-}
-
-bool
-ContentParent::RecvSetFakeVolumeState(const nsString& fsName, const int32_t& fsState)
-{
-#ifdef MOZ_WIDGET_GONK
-  return true;
-#else
-  NS_WARNING("ContentParent::RecvSetFakeVolumeState shouldn't be called when MOZ_WIDGET_GONK is not defined");
-  return false;
-#endif
 }
 
 bool

@@ -189,7 +189,6 @@ static void opensl_destroy(cubeb * ctx);
 
 // The bionic header file on B2G contains the required
 // declarations on all releases.
-#ifndef MOZ_WIDGET_GONK
 
 #if (__ANDROID_API__ >= ANDROID_VERSION_LOLLIPOP)
 typedef int (system_property_get)(const char*, char*);
@@ -211,7 +210,6 @@ __system_property_get(const char* name, char* value)
   dlclose(libc);
   return ret;
 }
-#endif
 #endif
 
 static int

@@ -563,7 +563,7 @@ dnl ==============================================================
 if test "$COMPILE_ENVIRONMENT"; then
     MOZ_ARCH_OPTS
 else
-    if test "$OS_TARGET" = Android -a x"$MOZ_WIDGET_TOOLKIT" != x"gonk"; then
+    if test "$OS_TARGET" = Android ; then
         dnl Default Android builds to ARMv7.
         MOZ_ARCH=armv7-a
     fi
@@ -2422,10 +2422,6 @@ xulrunner)
   ;;
 esac
 
-if test -n "$MOZ_B2G"; then
-    AC_DEFINE(MOZ_B2G)
-fi
-
 # Graphene is a desktop runtime for running applications with a HTML UI.
 if test -n "$MOZ_GRAPHENE"; then
     AC_DEFINE(MOZ_GRAPHENE)
@@ -2447,9 +2443,7 @@ fi
 
 AC_SUBST(MOZ_PHOENIX)
 AC_SUBST(MOZ_XULRUNNER)
-AC_SUBST(MOZ_B2G)
 AC_SUBST(MOZ_MULET)
-AC_SUBST(MOZ_B2G_VERSION)
 
 dnl ========================================================
 dnl Ensure Android SDK and build-tools versions depending on
@@ -2992,22 +2986,9 @@ if test -n "$MOZ_DIRECTSHOW"; then
 fi;
 
 dnl ========================================================
-dnl = Built-in fragmented MP4 support.
-dnl ========================================================
-
-if test x"$MOZ_WIDGET_TOOLKIT" = x"gonk" -a -n "$MOZ_FMP4" -a -n "$android_version"; then
-    # we now know for sure that $android_version is not an empty string!
-    if test "$android_version" -ge "18"; then
-        MOZ_GONK_MEDIACODEC=1
-        AC_SUBST(MOZ_GONK_MEDIACODEC)
-    fi
-fi
-
-
-dnl ========================================================
 dnl = Enable media plugin support
 dnl ========================================================
-if test "$OS_TARGET" = Android -a x"$MOZ_WIDGET_TOOLKIT" != x"gonk"; then
+if test "$OS_TARGET" = Android ; then
   dnl Enable support on android by default
   MOZ_ANDROID_OMX=1
 fi
@@ -3024,13 +3005,13 @@ fi
 dnl ========================================================
 dnl = Enable building OMX media plugin (B2G or Android)
 dnl ========================================================
-if test "$OS_TARGET" = Android -a x"$MOZ_WIDGET_TOOLKIT" != x"gonk"; then
+if test "$OS_TARGET" = Android ; then
   dnl Enable support on android by default
   MOZ_OMX_PLUGIN=1
 fi
 
 MOZ_ARG_ENABLE_BOOL(omx-plugin,
-[  --enable-omx-plugin      Enable building OMX plugin (B2G)],
+[  --enable-omx-plugin      Enable building OMX plugin],
     MOZ_OMX_PLUGIN=1,
     MOZ_OMX_PLUGIN=)
 
@@ -3039,8 +3020,8 @@ if test -n "$MOZ_OMX_PLUGIN"; then
         dnl Only allow building OMX plugin on Gonk (B2G) or Android
         AC_DEFINE(MOZ_OMX_PLUGIN)
     else
-        dnl fail if we're not building on Gonk or Android
-        AC_MSG_ERROR([OMX media plugin can only be built on B2G or Android])
+        dnl fail if we're not building on Android
+        AC_MSG_ERROR([OMX media plugin can only be built on Android])
     fi
 fi
 
@@ -4656,10 +4637,6 @@ MOZ_ARG_DISABLE_BOOL(startupcache,
     MOZ_DISABLE_STARTUPCACHE=1,
     MOZ_DISABLE_STARTUPCACHE=)
 
-dnl bug 988880: disable startup cache on b2g
-if test -n "$MOZ_B2G"; then
-  MOZ_DISABLE_STARTUPCACHE=1
-fi
 if test -n "$MOZ_DISABLE_STARTUPCACHE"; then
   AC_DEFINE(MOZ_DISABLE_STARTUPCACHE)
 else
@@ -4672,7 +4649,6 @@ AC_SUBST(MOZ_DISABLE_STARTUPCACHE)
 dnl =========================================
 dnl = Enable packaging Gaia with B2G desktop
 dnl =========================================
-if test x"$MOZ_WIDGET_TOOLKIT" != x"gonk"; then
     if test -n "$GAIADIR" -a ! -d "$GAIADIR" ; then
         AC_MSG_ERROR([GAIADIR '$GAIADIR' isn't a valid directory])
     fi
@@ -4690,7 +4666,6 @@ if test x"$MOZ_WIDGET_TOOLKIT" != x"gonk"; then
         AC_DEFINE(FXOS_SIMULATOR)
         AC_SUBST(FXOS_SIMULATOR)
     fi
-fi
 
 dnl ========================================================
 dnl = Enable Pico Speech Synthesis (Gonk usually)
@@ -5155,7 +5130,7 @@ else
 fi
 
 case "$MOZ_WIDGET_TOOLKIT" in
-android|gonk)
+android)
     TK_CFLAGS="$MOZ_CAIRO_CFLAGS $MOZ_PIXMAN_CFLAGS"
     TK_LIBS="$MOZ_CAIRO_LIBS $MOZ_PIXMAN_LIBS"
     ;;
@@ -5200,9 +5175,9 @@ if test "$NECKO_COOKIES"; then
 fi
 
 dnl
-dnl Always build Marionette if not Android or B2G
+dnl Always build Marionette if not Android
 dnl
-if test "$OS_TARGET" != Android -a x"$MOZ_WIDGET_TOOLKIT" != x"gonk"; then
+if test "$OS_TARGET" != Android ; then
     AC_DEFINE(ENABLE_MARIONETTE)
 fi
 AC_SUBST(ENABLE_MARIONETTE)
@@ -5424,10 +5399,6 @@ if test -z "$IS_ALPHA"; then
 else
   MOZ_APP_MAXVERSION=$MOZ_APP_VERSION
 fi
-
-MOZ_B2G_VERSION=${MOZ_B2G_VERSION:-"1.0.0"}
-AC_DEFINE_UNQUOTED(MOZ_B2G_VERSION,"$MOZ_B2G_VERSION")
-AC_DEFINE_UNQUOTED(MOZ_B2G_OS_NAME,"$MOZ_B2G_OS_NAME")
 
 AC_SUBST(MOZ_APP_NAME)
 AC_SUBST(MOZ_APP_REMOTINGNAME)

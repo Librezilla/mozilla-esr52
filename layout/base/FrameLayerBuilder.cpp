@@ -2347,9 +2347,6 @@ ContainerState::GetLayerCreationHint(AnimatedGeometryRoot* aAnimatedGeometryRoot
     }
     nsIScrollableFrame* scrollable = do_QueryFrame(fParent);
     if (scrollable
-  #ifdef MOZ_B2G
-        && scrollable->WantAsyncScroll()
-  #endif
        ) {
       // WantAsyncScroll() returns false when the frame has overflow:hidden,
       // so we won't create tiled layers for overflow:hidden frames even if

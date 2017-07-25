@@ -252,11 +252,7 @@ public:
    * XXX Investigate!  Especially for Android
    */
   virtual bool IsTextureSupported() override {
-#ifdef WEBRTC_GONK
-    return true;
-#else
     return false;
-#endif
   }
 
   virtual uint64_t CodecPluginID() override;

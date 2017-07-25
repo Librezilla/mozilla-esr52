@@ -156,7 +156,7 @@ void ThreadPosix::Run() {
   if (!name_.empty()) {
     // Setting the thread name may fail (harmlessly) if running inside a
     // sandbox. Ignore failures if they happen.
-#if (defined(WEBRTC_LINUX) || defined(WEBRTC_ANDROID) || defined(WEBRTC_GONK))
+#if (defined(WEBRTC_LINUX) || defined(WEBRTC_ANDROID)
     prctl(PR_SET_NAME, reinterpret_cast<unsigned long>(name_.c_str()));
 #elif defined(__NetBSD__)
     pthread_setname_np(pthread_self(), "%s", (void *)name_.c_str());

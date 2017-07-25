@@ -659,12 +659,6 @@ GetTotalSystemMemory()
   return hal_impl::GetTotalSystemMemory();
 }
 
-bool IsHeadphoneEventFromInputDev()
-{
-  AssertMainThread();
-  RETURN_PROXY_IF_SANDBOXED(IsHeadphoneEventFromInputDev(), false);
-}
-
 nsresult StartSystemService(const char* aSvcName, const char* aArgs)
 {
   AssertMainThread();

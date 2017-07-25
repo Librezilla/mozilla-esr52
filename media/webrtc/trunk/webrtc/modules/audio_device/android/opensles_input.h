@@ -19,11 +19,7 @@
 // Not defined in the android version we use to build with
 #define SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION ((SLuint32) 0x00000004)
 
-#if !defined(WEBRTC_GONK)
 #include "webrtc/modules/audio_device/android/audio_manager_jni.h"
-#else
-#include "media/AudioEffect.h"
-#endif
 #include "webrtc/modules/audio_device/android/low_latency_event.h"
 #include "webrtc/modules/audio_device/include/audio_device.h"
 #include "webrtc/modules/audio_device/include/audio_device_defines.h"
@@ -153,10 +149,6 @@ class OpenSlesInput {
   bool CreateAudioRecorder();
   void DestroyAudioRecorder();
   void SetupVoiceMode();
-#if defined(WEBRTC_GONK) && defined(WEBRTC_HARDWARE_AEC_NS)
-  void SetupAECAndNS();
-  bool CheckPlatformAEC();
-#endif
 
   // When overrun happens there will be more frames received from OpenSL than
   // the desired number of buffers. It is possible to expand the number of
@@ -189,10 +181,8 @@ class OpenSlesInput {
 
   PlayoutDelayProvider* delay_provider_;
 
-#if !defined(WEBRTC_GONK)
   // Java API handle
   AudioManagerJni audio_manager_;
-#endif
 
   // TODO(henrika): improve this area
   // PlayoutDelayProvider* delay_provider_;
@@ -237,10 +227,6 @@ class OpenSlesInput {
   uint32_t rec_sampling_rate_;
   bool agc_enabled_;
 
-#if defined(WEBRTC_GONK) && defined(WEBRTC_HARDWARE_AEC_NS)
-  android::AudioEffect* aec_;
-  android::AudioEffect* ns_;
-#endif
   // Audio status
   uint16_t recording_delay_;
 

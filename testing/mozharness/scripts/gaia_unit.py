@@ -45,8 +45,6 @@ class GaiaUnitTest(GaiaTest):
                                           'gaia_unit_test',
                                           'main.py')]
         executable = 'firefox'
-        if 'b2g' in self.binary_path:
-                executable = 'b2g-bin'
 
         profile = os.path.join(dirs['abs_gaia_dir'], 'profile-debug')
         binary = os.path.join(os.path.dirname(self.binary_path), executable)

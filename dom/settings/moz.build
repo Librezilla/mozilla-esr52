@@ -12,17 +12,9 @@ EXTRA_PP_COMPONENTS += [
     'SettingsManager.js'
 ]
 
-if CONFIG['MOZ_B2G']:
-    EXTRA_COMPONENTS += [
-        'SettingsService.js',
-        'SettingsService.manifest',
-    ]
-
 EXTRA_JS_MODULES += [
     'SettingsDB.jsm',
     'SettingsRequestManager.jsm'
 ]
 
 MOCHITEST_CHROME_MANIFESTS += ['tests/chrome.ini']
-
-XPCSHELL_TESTS_MANIFESTS += ['tests/unit/xpcshell.ini']

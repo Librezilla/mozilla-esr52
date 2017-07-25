@@ -348,7 +348,6 @@ void OpenSlesOutput::UpdatePlayoutDelay() {
 }
 
 bool OpenSlesOutput::SetLowLatency() {
-#if !defined(WEBRTC_GONK)
   if (!audio_manager_.low_latency_supported()) {
     return false;
   }
@@ -357,9 +356,6 @@ bool OpenSlesOutput::SetLowLatency() {
   speaker_sampling_rate_ = audio_manager_.native_output_sample_rate();
   assert(speaker_sampling_rate_ > 0);
   return true;
-#else
-  return false;
-#endif
 }
 
 void OpenSlesOutput::CalculateNumFifoBuffersNeeded() {

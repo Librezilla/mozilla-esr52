@@ -42,12 +42,6 @@ SimulatorProcess.prototype = {
   // Start the process and connect the debugger client.
   run() {
 
-    // Resolve B2G binary.
-    let b2g = this.b2gBinary;
-    if (!b2g || !b2g.exists()) {
-      throw Error("B2G executable not found.");
-    }
-
     // Ensure Gaia profile exists.
     let gaia = this.gaiaProfile;
     if (!gaia || !gaia.exists()) {
@@ -58,12 +52,6 @@ SimulatorProcess.prototype = {
       if (OS == "mac64") {
         console.debug("WORKAROUND run osascript to show b2g-desktop window on OS=='mac64'");
         // Escape double quotes and escape characters for use in AppleScript.
-        let path = b2g.path.replace(/\\/g, "\\\\").replace(/\"/g, '\\"');
-
-        Subprocess.call({
-          command: "/usr/bin/osascript",
-          arguments: ["-e", 'tell application "' + path + '" to activate'],
-        });
       }
     });
 
@@ -85,40 +73,10 @@ SimulatorProcess.prototype = {
       });
     }
 
-    // Spawn a B2G instance.
-    this.process = Subprocess.call({
-      command: b2g,
-      arguments: this.args,
-      environment: environment,
-      stdout: data => this.emit("stdout", data),
-      stderr: data => this.emit("stderr", data),
-      // On B2G instance exit, reset tracked process, remote debugger port and
-      // shuttingDown flag, then finally emit an exit event.
-      done: result => {
-        console.log("B2G terminated with " + result.exitCode);
-        this.process = null;
-        this.emit("exit", result.exitCode);
-      }
-    });
   },
 
   // Request a B2G instance kill.
   kill() {
-    let deferred = promise.defer();
-    if (this.process) {
-      this.once("exit", (e, exitCode) => {
-        this.shuttingDown = false;
-        deferred.resolve(exitCode);
-      });
-      if (!this.shuttingDown) {
-        this.shuttingDown = true;
-        this.emit("kill", null);
-        this.process.kill();
-      }
-      return deferred.promise;
-    } else {
-      return promise.resolve(undefined);
-    }
   },
 
   // Maybe log output messages.
@@ -154,13 +112,6 @@ SimulatorProcess.prototype = {
     // Ignore eventual zombie instances of b2g that are left over.
     args.push("-no-remote");
 
-    // If we are running a simulator based on Mulet,
-    // we have to override the default chrome URL
-    // in order to prevent the Browser UI to appear.
-    if (this.b2gBinary.leafName.includes("firefox")) {
-      args.push("-chrome", "chrome://b2g/content/shell.html");
-    }
-
     return args;
   },
 };
@@ -173,15 +124,6 @@ function CustomSimulatorProcess(options) {
 }
 
 var CSPp = CustomSimulatorProcess.prototype = Object.create(SimulatorProcess.prototype);
-
-// Compute B2G binary file handle.
-Object.defineProperty(CSPp, "b2gBinary", {
-  get: function () {
-    let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-    file.initWithPath(this.options.b2gBinary);
-    return file;
-  }
-});
 
 // Compute Gaia profile file handle.
 Object.defineProperty(CSPp, "gaiaProfile", {
@@ -201,43 +143,6 @@ function AddonSimulatorProcess(addon, options) {
 }
 
 var ASPp = AddonSimulatorProcess.prototype = Object.create(SimulatorProcess.prototype);
-
-// Compute B2G binary file handle.
-Object.defineProperty(ASPp, "b2gBinary", {
-  get: function () {
-    let file;
-    try {
-      let pref = "extensions." + this.addon.id + ".customRuntime";
-      file = Services.prefs.getComplexValue(pref, Ci.nsIFile);
-    } catch (e) {}
-
-    if (!file) {
-      file = this.addon.getResourceURI().QueryInterface(Ci.nsIFileURL).file;
-      file.append("b2g");
-      let binaries = {
-        win32: "b2g-bin.exe",
-        mac64: "B2G.app/Contents/MacOS/b2g-bin",
-        linux32: "b2g-bin",
-        linux64: "b2g-bin",
-      };
-      binaries[OS].split("/").forEach(node => file.append(node));
-    }
-    // If the binary doesn't exists, it may be because of a simulator
-    // based on mulet, which has a different binary name.
-    if (!file.exists()) {
-      file = this.addon.getResourceURI().QueryInterface(Ci.nsIFileURL).file;
-      file.append("firefox");
-      let binaries = {
-        win32: "firefox.exe",
-        mac64: "FirefoxNightly.app/Contents/MacOS/firefox-bin",
-        linux32: "firefox-bin",
-        linux64: "firefox-bin",
-      };
-      binaries[OS].split("/").forEach(node => file.append(node));
-    }
-    return file;
-  }
-});
 
 // Compute Gaia profile file handle.
 Object.defineProperty(ASPp, "gaiaProfile", {
@@ -274,34 +179,6 @@ function OldAddonSimulatorProcess(addon, options) {
 }
 
 var OASPp = OldAddonSimulatorProcess.prototype = Object.create(AddonSimulatorProcess.prototype);
-
-// Compute B2G binary file handle.
-Object.defineProperty(OASPp, "b2gBinary", {
-  get: function () {
-    let file;
-    try {
-      let pref = "extensions." + this.addon.id + ".customRuntime";
-      file = Services.prefs.getComplexValue(pref, Ci.nsIFile);
-    } catch (e) {}
-
-    if (!file) {
-      file = this.addon.getResourceURI().QueryInterface(Ci.nsIFileURL).file;
-      let version = this.addon.name.match(/\d+\.\d+/)[0].replace(/\./, "_");
-      file.append("resources");
-      file.append("fxos_" + version + "_simulator");
-      file.append("data");
-      file.append(OS == "linux32" ? "linux" : OS);
-      let binaries = {
-        win32: "b2g/b2g-bin.exe",
-        mac64: "B2G.app/Contents/MacOS/b2g-bin",
-        linux32: "b2g/b2g-bin",
-        linux64: "b2g/b2g-bin",
-      };
-      binaries[OS].split("/").forEach(node => file.append(node));
-    }
-    return file;
-  }
-});
 
 // Compute B2G CLI arguments.
 Object.defineProperty(OASPp, "args", {
