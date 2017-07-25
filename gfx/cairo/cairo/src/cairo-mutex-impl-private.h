@@ -197,21 +197,6 @@
 # define CAIRO_MUTEX_IMPL_FINI(mutex) DeleteCriticalSection (&(mutex))
 # define CAIRO_MUTEX_IMPL_NIL_INITIALIZER { NULL, 0, 0, NULL, NULL, 0 }
 
-#elif defined __OS2__ /******************************************************/
-
-# define INCL_BASE
-# define INCL_PM
-# include <os2.h>
-
-  typedef HMTX cairo_mutex_impl_t;
-
-# define CAIRO_MUTEX_IMPL_OS2 1
-# define CAIRO_MUTEX_IMPL_LOCK(mutex) DosRequestMutexSem(mutex, SEM_INDEFINITE_WAIT)
-# define CAIRO_MUTEX_IMPL_UNLOCK(mutex) DosReleaseMutexSem(mutex)
-# define CAIRO_MUTEX_IMPL_INIT(mutex) DosCreateMutexSem (NULL, &(mutex), 0L, FALSE)
-# define CAIRO_MUTEX_IMPL_FINI(mutex) DosCloseMutexSem (mutex)
-# define CAIRO_MUTEX_IMPL_NIL_INITIALIZER 0
-
 #elif CAIRO_HAS_BEOS_SURFACE /***********************************************/
 
   typedef BLocker* cairo_mutex_impl_t;

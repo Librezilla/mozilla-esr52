@@ -18,9 +18,6 @@ static size_t rng_systemFromNoise(unsigned char *dest, size_t maxLen);
 #ifdef XP_WIN
 #include "win_rand.c"
 #endif
-#ifdef XP_OS2
-#include "os2_rand.c"
-#endif
 
 #ifndef XP_WIN
 /*
