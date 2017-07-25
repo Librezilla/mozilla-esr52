@@ -125,7 +125,7 @@ SSLNamedGroup groupNameToNamedGroup(char *name);
 
 void printflags(char *trusts, unsigned int flags);
 
-#if !defined(XP_UNIX) && !defined(XP_OS2)
+#if !defined(XP_UNIX)
 extern int ffs(unsigned int i);
 #endif
 

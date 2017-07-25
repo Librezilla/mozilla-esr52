@@ -1860,7 +1860,7 @@ void ssl_Trace(const char *format, ...);
 
 SEC_END_PROTOS
 
-#if defined(XP_UNIX) || defined(XP_OS2) || defined(XP_BEOS)
+#if defined(XP_UNIX) || defined(XP_BEOS)
 #define SSL_GETPID getpid
 #elif defined(WIN32)
 extern int __cdecl _getpid(void);

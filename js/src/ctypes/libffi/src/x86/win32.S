@@ -515,7 +515,7 @@ END
         .balign 16
 FFI_HIDDEN(ffi_call_win32)
 	.globl	USCORE_SYMBOL(ffi_call_win32)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_call_win32;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_call_win32):
@@ -684,7 +684,7 @@ USCORE_SYMBOL(ffi_call_win32):
         .balign 16
 FFI_HIDDEN(ffi_closure_THISCALL)
 	.globl	USCORE_SYMBOL(ffi_closure_THISCALL)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_closure_THISCALL;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_closure_THISCALL):
@@ -697,7 +697,7 @@ USCORE_SYMBOL(ffi_closure_THISCALL):
         .balign 16
 FFI_HIDDEN(ffi_closure_FASTCALL)
 	.globl	USCORE_SYMBOL(ffi_closure_FASTCALL)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_closure_FASTCALL;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_closure_FASTCALL):
@@ -714,7 +714,7 @@ USCORE_SYMBOL(ffi_closure_FASTCALL):
 FFI_HIDDEN(ffi_closure_SYSV)
 #if defined(X86_WIN32)
 	.globl	USCORE_SYMBOL(ffi_closure_SYSV)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_closure_SYSV;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_closure_SYSV):
@@ -858,7 +858,7 @@ USCORE_SYMBOL(ffi_closure_SYSV):
         .balign 16
 FFI_HIDDEN(ffi_closure_raw_THISCALL)
 	.globl	USCORE_SYMBOL(ffi_closure_raw_THISCALL)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_closure_raw_THISCALL;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_closure_raw_THISCALL):
@@ -877,7 +877,7 @@ USCORE_SYMBOL(ffi_closure_raw_THISCALL):
         .balign 16
 #if defined(X86_WIN32)
 	.globl	USCORE_SYMBOL(ffi_closure_raw_SYSV)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_closure_raw_SYSV;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_closure_raw_SYSV):
@@ -1000,7 +1000,7 @@ USCORE_SYMBOL(ffi_closure_raw_SYSV):
 	.balign	16
 FFI_HIDDEN(ffi_closure_STDCALL)
 	.globl	USCORE_SYMBOL(ffi_closure_STDCALL)
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.def	_ffi_closure_STDCALL;	.scl	2;	.type	32;	.endef
 #endif
 USCORE_SYMBOL(ffi_closure_STDCALL):
@@ -1140,7 +1140,7 @@ L_ffi_closure_SYSV_inner$stub:
 	hlt ; hlt ; hlt ; hlt ; hlt
 #endif
 
-#if defined(X86_WIN32) && !defined(__OS2__)
+#if defined(X86_WIN32)
 	.section	.eh_frame,"w"
 #endif
 .Lframe1:
