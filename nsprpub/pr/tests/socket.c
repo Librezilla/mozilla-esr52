@@ -2291,7 +2291,7 @@ int main(int argc, char **argv)
 
     /* File transmission test can not be done in Symbian OS because of 
      * large file's size and the incomplete mmap() implementation. */
-#if !defined(WIN16) && !defined(SYMBIAN)
+#if !defined(SYMBIAN)
     /*
 ** The 'transmit file' test does not run because
 ** transmit file is not implemented in NSPR yet.

@@ -53,7 +53,7 @@ ClientThreadFunc(void *arg)
      */
 #if defined(XP_UNIX)
     close(PR_FileDesc2NativeHandle(badFD));
-#elif defined(WIN32) || defined(WIN16)
+#elif defined(WIN32)
     closesocket(PR_FileDesc2NativeHandle(badFD));
 #else
 #error "Unknown architecture"
