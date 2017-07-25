@@ -15,7 +15,7 @@
 #include "webrtc/modules/interface/module.h"
 #include "webrtc/modules/video_capture/include/video_capture_defines.h"
 
-#if defined(ANDROID) && !defined(WEBRTC_GONK)
+#if defined(ANDROID)
 #include <jni.h>
 #endif
 
@@ -29,7 +29,7 @@ protected:
     virtual ~VideoInputFeedBack(){}
 };
 
-#if defined(ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD) && !defined(WEBRTC_GONK)
+#if defined(ANDROID) && !defined(WEBRTC_CHROMIUM_BUILD)
   int32_t SetCaptureAndroidVM(JavaVM* javaVM);
 #endif
 

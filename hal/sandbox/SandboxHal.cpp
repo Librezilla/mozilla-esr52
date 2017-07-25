@@ -226,12 +226,6 @@ StopDiskSpaceWatcher()
   NS_RUNTIMEABORT("StopDiskSpaceWatcher() can't be called from sandboxed contexts.");
 }
 
-bool IsHeadphoneEventFromInputDev()
-{
-  NS_RUNTIMEABORT("IsHeadphoneEventFromInputDev() cannot be called from sandboxed contexts.");
-  return false;
-}
-
 nsresult StartSystemService(const char* aSvcName, const char* aArgs)
 {
   NS_RUNTIMEABORT("System services cannot be controlled from sandboxed contexts.");

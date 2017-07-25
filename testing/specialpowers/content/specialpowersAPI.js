@@ -5,6 +5,9 @@
  * order to be used as a replacement for UniversalXPConnect
  */
 
+#ifdef MAKE_PREPROCESSOR_HAPPY
+#endif
+
 "use strict";
 
 var global = this;
@@ -1530,14 +1533,6 @@ SpecialPowersAPI.prototype = {
 
     this._os = xulRuntime.OS;
     return this._os;
-  },
-
-  get isB2G() {
-#ifdef MOZ_B2G
-    return true;
-#else
-    return false;
-#endif
   },
 
   addSystemEventListener: function(target, type, listener, useCapture) {

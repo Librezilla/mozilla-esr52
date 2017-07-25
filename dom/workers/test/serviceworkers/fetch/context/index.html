@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script>
   var isAndroid = navigator.userAgent.includes("Android");
-  var isB2G = !isAndroid && /Mobile|Tablet/.test(navigator.userAgent);
 
   function ok(v, msg) {
     window.parent.postMessage({status: "ok", result: !!v, message: msg}, "*");
@@ -199,10 +198,6 @@
   }
 
   function testInternal() {
-    if (isB2G) {
-      // We can't open new windows on b2g, so skip this part of the test there.
-      return Promise.resolve();
-    }
     return new Promise(function(resolve, reject) {
       // Test this with a new window opened through script.  There are of course
       // other possible ways of testing this too.

@@ -649,8 +649,6 @@ ImageHostOverlay::IsValid(OverlaySource aOverlay)
   if ((aOverlay.handle().type() == OverlayHandle::Tint32_t) &&
       aOverlay.handle().get_int32_t() != INVALID_OVERLAY) {
     return true;
-  } else if (aOverlay.handle().type() == OverlayHandle::TGonkNativeHandle) {
-    return true;
   }
   return false;
 }

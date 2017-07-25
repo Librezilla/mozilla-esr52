@@ -108,7 +108,7 @@ ALIGN16_BEG const float ALIGN16_END WebRtcAec_overDriveCurve[65] = {
 static const float kDelayQualityThresholdMax = 0.07f;
 static const float kDelayQualityThresholdMin = 0.01f;
 static const int kInitialShiftOffset = 5;
-#if !defined(WEBRTC_ANDROID) && !defined(WEBRTC_GONK)
+#if !defined(WEBRTC_ANDROID)
 static const int kDelayCorrectionStart = 1500;  // 10 ms chunks
 #endif
 
@@ -878,7 +878,7 @@ static int SignalBasedDelayCorrection(AecCore* self) {
   int delay_correction = 0;
   int last_delay = -2;
   assert(self != NULL);
-#if !defined(WEBRTC_ANDROID) && !defined(WEBRTC_GONK)
+#if !defined(WEBRTC_ANDROID)
   // On desktops, turn on correction after |kDelayCorrectionStart| frames.  This
   // is to let the delay estimation get a chance to converge.  Also, if the
   // playout audio volume is low (or even muted) the delay estimation can return
@@ -1562,7 +1562,7 @@ AecCore* WebRtcAec_CreateAec() {
     WebRtcAec_FreeAec(aec);
     return NULL;
   }
-#if defined(WEBRTC_ANDROID) || defined(WEBRTC_GONK)
+#if defined(WEBRTC_ANDROID)
   aec->delay_agnostic_enabled = 1;  // DA-AEC enabled by default.
   // DA-AEC assumes the system is causal from the beginning and will self adjust
   // the lookahead when shifting is required.

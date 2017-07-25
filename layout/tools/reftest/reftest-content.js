@@ -4,6 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifdef MAKE_PREPROCESSOR_HAPPY
+#endif
+
 var CC = Components.classes;
 const CI = Components.interfaces;
 const CR = Components.results;
@@ -100,9 +103,7 @@ function PaintWaitFinishedListener(event)
 
 function OnInitialLoad()
 {
-#ifndef REFTEST_B2G
     removeEventListener("load", OnInitialLoad, true);
-#endif
 
     gDebug = CC[DEBUG_CONTRACTID].getService(CI.nsIDebug2);
     var env = CC[ENVIRONMENT_CONTRACTID].getService(CI.nsIEnvironment);
@@ -182,16 +183,11 @@ function resetZoom() {
 }
 
 function doPrintMode(contentRootElement) {
-#if REFTEST_B2G
-    // nsIPrintSettings not available in B2G
-    return false;
-#else
     // use getAttribute because className works differently in HTML and SVG
     return contentRootElement &&
            contentRootElement.hasAttribute('class') &&
            contentRootElement.getAttribute('class').split(/\s+/)
                              .indexOf("reftest-print") != -1;
-#endif
 }
 
 function setupPrintMode() {
@@ -1162,13 +1158,9 @@ function SendUpdateCanvasForEvent(event, contentRootElement)
         sendAsyncMessage("reftest:UpdateCanvasForInvalidation", { rects: rects });
     }
 }
-#if REFTEST_B2G
-OnInitialLoad();
-#else
 if (content.document.readyState == "complete") {
   // load event has already fired for content, get started
   OnInitialLoad();
 } else {
   addEventListener("load", OnInitialLoad, true);
 }
-#endif

@@ -43,12 +43,10 @@ function runTest() {
       var view = aScreenshotImageData.data;
       if (view[3] !== 0) {
         // The case here will always fail when oop'd on Firefox Desktop,
-        // but not on B2G Emulator
         // See https://bugzil.la/878003#c20
 
-        var isB2G = (navigator.platform === '');
         info('navigator.platform: ' + navigator.platform);
-        if (!isB2G && browserElementTestHelpers.getOOPByDefaultPref()) {
+        if (browserElementTestHelpers.getOOPByDefaultPref()) {
           todo(false, 'The first pixel of updated screenshot is not transparent');
         } else {
           ok(false, 'The first pixel of updated screenshot is not transparent');

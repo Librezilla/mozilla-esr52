@@ -199,9 +199,6 @@ class RemoteCPPUnittestOptions(cppunittests.CPPUnittestOptions):
         # on binaries on /mnt/sdcard
         defaults["remote_test_root"] = "/data/local/tests"
 
-        self.add_option("--with-b2g-emulator", action = "store",
-                    type = "string", dest = "with_b2g_emulator",
-                    help = "Start B2G Emulator (specify path to b2g home)")
         self.add_option("--emulator", default="arm", choices=["x86", "arm"],
                     help = "Architecture of emulator to use: x86 or arm")
         self.add_option("--addEnv", action = "append",
@@ -212,26 +209,14 @@ class RemoteCPPUnittestOptions(cppunittests.CPPUnittestOptions):
         self.set_defaults(**defaults)
 
 def run_test_harness(options, args):
-    if options.with_b2g_emulator:
-        from mozrunner import B2GEmulatorRunner
-        runner = B2GEmulatorRunner(arch=options.emulator, b2g_home=options.with_b2g_emulator)
-        runner.start()
     if options.dm_trans == "adb":
-        if options.with_b2g_emulator:
-            # because we just started the emulator, we need more than the
-            # default number of retries here.
-            retryLimit = 50
-        else:
-            retryLimit = 5
+        retryLimit = 5
         try:
             if options.device_ip:
                 dm = devicemanagerADB.DeviceManagerADB(options.device_ip, options.device_port, packageName=None, deviceRoot=options.remote_test_root, retryLimit=retryLimit)
             else:
                 dm = devicemanagerADB.DeviceManagerADB(packageName=None, deviceRoot=options.remote_test_root, retryLimit=retryLimit)
         except:
-            if options.with_b2g_emulator:
-                runner.cleanup()
-                runner.wait()
             raise
     else:
         dm = devicemanagerSUT.DeviceManagerSUT(options.device_ip, options.device_port, deviceRoot=options.remote_test_root)
@@ -248,9 +233,6 @@ def run_test_harness(options, args):
     try:
         result = tester.run_tests(progs, options.xre_path, options.symbols_path)
     finally:
-        if options.with_b2g_emulator:
-            runner.cleanup()
-            runner.wait()
     return result
 
 def main():

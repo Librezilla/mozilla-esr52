@@ -18,8 +18,6 @@
 using namespace mozilla;
 using namespace mozilla::widget;
 
-#ifndef MOZ_WIDGET_GONK
-
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsClipboardProxy)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsColorPickerProxy)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsDatePickerProxy)
@@ -73,5 +71,3 @@ static const mozilla::Module kWidgetModule = {
 };
 
 NSMODULE_DEFN(nsContentProcessWidgetModule) = &kWidgetModule;
-
-#endif /* MOZ_WIDGET_GONK */

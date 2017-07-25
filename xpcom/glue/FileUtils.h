@@ -161,7 +161,7 @@ void ReadAhead(filedesc_t aFd, const size_t aOffset = 0,
                const size_t aCount = SIZE_MAX);
 
 
-#if defined(MOZ_WIDGET_GONK) || defined(XP_UNIX)
+#if defined(XP_UNIX)
 #define MOZ_TEMP_FAILURE_RETRY(exp) (__extension__({ \
   typeof (exp) _rc; \
   do { \
@@ -174,7 +174,7 @@ void ReadAhead(filedesc_t aFd, const size_t aOffset = 0,
 /* Define ReadSysFile() and WriteSysFile() only on GONK to avoid unnecessary
  * libxul bloat. Also define it in debug builds, so that unit tests for it can
  * be written and run in non-GONK builds. */
-#if (defined(MOZ_WIDGET_GONK) || defined(DEBUG)) && defined(XP_UNIX)
+#if defined(DEBUG) && defined(XP_UNIX)
 
 #ifndef ReadSysFile_PRESENT
 #define ReadSysFile_PRESENT
@@ -213,7 +213,7 @@ bool ReadSysFile(const char* aFilename, bool* aVal);
 
 bool WriteSysFile(const char* aFilename, const char* aBuf);
 
-#endif /* (MOZ_WIDGET_GONK || DEBUG) && XP_UNIX */
+#endif /* DEBUG && XP_UNIX */
 
 } // namespace mozilla
 

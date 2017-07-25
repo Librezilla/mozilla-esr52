@@ -624,13 +624,6 @@ public:
   virtual void EnableTimeChangeNotifications() override;
   virtual void DisableTimeChangeNotifications() override;
 
-#ifdef MOZ_B2G
-  // Inner windows only.
-  virtual void EnableNetworkEvent(mozilla::EventMessage aEventMessage) override;
-  virtual void DisableNetworkEvent(
-                 mozilla::EventMessage aEventMessage) override;
-#endif // MOZ_B2G
-
   virtual nsresult SetArguments(nsIArray* aArguments) override;
 
   void MaybeForgiveSpamCount();
@@ -897,7 +890,7 @@ public:
   nsIDOMOfflineResourceList* GetApplicationCache(mozilla::ErrorResult& aError);
   already_AddRefed<nsIDOMOfflineResourceList> GetApplicationCache() override;
 
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
+#if defined(MOZ_WIDGET_ANDROID)
   int16_t Orientation(mozilla::dom::CallerType aCallerType) const;
 #endif
 
@@ -1920,11 +1913,6 @@ protected:
   bool mSetOpenerWindowCalled;
   nsCOMPtr<nsIURI> mLastOpenedURI;
 #endif
-
-#ifdef MOZ_B2G
-  bool mNetworkUploadObserverEnabled;
-  bool mNetworkDownloadObserverEnabled;
-#endif // MOZ_B2G
 
   bool mCleanedUp;
 

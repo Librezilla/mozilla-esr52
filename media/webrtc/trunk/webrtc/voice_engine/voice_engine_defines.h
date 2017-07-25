@@ -64,13 +64,13 @@ enum { kVoiceEngineVersionMaxMessageSize = 1024 };
 // Audio processing
 const NoiseSuppression::Level kDefaultNsMode = NoiseSuppression::kModerate;
 const GainControl::Mode kDefaultAgcMode =
-#if defined(WEBRTC_ANDROID) || defined(WEBRTC_IOS) || defined(WEBRTC_GONK) 
+#if defined(WEBRTC_ANDROID) || defined(WEBRTC_IOS)
   GainControl::kAdaptiveDigital;
 #else
   GainControl::kAdaptiveAnalog;
 #endif
 const bool kDefaultAgcState =
-#if defined(WEBRTC_ANDROID) || defined(WEBRTC_IOS) || defined(WEBRTC_GONK) 
+#if defined(WEBRTC_ANDROID) || defined(WEBRTC_IOS)
   false;
 #else
   true;

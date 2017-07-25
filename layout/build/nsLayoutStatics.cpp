@@ -100,10 +100,6 @@
 #include "Latency.h"
 #include "WebAudioUtils.h"
 
-#ifdef MOZ_WIDGET_GONK
-using namespace mozilla::system;
-#endif
-
 #include "nsError.h"
 
 #include "nsJSEnvironment.h"

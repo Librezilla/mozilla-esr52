@@ -13,9 +13,6 @@
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/EventDispatcher.h"
 #include "mozilla/EventListenerManager.h"
-#ifdef MOZ_B2G
-#include "mozilla/Hal.h"
-#endif // #ifdef MOZ_B2G
 #include "mozilla/InternalMutationEvent.h"
 #include "mozilla/JSEventHandler.h"
 #include "mozilla/Maybe.h"
@@ -343,14 +340,6 @@ EventListenerManager::AddEventListenerInternal(
         (aEventMessage == eLegacySubtreeModified) ?
           kAllMutationBits : MutationBitForEventType(aEventMessage));
     }
-#ifdef MOZ_B2G
-  } else if (aTypeAtom == nsGkAtoms::onmoztimechange) {
-    EnableDevice(eTimeChange);
-  } else if (aTypeAtom == nsGkAtoms::onmoznetworkupload) {
-    EnableDevice(eNetworkUpload);
-  } else if (aTypeAtom == nsGkAtoms::onmoznetworkdownload) {
-    EnableDevice(eNetworkDownload);
-#endif // MOZ_B2G
   } else if (aTypeAtom == nsGkAtoms::ontouchstart ||
              aTypeAtom == nsGkAtoms::ontouchend ||
              aTypeAtom == nsGkAtoms::ontouchmove ||
@@ -470,12 +459,6 @@ bool
 EventListenerManager::IsDeviceType(EventMessage aEventMessage)
 {
   switch (aEventMessage) {
-#ifdef MOZ_B2G
-    case eTimeChange:
-    case eNetworkUpload:
-    case eNetworkDownload:
-#endif
-      return true;
     default:
       break;
   }
@@ -491,15 +474,6 @@ EventListenerManager::EnableDevice(EventMessage aEventMessage)
   }
 
   switch (aEventMessage) {
-#ifdef MOZ_B2G
-    case eTimeChange:
-      window->EnableTimeChangeNotifications();
-      break;
-    case eNetworkUpload:
-    case eNetworkDownload:
-      window->EnableNetworkEvent(aEventMessage);
-      break;
-#endif
     default:
       NS_WARNING("Enabling an unknown device sensor.");
       break;
@@ -515,15 +489,6 @@ EventListenerManager::DisableDevice(EventMessage aEventMessage)
   }
 
   switch (aEventMessage) {
-#ifdef MOZ_B2G
-    case eTimeChange:
-      window->DisableTimeChangeNotifications();
-      break;
-    case eNetworkUpload:
-    case eNetworkDownload:
-      window->DisableNetworkEvent(aEventMessage);
-      break;
-#endif // MOZ_B2G
     default:
       NS_WARNING("Disabling an unknown device sensor.");
       break;
