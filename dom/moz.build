@@ -25,7 +25,6 @@ interfaces = [
     'storage',
     'json',
     'offline',
-    'geolocation',
     'notification',
     'permission',
     'svg',
@@ -33,6 +32,10 @@ interfaces = [
     'apps',
     'push',
 ]
+
+if CONFIG['MOZ_GEOLOCATION']:
+    interfaces += ['geolocation']
+    DIRS += ['geolocation']
 
 DIRS += ['interfaces/' + i for i in interfaces]
 
@@ -52,7 +55,6 @@ DIRS += [
     'filehandle',
     'filesystem',
     'gamepad',
-    'geolocation',
     'grid',
     'html',
     'json',

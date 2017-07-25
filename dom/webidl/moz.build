@@ -82,7 +82,6 @@ WEBIDL_FILES = [
     'ConstantSourceNode.webidl',
     'ContainerBoxObject.webidl',
     'ConvolverNode.webidl',
-    'Coordinates.webidl',
     'CreateOfferRequest.webidl',
     'Crypto.webidl',
     'CSPDictionaries.webidl',
@@ -159,7 +158,6 @@ WEBIDL_FILES = [
     'FormData.webidl',
     'Function.webidl',
     'GainNode.webidl',
-    'Geolocation.webidl',
     'GeometryUtils.webidl',
     'GetUserMediaRequest.webidl',
     'Grid.webidl',
@@ -344,8 +342,6 @@ WEBIDL_FILES = [
     'PluginArray.webidl',
     'PointerEvent.webidl',
     'PopupBoxObject.webidl',
-    'Position.webidl',
-    'PositionError.webidl',
     'Presentation.webidl',
     'PresentationAvailability.webidl',
     'PresentationConnection.webidl',
@@ -602,6 +598,14 @@ if CONFIG['MOZ_FLYWEB']:
 if CONFIG['MOZ_WAKELOCK']:
     WEBIDL_FILES += [
         'MozWakeLock.webidl'
+    ]
+
+if CONFIG['MOZ_GEOLOCATION']:
+    WEBIDL_FILES += [
+        'Coordinates.webidl',
+        'Geolocation.webidl',
+        'Position.webidl',
+        'PositionError.webidl'
     ]
 
 if CONFIG['MOZ_AUDIO_CHANNEL_MANAGER']:

@@ -68,7 +68,10 @@ include ProfilerTypes;
 // XXX Remove this once bug 1069073 is fixed
 include "mozilla/dom/PContentBridgeParent.h";
 
+#ifdef MOZ_GEOLOCATION
 using GeoPosition from "nsGeoPositionIPCSerialiser.h";
+#endif
+
 using AlertNotificationType from "mozilla/AlertNotificationIPCSerializer.h";
 
 using struct ChromePackage from "mozilla/chrome/RegistryMessageUtils.h";
@@ -371,9 +374,11 @@ child:
 
     async NotifyAlertsObserver(nsCString topic, nsString data);
 
+#ifdef MOZ_GEOLOCATION
     async GeolocationUpdate(GeoPosition somewhere);
 
     async GeolocationError(uint16_t errorCode);
+#endif
 
     async UpdateDictionaryList(nsString[] dictionaries);
 
@@ -735,9 +740,11 @@ parent:
 
     async PHandlerService();
 
+#ifdef MOZ_GEOLOCATION
     async AddGeolocationListener(Principal principal, bool highAccuracy);
     async RemoveGeolocationListener();
     async SetGeolocationHigherAccuracy(bool enable);
+#endif
 
     async ConsoleMessage(nsString message);
     async ScriptError(nsString message, nsString sourceName, nsString sourceLine,

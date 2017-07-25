@@ -14,7 +14,9 @@
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/dom/DesktopNotification.h"
 #include "mozilla/dom/File.h"
+#ifdef MOZ_GEOLOCATION
 #include "nsGeolocation.h"
+#endif
 #include "nsIClassOfService.h"
 #include "nsIHttpProtocolHandler.h"
 #include "nsIContentPolicy.h"
@@ -195,7 +197,9 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(Navigator)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mMimeTypes)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPlugins)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPermissions)
+#ifdef MOZ_GEOLOCATION
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mGeolocation)
+#endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mNotification)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPowerManager)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mConnection)
@@ -238,11 +242,13 @@ Navigator::Invalidate()
 
   mStorageManager = nullptr;
 
+#ifdef MOZ_GEOLOCATION
   // If there is a page transition, make sure delete the geolocation object.
   if (mGeolocation) {
     mGeolocation->Shutdown();
     mGeolocation = nullptr;
   }
+#endif
 
   if (mNotification) {
     mNotification->Shutdown();
@@ -800,6 +806,7 @@ Navigator::RegisterProtocolHandler(const nsAString& aProtocol,
                                            mWindow->GetOuterWindow());
 }
 
+#ifdef MOZ_GEOLOCATION
 Geolocation*
 Navigator::GetGeolocation(ErrorResult& aRv)
 {
@@ -821,6 +828,7 @@ Navigator::GetGeolocation(ErrorResult& aRv)
 
   return mGeolocation;
 }
+#endif /* MOZ_GEOLOCATION */
 
 class BeaconStreamListener final : public nsIStreamListener
 {

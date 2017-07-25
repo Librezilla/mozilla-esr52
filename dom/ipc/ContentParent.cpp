@@ -43,7 +43,11 @@
 #include "mozilla/dom/FileSystemSecurity.h"
 #include "mozilla/dom/ExternalHelperAppParent.h"
 #include "mozilla/dom/GetFilesHelper.h"
+#ifdef MOZ_GEOLOCATION
 #include "mozilla/dom/GeolocationBinding.h"
+#include "nsIDOMGeoGeolocation.h"
+#include "nsIDOMGeoPositionError.h"
+#endif
 #include "mozilla/dom/Notification.h"
 #include "mozilla/dom/PContentBridgeParent.h"
 #include "mozilla/dom/PContentPermissionRequestParent.h"
@@ -112,8 +116,6 @@
 #include "nsICycleCollectorListener.h"
 #include "nsIDocShellTreeOwner.h"
 #include "nsIDocument.h"
-#include "nsIDOMGeoGeolocation.h"
-#include "nsIDOMGeoPositionError.h"
 #include "nsIDragService.h"
 #ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
@@ -1785,7 +1787,9 @@ ContentParent::ActorDestroy(ActorDestroyReason why)
     gpu->RemoveListener(this);
   }
 
+#ifdef MOZ_GEOLOCATION
   RecvRemoveGeolocationListener();
+#endif
 
   mConsoleService = nullptr;
 
@@ -2021,7 +2025,9 @@ ContentParent::InitializeMembers()
 {
   mSubprocess = nullptr;
   mChildID = gContentChildID++;
+#ifdef MOZ_GEOLOCATION
   mGeolocationWatchID = -1;
+#endif
   mNumDestroyingTabs = 0;
   mIsAlive = true;
   mMetamorphosed = false;
@@ -2631,8 +2637,10 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(ContentParent)
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ContentParent)
   NS_INTERFACE_MAP_ENTRY(nsIContentParent)
   NS_INTERFACE_MAP_ENTRY(nsIObserver)
+#ifdef MOZ_GEOLOCATION
   NS_INTERFACE_MAP_ENTRY(nsIDOMGeoPositionCallback)
   NS_INTERFACE_MAP_ENTRY(nsIDOMGeoPositionErrorCallback)
+#endif
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIObserver)
 NS_INTERFACE_MAP_END
 
@@ -3753,6 +3761,7 @@ ContentParent::RecvAsyncMessage(const nsString& aMsg,
                                             aData);
 }
 
+#ifdef MOZ_GEOLOCATION
 static int32_t
 AddGeolocationListener(nsIDOMGeoPositionCallback* watcher,
                        nsIDOMGeoPositionErrorCallback* errorCallBack,
@@ -3826,6 +3835,7 @@ ContentParent::HandleEvent(nsIDOMGeoPositionError* postionError)
   Unused << SendGeolocationError(errorCode);
   return NS_OK;
 }
+#endif /* MOZ_GEOLOCATION */
 
 nsConsoleService *
 ContentParent::GetConsoleService()

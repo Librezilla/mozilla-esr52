@@ -115,6 +115,7 @@ partial interface Navigator {
   readonly attribute DOMString doNotTrack;
 };
 
+#ifdef MOZ_GEOLOCATION
 // http://www.w3.org/TR/geolocation-API/#geolocation_interface
 [NoInterfaceObject]
 interface NavigatorGeolocation {
@@ -122,6 +123,7 @@ interface NavigatorGeolocation {
   readonly attribute Geolocation geolocation;
 };
 Navigator implements NavigatorGeolocation;
+#endif
 
 #ifdef MOZ_FLYWEB
 partial interface Navigator {
