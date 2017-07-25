@@ -405,9 +405,11 @@ public:
                                 const IPC::Principal& aPrincipal,
                                 const ClonedMessageData& aData) override;
 
+#ifdef MOZ_GEOLOCATION
   virtual bool RecvGeolocationUpdate(const GeoPosition& somewhere) override;
 
   virtual bool RecvGeolocationError(const uint16_t& errorCode) override;
+#endif
 
   virtual bool RecvUpdateDictionaryList(InfallibleTArray<nsString>&& aDictionaries) override;
 

@@ -30,7 +30,9 @@
 #include "nsCategoryManagerUtils.h"
 #include "nsCDefaultURIFixup.h"
 #include "nsToolkitCompsCID.h"
+#ifdef MOZ_GEOLOCATION
 #include "nsGeoPosition.h"
+#endif
 
 #include "mozilla/Services.h"
 #include "mozilla/Preferences.h"
