@@ -37,18 +37,6 @@ int64_t SysInfo::AmountOfPhysicalMemory() {
 }
 
 // static
-int64_t SysInfo::AmountOfFreeDiskSpace(const std::wstring& path) {
-  ULARGE_INTEGER available, total, free;
-  if (!GetDiskFreeSpaceExW(path.c_str(), &available, &total, &free)) {
-    return -1;
-  }
-  int64_t rv = static_cast<int64_t>(available.QuadPart);
-  if (rv < 0)
-    rv = kint64max;
-  return rv;
-}
-
-// static
 bool SysInfo::HasEnvVar(const wchar_t* var) {
   return GetEnvironmentVariable(var, NULL, 0) != 0;
 }

@@ -303,20 +303,6 @@ void SetThreadPriority(PlatformThreadId aThreadId,
                        hal::ThreadPriority aThreadPriority);
 
 /**
- * Start monitoring disk space for low space situations.
- *
- * This API is currently only allowed to be used from the main process.
- */
-void StartDiskSpaceWatcher();
-
-/**
- * Stop monitoring disk space for low space situations.
- *
- * This API is currently only allowed to be used from the main process.
- */
-void StopDiskSpaceWatcher();
-
-/**
  * Start the system service with the specified name and arguments.
  */
 nsresult StartSystemService(const char* aSvcName, const char* aArgs);

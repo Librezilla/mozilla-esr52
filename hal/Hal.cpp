@@ -571,22 +571,6 @@ ThreadPriorityToString(ThreadPriority aPriority)
   }
 }
 
-void
-StartDiskSpaceWatcher()
-{
-  AssertMainProcess();
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(StartDiskSpaceWatcher());
-}
-
-void
-StopDiskSpaceWatcher()
-{
-  AssertMainProcess();
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(StopDiskSpaceWatcher());
-}
-
 nsresult StartSystemService(const char* aSvcName, const char* aArgs)
 {
   AssertMainThread();

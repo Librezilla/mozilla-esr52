@@ -90,19 +90,6 @@ int64_t SysInfo::AmountOfPhysicalMemory() {
 }
 
 // static
-int64_t SysInfo::AmountOfFreeDiskSpace(const std::wstring& path) {
-#ifndef ANDROID
-  struct statvfs stats;
-  if (statvfs(WideToUTF8(path).c_str(), &stats) != 0) {
-    return -1;
-  }
-  return static_cast<int64_t>(stats.f_bavail) * stats.f_frsize;
-#else
-  return -1;
-#endif
-}
-
-// static
 bool SysInfo::HasEnvVar(const wchar_t* var) {
   std::string var_utf8 = WideToUTF8(std::wstring(var));
   return getenv(var_utf8.c_str()) != NULL;

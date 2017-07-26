@@ -216,18 +216,6 @@ SetThreadPriority(PlatformThreadId aThreadId,
   NS_RUNTIMEABORT("Setting thread priority cannot be called from sandboxed contexts.");
 }
 
-void
-StartDiskSpaceWatcher()
-{
-  NS_RUNTIMEABORT("StartDiskSpaceWatcher() can't be called from sandboxed contexts.");
-}
-
-void
-StopDiskSpaceWatcher()
-{
-  NS_RUNTIMEABORT("StopDiskSpaceWatcher() can't be called from sandboxed contexts.");
-}
-
 nsresult StartSystemService(const char* aSvcName, const char* aArgs)
 {
   NS_RUNTIMEABORT("System services cannot be controlled from sandboxed contexts.");
