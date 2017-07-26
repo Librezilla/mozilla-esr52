@@ -20,16 +20,6 @@ interface mozIDOMWindow;
 interface nsIPowerManagerService : nsISupports
 {
   /**
-   * This API will power off the machine.
-   */
-  void              powerOff();
-
-  /**
-   * This API will completely shut down and boot the machine.
-   */
-  void              reboot();
-
-  /**
    * This API will restart the Gecko processes without powering off the machine.
    */
   void              restart();

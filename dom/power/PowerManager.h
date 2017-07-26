@@ -41,8 +41,6 @@ public:
     return mWindow;
   }
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
-  void Reboot(ErrorResult& aRv);
-  void PowerOff(ErrorResult& aRv);
   void AddWakeLockListener(nsIDOMMozWakeLockListener* aListener);
   void RemoveWakeLockListener(nsIDOMMozWakeLockListener* aListener);
   void GetWakeLockState(const nsAString& aTopic, nsAString& aState,
