@@ -27,8 +27,6 @@ const uint64_t CONTENT_PROCESS_ID_MAIN = 0;
  */
 enum ShutdownMode {
   eHalShutdownMode_Unknown  = -1,
-  eHalShutdownMode_PowerOff = 0,
-  eHalShutdownMode_Reboot   = 1,
   eHalShutdownMode_Restart  = 2,
   eHalShutdownMode_Count    = 3
 };

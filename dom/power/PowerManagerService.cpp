@@ -134,38 +134,10 @@ PowerManagerService::SyncProfile()
 }
 
 NS_IMETHODIMP
-PowerManagerService::Reboot()
-{
-  LOG_FUNCTION_AND_JS_STACK() // bug 839452
-
-  StartForceQuitWatchdog(eHalShutdownMode_Reboot, mWatchdogTimeoutSecs);
-  // To synchronize any unsaved user data before rebooting.
-  SyncProfile();
-  hal::Reboot();
-  MOZ_CRASH("hal::Reboot() shouldn't return");
-}
-
-NS_IMETHODIMP
-PowerManagerService::PowerOff()
-{
-  LOG_FUNCTION_AND_JS_STACK() // bug 839452
-
-  StartForceQuitWatchdog(eHalShutdownMode_PowerOff, mWatchdogTimeoutSecs);
-  // To synchronize any unsaved user data before powering off.
-  SyncProfile();
-  hal::PowerOff();
-  MOZ_CRASH("hal::PowerOff() shouldn't return");
-}
-
-NS_IMETHODIMP
 PowerManagerService::Restart()
 {
   LOG_FUNCTION_AND_JS_STACK() // bug 839452
 
-  // FIXME/bug 796826 this implementation is currently gonk-specific,
-  // because it relies on the Gonk to initialize the Gecko processes to
-  // restart B2G. It's better to do it here to have a real "restart".
-  StartForceQuitWatchdog(eHalShutdownMode_Restart, mWatchdogTimeoutSecs);
   // Ensure all content processes are dead before we continue
   // restarting.  This code is used to restart to apply updates, and
   // if we don't join all the subprocesses, race conditions can cause

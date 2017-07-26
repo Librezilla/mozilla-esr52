@@ -67,30 +67,6 @@ PowerManager::Shutdown()
 }
 
 void
-PowerManager::Reboot(ErrorResult& aRv)
-{
-  nsCOMPtr<nsIPowerManagerService> pmService =
-    do_GetService(POWERMANAGERSERVICE_CONTRACTID);
-  if (pmService) {
-    pmService->Reboot();
-  } else {
-    aRv.Throw(NS_ERROR_UNEXPECTED);
-  }
-}
-
-void
-PowerManager::PowerOff(ErrorResult& aRv)
-{
-  nsCOMPtr<nsIPowerManagerService> pmService =
-    do_GetService(POWERMANAGERSERVICE_CONTRACTID);
-  if (pmService) {
-    pmService->PowerOff();
-  } else {
-    aRv.Throw(NS_ERROR_UNEXPECTED);
-  }
-}
-
-void
 PowerManager::AddWakeLockListener(nsIDOMMozWakeLockListener *aListener)
 {
   if (!mListeners.Contains(aListener)) {
