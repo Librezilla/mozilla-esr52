@@ -113,46 +113,6 @@ PowerManager::Callback(const nsAString &aTopic, const nsAString &aState)
   return NS_OK;
 }
 
-bool
-PowerManager::ScreenEnabled()
-{
-  return hal::GetScreenEnabled();
-}
-
-void
-PowerManager::SetScreenEnabled(bool aEnabled)
-{
-  hal::SetScreenEnabled(aEnabled);
-}
-
-bool
-PowerManager::KeyLightEnabled()
-{
-  return hal::GetKeyLightEnabled();
-}
-
-void
-PowerManager::SetKeyLightEnabled(bool aEnabled)
-{
-  hal::SetKeyLightEnabled(aEnabled);
-}
-
-double
-PowerManager::ScreenBrightness()
-{
-  return hal::GetScreenBrightness();
-}
-
-void
-PowerManager::SetScreenBrightness(double aBrightness, ErrorResult& aRv)
-{
-  if (0 <= aBrightness && aBrightness <= 1) {
-    hal::SetScreenBrightness(aBrightness);
-  } else {
-    aRv.Throw(NS_ERROR_INVALID_ARG);
-  }
-}
-
 already_AddRefed<PowerManager>
 PowerManager::CreateInstance(nsPIDOMWindowInner* aWindow)
 {

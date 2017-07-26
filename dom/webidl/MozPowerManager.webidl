@@ -37,35 +37,4 @@ interface MozPowerManager
      */
     [Throws]
     DOMString getWakeLockState(DOMString aTopic);
-
-    /**
-     * Is the device's screen currently enabled?  This attribute controls the
-     * device's screen, so setting it to false will turn off the screen.
-     */
-    attribute boolean screenEnabled;
-
-    /**
-     * Is the device's keypad/button backlight enabled? Setting it to false will
-     * turn off the device's keypad/button backlight. And the brightness level
-     * is the same as |screenBrightness|.
-     */
-    attribute boolean keyLightEnabled;
-
-    /**
-     * How bright is the screen's backlight, on a scale from 0 (very dim) to 1
-     * (full brightness)?  Setting this attribute modifies the screen's
-     * brightness.
-     *
-     * You can read and write this attribute even when the screen is disabled,
-     * but the backlight is off while the screen is disabled.
-     *
-     * If you write a value of X into this attribute, the attribute may not have
-     * the same value X when you later read it.  Most screens don't support as
-     * many different brightness levels as there are doubles between 0 and 1, so
-     * we may reduce the value's precision before storing it.
-     *
-     * @throw NS_ERROR_INVALID_ARG if brightness is not in the range [0, 1].
-     */
-    [SetterThrows]
-    attribute double screenBrightness;
 };

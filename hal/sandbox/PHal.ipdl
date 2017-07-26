@@ -88,15 +88,6 @@ parent:
     sync GetCurrentNetworkInformation()
       returns (NetworkInformation aNetworkInfo);
 
-    sync GetScreenEnabled() returns (bool enabled);
-    async SetScreenEnabled(bool aEnabled);
-
-    sync GetKeyLightEnabled() returns (bool enabled);
-    async SetKeyLightEnabled(bool aEnabled);
-
-    sync GetScreenBrightness() returns (double brightness);
-    async SetScreenBrightness(double aBrightness);
-
     async AdjustSystemClock(int64_t aDeltaMilliseconds);
     async SetTimezone(nsCString aTimezoneSpec);
     sync GetTimezone()
