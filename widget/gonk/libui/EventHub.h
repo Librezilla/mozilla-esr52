@@ -127,9 +127,6 @@ enum {
     /* The input device is a joystick (implies gamepad, has joystick absolute axes). */
     INPUT_DEVICE_CLASS_JOYSTICK      = 0x00000100,
 
-    /* The input device has a vibrator (supports FF_RUMBLE). */
-    INPUT_DEVICE_CLASS_VIBRATOR      = 0x00000200,
-
     /* The input device is virtual (not a real device, not part of UI configuration). */
     INPUT_DEVICE_CLASS_VIRTUAL       = 0x40000000,
 
@@ -237,10 +234,6 @@ public:
     virtual sp<KeyCharacterMap> getKeyCharacterMap(int32_t deviceId) const = 0;
     virtual bool setKeyboardLayoutOverlay(int32_t deviceId, const sp<KeyCharacterMap>& map) = 0;
 
-    /* Control the vibrator. */
-    virtual void vibrate(int32_t deviceId, nsecs_t duration) = 0;
-    virtual void cancelVibrate(int32_t deviceId) = 0;
-
     /* Requests the EventHub to reopen all input devices on the next call to getEvents(). */
     virtual void requestReopenDevices() = 0;
 
@@ -299,9 +292,6 @@ public:
 
     virtual sp<KeyCharacterMap> getKeyCharacterMap(int32_t deviceId) const;
     virtual bool setKeyboardLayoutOverlay(int32_t deviceId, const sp<KeyCharacterMap>& map);
-
-    virtual void vibrate(int32_t deviceId, nsecs_t duration);
-    virtual void cancelVibrate(int32_t deviceId);
 
     virtual void requestReopenDevices();
 

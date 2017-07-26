@@ -8,7 +8,6 @@
  * http://www.w3.org/TR/tracking-dnt/
  * http://www.w3.org/TR/geolocation-API/#geolocation_interface
  * http://www.w3.org/TR/battery-status/#navigatorbattery-interface
- * http://www.w3.org/TR/vibration/#vibration-interface
  * http://www.w3.org/2012/sysapps/runtime/#extension-to-the-navigator-interface-1
  * https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html#navigator-interface-extension
  * http://www.w3.org/TR/beacon/#sec-beacon-method
@@ -138,14 +137,6 @@ partial interface Navigator {
                                                optional FlyWebPublishOptions options);
 };
 
-// http://www.w3.org/TR/vibration/#vibration-interface
-partial interface Navigator {
-    // We don't support sequences in unions yet
-    //boolean vibrate ((unsigned long or sequence<unsigned long>) pattern);
-    boolean vibrate(unsigned long duration);
-    boolean vibrate(sequence<unsigned long> pattern);
-};
-
 // http://www.w3.org/TR/pointerevents/#extensions-to-the-navigator-interface
 partial interface Navigator {
     [Pref="dom.w3c_pointer_events.enabled"]
@@ -153,17 +144,6 @@ partial interface Navigator {
 };
 
 // Mozilla-specific extensions
-
-// Chrome-only interface for Vibration API permission handling.
-partial interface Navigator {
-    /* Set permission state to device vibration.
-     * @param permitted permission state (true for allowing vibration)
-     * @param persistent make the permission session-persistent
-     */
-    [ChromeOnly]
-    void setVibrationPermission(boolean permitted,
-                                optional boolean persistent = true);
-};
 
 callback interface MozIdleObserver {
   // Time is in seconds and is read only when idle observers are added

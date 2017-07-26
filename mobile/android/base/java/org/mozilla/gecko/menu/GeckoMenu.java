@@ -259,7 +259,6 @@ public class GeckoMenu extends ListView
                 @Override
                 public boolean onLongClick(View view) {
                     if (handleMenuItemLongClick(menuItem)) {
-                        GeckoAppShell.vibrateOnHapticFeedbackEnabled(getResources().getIntArray(R.array.long_press_vibrate_msec));
                         return true;
                     }
                     return false;
@@ -276,7 +275,6 @@ public class GeckoMenu extends ListView
                 @Override
                 public boolean onLongClick(View view) {
                     if (handleMenuItemLongClick(menuItem)) {
-                        GeckoAppShell.vibrateOnHapticFeedbackEnabled(getResources().getIntArray(R.array.long_press_vibrate_msec));
                         return true;
                     }
                     return false;
