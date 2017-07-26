@@ -303,20 +303,6 @@ void SetThreadPriority(PlatformThreadId aThreadId,
                        hal::ThreadPriority aThreadPriority);
 
 /**
- * Start monitoring disk space for low space situations.
- *
- * This API is currently only allowed to be used from the main process.
- */
-void StartDiskSpaceWatcher();
-
-/**
- * Stop monitoring disk space for low space situations.
- *
- * This API is currently only allowed to be used from the main process.
- */
-void StopDiskSpaceWatcher();
-
-/**
  * Determine whether the headphone switch event is from input device
  */
 bool IsHeadphoneEventFromInputDev();

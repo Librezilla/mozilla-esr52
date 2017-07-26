@@ -28,10 +28,6 @@ class SysInfo {
     return static_cast<int>(AmountOfPhysicalMemory() / 1024 / 1024);
   }
 
-  // Return the available disk space in bytes on the volume containing |path|,
-  // or -1 on failure.
-  static int64_t AmountOfFreeDiskSpace(const std::wstring& path);
-
   // Return true if the given environment variable is defined.
   // TODO: find a better place for HasEnvVar.
   static bool HasEnvVar(const wchar_t* var);

@@ -87,16 +87,6 @@ public:
 #endif
 
   static bool
-  InLowDiskSpaceMode()
-#ifdef DEBUG
-  ;
-#else
-  {
-    return !!sLowDiskSpaceMode;
-  }
-#endif
-
-  static bool
   InTestingMode();
 
   static bool
@@ -248,7 +238,6 @@ private:
   static bool sFullSynchronousMode;
   static LazyLogModule sLoggingModule;
   static Atomic<LoggingMode> sLoggingMode;
-  static mozilla::Atomic<bool> sLowDiskSpaceMode;
 };
 
 } // namespace dom
