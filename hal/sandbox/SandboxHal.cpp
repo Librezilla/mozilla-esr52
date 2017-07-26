@@ -157,6 +157,7 @@ DisableSensorNotifications(SensorType aSensor) {
   Hal()->SendDisableSensorNotifications(aSensor);
 }
 
+#ifdef MOZ_WAKELOCK
 void
 EnableWakeLockNotifications()
 {
@@ -184,6 +185,7 @@ GetWakeLockInfo(const nsAString &aTopic, WakeLockInformation *aWakeLockInfo)
 {
   Hal()->SendGetWakeLockInfo(nsString(aTopic), aWakeLockInfo);
 }
+#endif /* MOZ_WAKELOCK */
 
 bool
 EnableAlarm()
@@ -256,7 +258,9 @@ bool SystemServiceIsRunning(const char* aSvcName)
 class HalParent : public PHalParent
                 , public NetworkObserver
                 , public ISensorObserver
+#ifdef MOZ_WAKELOCK
                 , public WakeLockObserver
+#endif
                 , public ScreenConfigurationObserver
                 , public SystemClockChangeObserver
                 , public SystemTimezoneChangeObserver
@@ -273,7 +277,9 @@ public:
          sensor < NUM_SENSOR_TYPE; ++sensor) {
       hal::UnregisterSensorObserver(SensorType(sensor), this);
     }
+#ifdef MOZ_WAKELOCK
     hal::UnregisterWakeLockObserver(this);
+#endif
     hal::UnregisterSystemClockChangeObserver(this);
     hal::UnregisterSystemTimezoneChangeObserver(this);
   }
@@ -429,6 +435,7 @@ public:
     Unused << SendNotifySensorChange(aSensorData);
   }
 
+#ifdef MOZ_WAKELOCK
   virtual bool
   RecvModifyWakeLock(const nsString& aTopic,
                      const WakeLockControl& aLockAdjust,
@@ -468,6 +475,7 @@ public:
   {
     Unused << SendNotifyWakeLockChange(aWakeLockInfo);
   }
+#endif
 
   void Notify(const int64_t& aClockDeltaMS) override
   {
@@ -497,11 +505,13 @@ public:
     return true;
   }
 
+#ifdef MOZ_WAKELOCK
   virtual bool
   RecvNotifyWakeLockChange(const WakeLockInformation& aWakeLockInfo) override {
     hal::NotifyWakeLockChange(aWakeLockInfo);
     return true;
   }
+#endif
 
   virtual bool
   RecvNotifyScreenConfigurationChange(const ScreenConfiguration& aScreenConfiguration) override {

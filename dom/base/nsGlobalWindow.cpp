@@ -35,7 +35,9 @@
 #include "nsArrayUtils.h"
 #include "nsIDOMWindowCollection.h"
 #include "nsDOMWindowList.h"
+#ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
+#endif
 #include "mozilla/dom/power/PowerManagerService.h"
 #include "nsIDocShellTreeOwner.h"
 #include "nsIInterfaceRequestorUtils.h"
@@ -2009,7 +2011,9 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INTERNAL(nsGlobalWindow)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mDocumentPrincipal)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mDoc)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mIdleService)
+#ifdef MOZ_WAKELOCK
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mWakeLock)
+#endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPendingStorageEvents)
 
   for (IdleRequest* request : tmp->mIdleRequestCallbacks) {
@@ -2095,7 +2099,9 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(nsGlobalWindow)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mDocumentPrincipal)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mDoc)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mIdleService)
+#if MOZ_WAKELOCK
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mWakeLock)
+#endif
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mPendingStorageEvents)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mIdleObservers)
 
@@ -6858,6 +6864,7 @@ nsGlobalWindow::FinishFullscreenChange(bool aIsFullscreen)
     }
   }
 
+#ifdef MOZ_WAKELOCK
   if (!mWakeLock && mFullScreen) {
     RefPtr<power::PowerManagerService> pmService =
       power::PowerManagerService::GetInstance();
@@ -6877,6 +6884,7 @@ nsGlobalWindow::FinishFullscreenChange(bool aIsFullscreen)
     mWakeLock = nullptr;
     rv.SuppressException();
   }
+#endif /* MOZ_WAKELOCK */
 }
 
 bool

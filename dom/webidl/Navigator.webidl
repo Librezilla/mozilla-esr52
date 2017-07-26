@@ -178,6 +178,7 @@ partial interface Navigator {
   [Throws, ChromeOnly]
   void removeIdleObserver(MozIdleObserver aIdleObserver);
 
+#ifdef MOZ_WAKELOCK
   /**
    * Request a wake lock for a resource.
    *
@@ -208,6 +209,7 @@ partial interface Navigator {
    */
   [Throws, Pref="dom.wakelock.enabled", Func="Navigator::HasWakeLockSupport", UnsafeInPrerendering]
   MozWakeLock requestWakeLock(DOMString aTopic);
+#endif
 
   /**
    * Make CPU instruction subset information available for UpdateUtils.

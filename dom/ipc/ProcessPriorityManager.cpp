@@ -140,7 +140,9 @@ private:
  */
 class ProcessPriorityManagerImpl final
   : public nsIObserver
+#ifdef MOZ_WAKELOCK
   , public WakeLockObserver
+#endif
   , public nsSupportsWeakReference
 {
 public:
@@ -184,11 +186,13 @@ public:
     ParticularProcessPriorityManager* aParticularManager,
     hal::ProcessPriority aOldPriority);
 
+#ifdef MOZ_WAKELOCK
   /**
    * Implements WakeLockObserver, used to monitor wake lock changes in the
    * main process.
    */
   virtual void Notify(const WakeLockInformation& aInfo) override;
+#endif
 
   /**
    * Prevents processes from changing priority until unfrozen.
@@ -281,8 +285,11 @@ private:
  * main-process only.
  */
 class ParticularProcessPriorityManager final
-  : public WakeLockObserver
-  , public nsIObserver
+ :
+#ifdef MOZ_WAKELOCK
+    public WakeLockObserver,
+#endif
+    public nsIObserver
   , public nsITimerCallback
   , public nsSupportsWeakReference
 {
@@ -295,7 +302,10 @@ public:
   NS_DECL_NSIOBSERVER
   NS_DECL_NSITIMERCALLBACK
 
+#ifdef MOZ_WAKELOCK
   virtual void Notify(const WakeLockInformation& aInfo) override;
+#endif
+
   static void StaticInit();
   void Init();
 
@@ -470,7 +480,9 @@ ProcessPriorityManagerImpl::ProcessPriorityManagerImpl()
     , mBackgroundPerceivableLRUPool(PROCESS_PRIORITY_BACKGROUND_PERCEIVABLE)
 {
   MOZ_ASSERT(XRE_IsParentProcess());
+#ifdef MOZ_WAKELOCK
   RegisterWakeLockObserver(this);
+#endif
 }
 
 ProcessPriorityManagerImpl::~ProcessPriorityManagerImpl()
@@ -481,7 +493,9 @@ ProcessPriorityManagerImpl::~ProcessPriorityManagerImpl()
 void
 ProcessPriorityManagerImpl::ShutDown()
 {
+#ifdef MOZ_WAKELOCK
   UnregisterWakeLockObserver(this);
+#endif
 }
 
 void
@@ -647,6 +661,7 @@ ProcessPriorityManagerImpl::NotifyProcessPriorityChanged(
   }
 }
 
+#ifdef MOZ_WAKELOCK
 /* virtual */ void
 ProcessPriorityManagerImpl::Notify(const WakeLockInformation& aInfo)
 {
@@ -664,6 +679,7 @@ ProcessPriorityManagerImpl::Notify(const WakeLockInformation& aInfo)
         "Now mHighPriorityParent = %d\n", mHighPriority);
   }
 }
+#endif
 
 NS_IMPL_ISUPPORTS(ParticularProcessPriorityManager,
                   nsIObserver,
@@ -676,8 +692,10 @@ ParticularProcessPriorityManager::ParticularProcessPriorityManager(
   , mChildID(aContentParent->ChildID())
   , mPriority(PROCESS_PRIORITY_UNKNOWN)
   , mLRU(0)
+#ifdef MOZ_WAKELOCK
   , mHoldsCPUWakeLock(false)
   , mHoldsHighPriorityWakeLock(false)
+#endif
   , mIsActivityOpener(false)
   , mFrozen(aFrozen)
 {
@@ -697,7 +715,9 @@ ParticularProcessPriorityManager::StaticInit()
 void
 ParticularProcessPriorityManager::Init()
 {
+#ifdef MOZ_WAKELOCK
   RegisterWakeLockObserver(this);
+#endif
 
   nsCOMPtr<nsIObserverService> os = services::GetObserverService();
   if (os) {
@@ -711,6 +731,7 @@ ParticularProcessPriorityManager::Init()
 
   // This process may already hold the CPU lock; for example, our parent may
   // have acquired it on our behalf.
+#ifdef MOZ_WAKELOCK
   WakeLockInformation info1, info2;
   GetWakeLockInfo(NS_LITERAL_STRING("cpu"), &info1);
   mHoldsCPUWakeLock = info1.lockingProcesses().Contains(ChildID());
@@ -719,12 +740,14 @@ ParticularProcessPriorityManager::Init()
   mHoldsHighPriorityWakeLock = info2.lockingProcesses().Contains(ChildID());
   LOGP("Done starting up.  mHoldsCPUWakeLock=%d, mHoldsHighPriorityWakeLock=%d",
        mHoldsCPUWakeLock, mHoldsHighPriorityWakeLock);
+#endif /* MOZ_WAKELOCK */
 }
 
 ParticularProcessPriorityManager::~ParticularProcessPriorityManager()
 {
   LOGP("Destroying ParticularProcessPriorityManager.");
 
+#ifdef MOZ_WAKELOCK
   // Unregister our wake lock observer if ShutDown hasn't been called.  (The
   // wake lock observer takes raw refs, so we don't want to take chances here!)
   // We don't call UnregisterWakeLockObserver unconditionally because the code
@@ -733,8 +756,10 @@ ParticularProcessPriorityManager::~ParticularProcessPriorityManager()
   if (mContentParent) {
     UnregisterWakeLockObserver(this);
   }
+#endif /* MOZ_WAKELOCK */
 }
 
+#ifdef MOZ_WAKELOCK
 /* virtual */ void
 ParticularProcessPriorityManager::Notify(const WakeLockInformation& aInfo)
 {
@@ -761,6 +786,7 @@ ParticularProcessPriorityManager::Notify(const WakeLockInformation& aInfo)
     }
   }
 }
+#endif /* MOZ_WAKELOCK */
 
 NS_IMETHODIMP
 ParticularProcessPriorityManager::Observe(nsISupports* aSubject,
@@ -1052,10 +1078,12 @@ ParticularProcessPriorityManager::CurrentPriority()
 ProcessPriority
 ParticularProcessPriorityManager::ComputePriority()
 {
+#ifdef MOZ_WAKELOCK
   if ((mHoldsCPUWakeLock || mHoldsHighPriorityWakeLock) &&
       HasAppType("critical")) {
     return PROCESS_PRIORITY_FOREGROUND_HIGH;
   }
+#endif /* MOZ_WAKELOCK */
 
   bool isVisible = false;
   const ManagedContainer<PBrowserParent>& browsers =
@@ -1073,10 +1101,12 @@ ParticularProcessPriorityManager::ComputePriority()
       PROCESS_PRIORITY_FOREGROUND;
   }
 
+#ifdef MOZ_WAKELOCK
   if ((mHoldsCPUWakeLock || mHoldsHighPriorityWakeLock) &&
       IsExpectingSystemMessage()) {
     return PROCESS_PRIORITY_BACKGROUND_PERCEIVABLE;
   }
+#endif /* MOZ_WAKELOCK */
 
   RefPtr<AudioChannelService> service = AudioChannelService::GetOrCreate();
   if (service && service->ProcessContentOrNormalChannelIsActive(ChildID())) {
@@ -1152,7 +1182,9 @@ ParticularProcessPriorityManager::ShutDown()
 {
   MOZ_ASSERT(mContentParent);
 
+#ifdef MOZ_WAKELOCK
   UnregisterWakeLockObserver(this);
+#endif
 
   if (mResetPriorityTimer) {
     mResetPriorityTimer->Cancel();

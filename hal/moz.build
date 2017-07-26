@@ -11,14 +11,20 @@ EXPORTS.mozilla += [
     'HalScreenConfiguration.h',
     'HalSensor.h',
     'HalTypes.h',
-    'HalWakeLock.h',
 ]
 
 UNIFIED_SOURCES += [
-    'HalWakeLock.cpp',
     'sandbox/SandboxHal.cpp',
     'WindowIdentifier.cpp',
 ]
+
+if CONFIG['MOZ_WAKELOCK']:
+    EXPORTS.mozilla += [
+        'HalWakeLock.h',
+    ]
+    UNIFIED_SOURCES += [
+        'HalWakeLock.cpp',
+    ]
 
 # Hal.cpp cannot be built in unified mode because it relies on HalImpl.h.
 SOURCES += [

@@ -34,7 +34,9 @@
 #include "mozilla/dom/GamepadServiceTest.h"
 #endif
 #include "mozilla/dom/PowerManager.h"
+#ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
+#endif
 #include "mozilla/dom/power/PowerManagerService.h"
 #include "mozilla/dom/FlyWebPublishedServer.h"
 #include "mozilla/dom/FlyWebService.h"
@@ -1168,6 +1170,7 @@ Navigator::PublishServer(const nsAString& aName,
   return domPromise.forget();
 }
 
+#ifdef MOZ_WAKELOCK
 already_AddRefed<WakeLock>
 Navigator::RequestWakeLock(const nsAString &aTopic, ErrorResult& aRv)
 {
@@ -1187,6 +1190,7 @@ Navigator::RequestWakeLock(const nsAString &aTopic, ErrorResult& aRv)
 
   return pmService->NewWakeLock(aTopic, mWindow, aRv);
 }
+#endif /* MOZ_WAKELOCK */
 
 already_AddRefed<LegacyMozTCPSocket>
 Navigator::MozTCPSocket()
@@ -1429,6 +1433,7 @@ Navigator::WrapObject(JSContext* cx, JS::Handle<JSObject*> aGivenProto)
   return NavigatorBinding::Wrap(cx, this, aGivenProto);
 }
 
+#if MOZ_WAKELOCK
 /* static */
 bool
 Navigator::HasWakeLockSupport(JSContext* /* unused*/, JSObject* /*unused */)
@@ -1438,6 +1443,7 @@ Navigator::HasWakeLockSupport(JSContext* /* unused*/, JSObject* /*unused */)
   // No service means no wake lock support
   return !!pmService;
 }
+#endif /* MOZ_WAKELOCK */
 
 /* static */
 bool

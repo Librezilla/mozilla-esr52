@@ -9,7 +9,9 @@
 #include "mozilla/Hal.h"
 #include "WakeLock.h"
 #include "nsDOMClassInfoID.h"
+#ifdef MOZ_WAKELOCK
 #include "nsIDOMWakeLockListener.h"
+#endif
 #include "nsIDocument.h"
 #include "nsIPermissionManager.h"
 #include "nsIPowerManagerService.h"
@@ -26,7 +28,9 @@ namespace dom {
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(PowerManager)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
   NS_INTERFACE_MAP_ENTRY(nsISupports)
+#ifdef MOZ_WAKELOCK
   NS_INTERFACE_MAP_ENTRY(nsIDOMMozWakeLockListener)
+#endif
 NS_INTERFACE_MAP_END
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(PowerManager, mListeners, mWindow)
@@ -49,8 +53,10 @@ PowerManager::Init(nsPIDOMWindowInner* aWindow)
     do_GetService(POWERMANAGERSERVICE_CONTRACTID);
   NS_ENSURE_STATE(pmService);
 
+#ifdef MOZ_WAKELOCK
   // Add ourself to the global notification list.
   pmService->AddWakeLockListener(this);
+#endif
   return NS_OK;
 }
 
@@ -61,11 +67,14 @@ PowerManager::Shutdown()
     do_GetService(POWERMANAGERSERVICE_CONTRACTID);
   NS_ENSURE_STATE(pmService);
 
+#ifdef MOZ_WAKELOCK
   // Remove ourself from the global notification list.
   pmService->RemoveWakeLockListener(this);
+#endif
   return NS_OK;
 }
 
+#ifdef MOZ_WAKELOCK
 void
 PowerManager::AddWakeLockListener(nsIDOMMozWakeLockListener *aListener)
 {
@@ -93,6 +102,7 @@ PowerManager::GetWakeLockState(const nsAString& aTopic,
     aRv.Throw(NS_ERROR_UNEXPECTED);
   }
 }
+#endif
 
 NS_IMETHODIMP
 PowerManager::Callback(const nsAString &aTopic, const nsAString &aState)
@@ -105,10 +115,12 @@ PowerManager::Callback(const nsAString &aTopic, const nsAString &aState)
    * because the callbacks may install new listeners. We expect no
    * more than one listener per window, so it shouldn't be too long.
    */
+#ifdef MOZ_WAKELOCK
   AutoTArray<nsCOMPtr<nsIDOMMozWakeLockListener>, 2> listeners(mListeners);
   for (uint32_t i = 0; i < listeners.Length(); ++i) {
     listeners[i]->Callback(aTopic, aState);
   }
+#endif
 
   return NS_OK;
 }

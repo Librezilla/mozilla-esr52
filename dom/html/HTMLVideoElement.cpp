@@ -27,7 +27,9 @@
 #include "MediaError.h"
 #include "MediaDecoder.h"
 #include "mozilla/Preferences.h"
+#ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
+#endif /* MOZ_WAKELOCK */
 #include "mozilla/dom/power/PowerManagerService.h"
 #include "mozilla/dom/Performance.h"
 #include "mozilla/dom/VideoPlaybackQuality.h"
@@ -46,7 +48,9 @@ NS_IMPL_ELEMENT_CLONE(HTMLVideoElement)
 
 HTMLVideoElement::HTMLVideoElement(already_AddRefed<NodeInfo>& aNodeInfo)
   : HTMLMediaElement(aNodeInfo)
+#ifdef MOZ_WAKELOCK
   , mUseScreenWakeLock(true)
+#endif /* MOZ_WAKELOCK */
 {
 }
 
@@ -202,6 +206,7 @@ bool HTMLVideoElement::MozHasAudio() const
   return HasAudio();
 }
 
+#ifdef MOZ_WAKELOCK
 bool HTMLVideoElement::MozUseScreenWakeLock() const
 {
   MOZ_ASSERT(NS_IsMainThread(), "Should be on main thread.");
@@ -214,6 +219,7 @@ void HTMLVideoElement::SetMozUseScreenWakeLock(bool aValue)
   mUseScreenWakeLock = aValue;
   UpdateScreenWakeLock();
 }
+#endif /* MOZ_WAKELOCK */
 
 JSObject*
 HTMLVideoElement::WrapNode(JSContext* aCx, JS::Handle<JSObject*> aGivenProto)
@@ -225,7 +231,9 @@ void
 HTMLVideoElement::NotifyOwnerDocumentActivityChanged()
 {
   HTMLMediaElement::NotifyOwnerDocumentActivityChanged();
+#ifdef MOZ_WAKELOCK
   UpdateScreenWakeLock();
+#endif
 }
 
 FrameStatistics*
@@ -279,6 +287,7 @@ HTMLVideoElement::GetVideoPlaybackQuality()
   return playbackQuality.forget();
 }
 
+#ifdef MOZ_WAKELOCK
 void
 HTMLVideoElement::WakeLockCreate()
 {
@@ -318,6 +327,7 @@ HTMLVideoElement::UpdateScreenWakeLock()
                                              rv);
   }
 }
+#endif /* MOZ_WAKELOCK */
 
 void
 HTMLVideoElement::Init()

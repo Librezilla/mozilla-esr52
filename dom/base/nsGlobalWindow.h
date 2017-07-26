@@ -134,7 +134,9 @@ class Timeout;
 class U2F;
 class VRDisplay;
 class VREventObserver;
+#ifdef MOZ_WAKELOCK
 class WakeLock;
+#endif
 #if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
 class WindowOrientationObserver;
 #endif
@@ -1356,7 +1358,9 @@ protected:
 
   nsCOMPtr <nsIIdleService> mIdleService;
 
+#ifdef MOZ_WAKELOCK
   RefPtr<mozilla::dom::WakeLock> mWakeLock;
+#endif
 
   static bool sIdleObserversAPIFuzzTimeDisabled;
 
