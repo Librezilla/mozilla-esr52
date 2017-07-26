@@ -232,8 +232,6 @@ public:
 
   // WebIDL helper methods
   static bool HasWakeLockSupport(JSContext* /* unused*/, JSObject* /*unused */);
-  static bool HasWifiManagerSupport(JSContext* /* unused */,
-                                  JSObject* aGlobal);
   static bool HasUserMediaSupport(JSContext* /* unused */,
                                   JSObject* /* unused */);
 

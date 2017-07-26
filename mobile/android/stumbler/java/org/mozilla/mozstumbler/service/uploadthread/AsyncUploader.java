@@ -150,15 +150,6 @@ public class AsyncUploader extends AsyncTask<Void, Void, SyncSummary> {
         long uploadedCells = 0;
         long uploadedWifis = 0;
 
-        if (!mUploadArgs.mShouldIgnoreWifiStatus && mUploadArgs.mUseWifiOnly &&
-               !mUploadArgs.mNetworkUtils.isWifiAvailable()) {
-            if (AppGlobals.isDebug) {
-                Log.d(LOG_TAG, "not on WiFi, not sending");
-            }
-            syncResult.numIoExceptions += 1;
-            return;
-        }
-
         Submitter submitter = new Submitter();
         DataStorageManager dm = DataStorageManager.getInstance();
 

@@ -18,15 +18,4 @@ public final class NetworkUtils {
     public NetworkUtils(Context context) {
         mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
-
-    public synchronized boolean isWifiAvailable() {
-        if (mConnectivityManager == null) {
-            Log.e(LOG_TAG, "ConnectivityManager is null!");
-            return false;
-        }
-
-        NetworkInfo aNet = mConnectivityManager.getActiveNetworkInfo();
-        return (aNet != null && aNet.getType() == ConnectivityManager.TYPE_WIFI);
-    }
-
 }

@@ -234,7 +234,6 @@ public:
                                 nsIInterfaceRequestor *callbacks,
                                 uint32_t caps = 0)
     {
-        TickleWifi(callbacks);
         return mConnMgr->SpeculativeConnect(ci, callbacks, caps);
     }
 
@@ -632,10 +631,6 @@ public:
             mRequestTokenBucket = nullptr;
         }
     }
-
-private:
-    RefPtr<Tickler> mWifiTickler;
-    void TickleWifi(nsIInterfaceRequestor *cb);
 
 private:
     nsresult SpeculativeConnectInternal(nsIURI *aURI,

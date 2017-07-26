@@ -56,9 +56,6 @@ function run_test()
     httpserver.registerPathHandler("/geo", geoHandler);
     httpserver.start(-1);
     var prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-    prefs.setBoolPref("geo.wifi.scan", false);
-    prefs.setCharPref("geo.wifi.uri", "http://localhost:" +
-                      httpserver.identity.primaryPort + "/geo");
     prefs.setBoolPref("dom.testing.ignore_ipc_principal", true);
   }
 

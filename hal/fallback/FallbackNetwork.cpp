@@ -23,7 +23,6 @@ void
 GetCurrentNetworkInformation(hal::NetworkInformation* aNetworkInfo)
 {
   aNetworkInfo->type() = dom::network::kDefaultType;
-  aNetworkInfo->isWifi() = dom::network::kDefaultIsWifi;
   aNetworkInfo->dhcpGateway() = dom::network::kDefaultDHCPGateway;
 }
 

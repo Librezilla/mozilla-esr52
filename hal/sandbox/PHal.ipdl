@@ -21,7 +21,6 @@ namespace hal {
 
 struct NetworkInformation {
   uint32_t type;
-  bool   isWifi;
   uint32_t dhcpGateway;
 };
 

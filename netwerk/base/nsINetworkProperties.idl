@@ -13,6 +13,5 @@
 [scriptable, builtinclass, uuid(0af94dec-7ffc-4301-8937-766c214ac688)]
 interface nsINetworkProperties : nsISupports
 {
-    readonly attribute boolean isWifi;
     readonly attribute unsigned long dhcpGateway;
 };

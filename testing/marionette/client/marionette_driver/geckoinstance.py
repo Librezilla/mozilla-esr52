@@ -67,8 +67,6 @@ class GeckoInstance(object):
         # Always use network provider for geolocation tests
         # so we bypass the OSX dialog raised by the corelocation provider
         "geo.provider.testing": True,
-        # Do not scan Wifi
-        "geo.wifi.scan": False,
 
         # No hang monitor
         "hangmonitor.timeout": 0,

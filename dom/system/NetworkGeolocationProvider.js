@@ -31,8 +31,6 @@ var gLoggingEnabled = false;
 
 var gLocationRequestTimeout = 5000;
 
-var gWifiScanningEnabled = true;
-
 function LOG(aMsg) {
   if (gLoggingEnabled) {
     aMsg = "*** WIFI GEO: " + aMsg + "\n";
@@ -92,23 +90,6 @@ function CachedRequest(loc, cellInfo, wifiList) {
     return true;
   };
 
-  // if 50% of the SSIDS match
-  this.isWifiApproxEqual = function(wifiList) {
-    if (!this.hasWifis()) {
-      return false;
-    }
-
-    // if either list is a 50% subset of the other, they are equal
-    let common = 0;
-    for (let i = 0; i < wifiList.length; i++) {
-      if (wifis.has(wifiList[i].macAddress)) {
-        common++;
-      }
-    }
-    let kPercentMatch = 0.5;
-    return common >= (Math.max(wifis.size, wifiList.length) * kPercentMatch);
-  };
-
   this.isGeoip = function() {
     return !this.hasCells() && !this.hasWifis();
   };
@@ -119,10 +100,6 @@ function CachedRequest(loc, cellInfo, wifiList) {
 
   this.isCellOnly = function() {
     return this.hasCells() && !this.hasWifis();
-  };
-
-  this.isWifiOnly = function() {
-    return this.hasWifis() && !this.hasCells();
   };
  }
 
@@ -160,18 +137,9 @@ function isCachedRequestMoreAccurateThanServerRequest(newCell, newWifiList)
     return true;
   }
 
-  if (newCell && newWifiList && (gCachedRequest.isCellOnly() || gCachedRequest.isWifiOnly())) {
+  if (newCell && newWifiList && (gCachedRequest.isCellOnly())) {
     gDebugCacheReasoning = "New req. is cell+wifi, cache only cell or wifi.";
     return false;
-  }
-
-  if (newCell && gCachedRequest.isWifiOnly()) {
-    // In order to know if a cell-only request should trump a wifi-only request
-    // need to know if wifi is low accuracy. >5km would be VERY low accuracy,
-    // it is worth trying the cell
-    var isHighAccuracyWifi = gCachedRequest.location.coords.accuracy < 5000;
-    gDebugCacheReasoning = "Req. is cell, cache is wifi, isHigh:" + isHighAccuracyWifi;
-    return isHighAccuracyWifi;
   }
 
   let hasEqualCells = false;
@@ -180,9 +148,6 @@ function isCachedRequestMoreAccurateThanServerRequest(newCell, newWifiList)
   }
 
   let hasEqualWifis = false;
-  if (newWifiList) {
-    hasEqualWifis = gCachedRequest.isWifiApproxEqual(newWifiList);
-  }
 
   gDebugCacheReasoning = "EqualCells:" + hasEqualCells + " EqualWifis:" + hasEqualWifis;
 
@@ -191,9 +156,6 @@ function isCachedRequestMoreAccurateThanServerRequest(newCell, newWifiList)
     if (hasEqualCells) {
       return true;
     }
-  } else if (gCachedRequest.isWifiOnly() && hasEqualWifis) {
-    gDebugCacheReasoning +=", Wifi only."
-    return true;
   } else if (gCachedRequest.isCellAndWifi()) {
      gDebugCacheReasoning += ", Cache has Cell+Wifi.";
     if ((hasEqualCells && hasEqualWifis) ||
@@ -238,10 +200,6 @@ function WifiGeoPositionProvider() {
     gLocationRequestTimeout = Services.prefs.getIntPref("geo.wifi.timeToWaitBeforeSending");
   } catch (e) {}
 
-  try {
-    gWifiScanningEnabled = Services.prefs.getBoolPref("geo.wifi.scan");
-  } catch (e) {}
-
   this.wifiService = null;
   this.timer = null;
   this.started = false;
@@ -266,8 +224,6 @@ WifiGeoPositionProvider.prototype = {
       }
       if (aSubject.key == SETTINGS_DEBUG_ENABLED) {
         gLoggingEnabled = aSubject.value;
-      } else if (aSubject.key == SETTINGS_WIFI_ENABLED) {
-        gWifiScanningEnabled = aSubject.value;
       }
     } catch (e) {
     }
@@ -297,15 +253,6 @@ WifiGeoPositionProvider.prototype = {
         // If gLoggingEnabled is already on during startup, that means it was set in js prefs.
         if (name == SETTINGS_DEBUG_ENABLED && !gLoggingEnabled) {
           gLoggingEnabled = result;
-        } else if (name == SETTINGS_WIFI_ENABLED) {
-          gWifiScanningEnabled = result;
-          if (self.wifiService) {
-            self.wifiService.stopWatching(self);
-          }
-          if (gWifiScanningEnabled) {
-            self.wifiService = Cc["@mozilla.org/wifi/monitor;1"].getService(Ci.nsIWifiMonitor);
-            self.wifiService.startWatching(self);
-          }
         }
       },
 
@@ -321,14 +268,6 @@ WifiGeoPositionProvider.prototype = {
       let settings = settingsService.getService(Ci.nsISettingsService);
       settings.createLock().get(SETTINGS_WIFI_ENABLED, settingsCallback);
       settings.createLock().get(SETTINGS_DEBUG_ENABLED, settingsCallback);
-    }
-
-    if (gWifiScanningEnabled && Cc["@mozilla.org/wifi/monitor;1"]) {
-      if (this.wifiService) {
-        this.wifiService.stopWatching(this);
-      }
-      this.wifiService = Cc["@mozilla.org/wifi/monitor;1"].getService(Ci.nsIWifiMonitor);
-      this.wifiService.startWatching(this);
     }
 
     this.resetTimer();

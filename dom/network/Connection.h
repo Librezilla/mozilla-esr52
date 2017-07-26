@@ -63,11 +63,6 @@ private:
   ConnectionType mType;
 
   /**
-   * If the connection is WIFI
-   */
-  bool mIsWifi;
-
-  /**
    * DHCP Gateway information for IPV4, in network byte order. 0 if unassigned.
    */
   uint32_t mDHCPGateway;

@@ -7,7 +7,7 @@
 const Services = require("Services");
 const {AppManager} = require("devtools/client/webide/modules/app-manager");
 const EventEmitter = require("devtools/shared/event-emitter");
-const {RuntimeScanners, WiFiScanner} = require("devtools/client/webide/modules/runtimes");
+const {RuntimeScanners} = require("devtools/client/webide/modules/runtimes");
 const {Devices} = require("resource://devtools/shared/apps/Devices.jsm");
 const {Task} = require("devtools/shared/task");
 const utils = require("devtools/client/webide/modules/utils");
@@ -126,16 +126,8 @@ RuntimeList.prototype = {
 
   update: function () {
     let doc = this._doc;
-    let wifiHeaderNode = doc.querySelector("#runtime-header-wifi");
-
-    if (WiFiScanner.allowed) {
-      wifiHeaderNode.removeAttribute("hidden");
-    } else {
-      wifiHeaderNode.setAttribute("hidden", "true");
-    }
 
     let usbListNode = doc.querySelector("#runtime-panel-usb");
-    let wifiListNode = doc.querySelector("#runtime-panel-wifi");
     let simulatorListNode = doc.querySelector("#runtime-panel-simulator");
     let otherListNode = doc.querySelector("#runtime-panel-other");
     let noHelperNode = doc.querySelector("#runtime-panel-noadbhelper");

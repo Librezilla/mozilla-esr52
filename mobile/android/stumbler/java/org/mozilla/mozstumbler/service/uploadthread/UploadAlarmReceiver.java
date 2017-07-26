@@ -77,20 +77,6 @@ public class UploadAlarmReceiver extends BroadcastReceiver {
                     return;
                 }
             }
-
-            NetworkUtils networkUtils = new NetworkUtils(this);
-            if (networkUtils.isWifiAvailable() &&
-                !AsyncUploader.isUploading()) {
-                Log.d(LOG_TAG, "Alarm upload(), call AsyncUploader");
-                AsyncUploader.AsyncUploadArgs settings =
-                    new AsyncUploader.AsyncUploadArgs(networkUtils,
-                            Prefs.getInstance(this).getWifiScanAlways(),
-                            Prefs.getInstance(this).getUseWifiOnly());
-                AsyncUploader uploader = new AsyncUploader(settings, null);
-                uploader.setNickname(Prefs.getInstance(this).getNickname());
-                uploader.execute();
-                // we could listen for completion and cancel, instead, cancel on next alarm when db empty
-            }
         }
     }
 

@@ -32,7 +32,6 @@ NS_IMPL_RELEASE_INHERITED(dom::network::Connection, DOMEventTargetHelper)
 Connection::Connection(nsPIDOMWindowInner* aWindow)
   : DOMEventTargetHelper(aWindow)
   , mType(static_cast<ConnectionType>(kDefaultType))
-  , mIsWifi(kDefaultIsWifi)
   , mDHCPGateway(kDefaultDHCPGateway)
 {
   hal::RegisterNetworkObserver(this);
@@ -50,13 +49,6 @@ Connection::Shutdown()
 }
 
 NS_IMETHODIMP
-Connection::GetIsWifi(bool *aIsWifi)
-{
-  *aIsWifi = mIsWifi;
-  return NS_OK;
-}
-
-NS_IMETHODIMP
 Connection::GetDhcpGateway(uint32_t *aGW)
 {
   *aGW = mDHCPGateway;
@@ -67,7 +59,6 @@ void
 Connection::UpdateFromNetworkInfo(const hal::NetworkInformation& aNetworkInfo)
 {
   mType = static_cast<ConnectionType>(aNetworkInfo.type());
-  mIsWifi = aNetworkInfo.isWifi();
   mDHCPGateway = aNetworkInfo.dhcpGateway();
 }
 
