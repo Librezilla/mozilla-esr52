@@ -68,11 +68,4 @@ interface MozPowerManager
      */
     [SetterThrows]
     attribute double screenBrightness;
-
-    /**
-     * Is it possible that the device's CPU will sleep after the screen is
-     * disabled?  Setting this attribute to false will prevent the device
-     * entering suspend state.
-     */
-    attribute boolean cpuSleepAllowed;
 };

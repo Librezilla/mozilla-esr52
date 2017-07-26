@@ -164,20 +164,6 @@ SetKeyLightEnabled(bool aEnabled)
   Hal()->SendSetKeyLightEnabled(aEnabled);
 }
 
-bool
-GetCpuSleepAllowed()
-{
-  bool allowed = true;
-  Hal()->SendGetCpuSleepAllowed(&allowed);
-  return allowed;
-}
-
-void
-SetCpuSleepAllowed(bool aAllowed)
-{
-  Hal()->SendSetCpuSleepAllowed(aAllowed);
-}
-
 double
 GetScreenBrightness()
 {
@@ -572,26 +558,6 @@ public:
       return false;
     }
     hal::SetKeyLightEnabled(aEnabled);
-    return true;
-  }
-
-  virtual bool
-  RecvGetCpuSleepAllowed(bool* aAllowed) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    *aAllowed = hal::GetCpuSleepAllowed();
-    return true;
-  }
-
-  virtual bool
-  RecvSetCpuSleepAllowed(const bool& aAllowed) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    hal::SetCpuSleepAllowed(aAllowed);
     return true;
   }
 

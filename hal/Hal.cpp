@@ -418,22 +418,6 @@ void SetKeyLightEnabled(bool aEnabled)
   PROXY_IF_SANDBOXED(SetKeyLightEnabled(aEnabled));
 }
 
-bool GetCpuSleepAllowed()
-{
-  // Generally for interfaces that are accessible by normal web content
-  // we should cache the result and be notified on state changes, like
-  // what the battery API does. But since this is only used by
-  // privileged interface, the synchronous getter is OK here.
-  AssertMainThread();
-  RETURN_PROXY_IF_SANDBOXED(GetCpuSleepAllowed(), true);
-}
-
-void SetCpuSleepAllowed(bool aAllowed)
-{
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(SetCpuSleepAllowed(aAllowed));
-}
-
 double GetScreenBrightness()
 {
   AssertMainThread();
