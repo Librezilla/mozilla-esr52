@@ -34,8 +34,6 @@
   "browser.search.geoip.url": "http://localhost/location-dummy/locationURL",
   "browser.search.isUS": true,
   "browser.search.countryCode": "US",
-  "geo.wifi.uri": "http://localhost/extensions-dummy/geowifiURL",
-  "geo.wifi.scan": false,
   "browser.webapps.checkForUpdates": 0,
   "identity.fxaccounts.auth.uri": "http://localhost/fxa-dummy/"
 }

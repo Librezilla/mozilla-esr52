@@ -79,7 +79,6 @@ function run_test()
 
     var prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
     prefs.setBoolPref("dom.testing.ignore_ipc_principal", true);
-    prefs.setBoolPref("geo.wifi.scan", false);
   }
 
   do_test_pending();

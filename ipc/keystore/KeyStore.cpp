@@ -187,9 +187,6 @@ public:
     }
 
     String8 certName(name);
-    if (!strncmp(certName.string(), "WIFI_USERKEY_", 13)) {
-      return getPrivateKey(certName.string(), (const uint8_t**)item, itemLength);
-    }
 
     return getCertificate(certName.string(), (const uint8_t**)item, itemLength);
   }
@@ -221,9 +218,6 @@ public:
     }
 
     String8 keyName(name);
-    if (!strncmp(keyName.string(), "WIFI_USERKEY_", 13)) {
-      return signData(keyName.string(), data, length, out, outLength);
-    }
 
     return ::UNDEFINED_ACTION;
   }
@@ -241,9 +235,6 @@ public:
     }
 
     String8 keyName(name);
-    if (!strncmp(keyName.string(), "WIFI_USERKEY_", 13)) {
-      return getPublicKey(keyName.string(), (const uint8_t**)pubkey, pubkeyLength);
-    }
 
     return ::UNDEFINED_ACTION;
   }
@@ -302,13 +293,9 @@ namespace ipc {
 
 static const char* KEYSTORE_ALLOWED_USERS[] = {
   "root",
-  "wifi",
   NULL
 };
 static const char* KEYSTORE_ALLOWED_PREFIXES[] = {
-  "WIFI_SERVERCERT_",
-  "WIFI_USERCERT_",
-  "WIFI_USERKEY_",
   NULL
 };
 
@@ -534,46 +521,6 @@ ResponseCode getPrivateKey(const char *aKeyName, const uint8_t **aKeyData,
   if (!(*aKeyData)) {
     return SYSTEM_ERROR;
   }
-
-  return SUCCESS;
-}
-
-ResponseCode getPublicKey(const char *aKeyName, const uint8_t **aKeyData,
-                          size_t *aKeyDataLength)
-{
-  *aKeyData = nullptr;
-
-  // Get corresponding user certificate nickname
-  char userCertName[128] = {0};
-  snprintf(userCertName, sizeof(userCertName) - 1, "WIFI_USERCERT_%s", aKeyName + 13);
-
-  // Get public key from user certificate.
-  ScopedCERTCertificate userCert(
-    CERT_FindCertByNickname(CERT_GetDefaultCertDB(), userCertName));
-  if (!userCert) {
-    return KEY_NOT_FOUND;
-  }
-
-  // Get public key.
-  ScopedSECKEYPublicKey publicKey(CERT_ExtractPublicKey(userCert));
-  if (!publicKey) {
-    return KEY_NOT_FOUND;
-  }
-
-  ScopedSECItem keyItem(PK11_DEREncodePublicKey(publicKey));
-  if (!keyItem) {
-    return KEY_NOT_FOUND;
-  }
-
-  size_t bufSize = keyItem->len;
-  char *buf = (char *)malloc(bufSize);
-  if (!buf) {
-    return SYSTEM_ERROR;
-  }
-
-  memcpy(buf, keyItem->data, bufSize);
-  *aKeyData = (const uint8_t *)buf;
-  *aKeyDataLength = bufSize;
 
   return SUCCESS;
 }

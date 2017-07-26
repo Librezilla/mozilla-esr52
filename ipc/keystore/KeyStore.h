@@ -44,8 +44,6 @@ ResponseCode getCertificate(const char *aCertName, const uint8_t **aCertData,
                             size_t *aCertDataLength);
 ResponseCode getPrivateKey(const char *aKeyName, const uint8_t **aKeyData,
                            size_t *aKeyDataLength);
-ResponseCode getPublicKey(const char *aKeyName, const uint8_t **aKeyData,
-                          size_t *aKeyDataLength);
 ResponseCode signData(const char *aKeyName, const uint8_t *data, size_t length,
                       uint8_t **out, size_t *outLength);
 

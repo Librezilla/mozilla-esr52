@@ -31,8 +31,6 @@ var gLoggingEnabled = false;
 
 var gLocationRequestTimeout = 5000;
 
-var gWifiScanningEnabled = true;
-
 function LOG(aMsg) {
   if (gLoggingEnabled) {
     aMsg = "*** WIFI GEO: " + aMsg + "\n";
@@ -238,10 +236,6 @@ function WifiGeoPositionProvider() {
     gLocationRequestTimeout = Services.prefs.getIntPref("geo.wifi.timeToWaitBeforeSending");
   } catch (e) {}
 
-  try {
-    gWifiScanningEnabled = Services.prefs.getBoolPref("geo.wifi.scan");
-  } catch (e) {}
-
   this.wifiService = null;
   this.timer = null;
   this.started = false;
@@ -266,8 +260,6 @@ WifiGeoPositionProvider.prototype = {
       }
       if (aSubject.key == SETTINGS_DEBUG_ENABLED) {
         gLoggingEnabled = aSubject.value;
-      } else if (aSubject.key == SETTINGS_WIFI_ENABLED) {
-        gWifiScanningEnabled = aSubject.value;
       }
     } catch (e) {
     }
@@ -297,15 +289,6 @@ WifiGeoPositionProvider.prototype = {
         // If gLoggingEnabled is already on during startup, that means it was set in js prefs.
         if (name == SETTINGS_DEBUG_ENABLED && !gLoggingEnabled) {
           gLoggingEnabled = result;
-        } else if (name == SETTINGS_WIFI_ENABLED) {
-          gWifiScanningEnabled = result;
-          if (self.wifiService) {
-            self.wifiService.stopWatching(self);
-          }
-          if (gWifiScanningEnabled) {
-            self.wifiService = Cc["@mozilla.org/wifi/monitor;1"].getService(Ci.nsIWifiMonitor);
-            self.wifiService.startWatching(self);
-          }
         }
       },
 
@@ -321,14 +304,6 @@ WifiGeoPositionProvider.prototype = {
       let settings = settingsService.getService(Ci.nsISettingsService);
       settings.createLock().get(SETTINGS_WIFI_ENABLED, settingsCallback);
       settings.createLock().get(SETTINGS_DEBUG_ENABLED, settingsCallback);
-    }
-
-    if (gWifiScanningEnabled && Cc["@mozilla.org/wifi/monitor;1"]) {
-      if (this.wifiService) {
-        this.wifiService.stopWatching(this);
-      }
-      this.wifiService = Cc["@mozilla.org/wifi/monitor;1"].getService(Ci.nsIWifiMonitor);
-      this.wifiService.startWatching(this);
     }
 
     this.resetTimer();
