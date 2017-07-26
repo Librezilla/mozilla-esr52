@@ -37,9 +37,6 @@ if (isGonk) {
                                                 ]);
 
     return {
-      factoryReset:        library.declare("factoryReset",
-                                           ctypes.default_abi,
-                                           ctypes.int),
       installFotaUpdate:   library.declare("installFotaUpdate",
                                            ctypes.default_abi,
                                            ctypes.int,
@@ -56,8 +53,6 @@ if (isGonk) {
 
 }
 
-const gFactoryResetFile = "__post_reset_cmd__";
-
 function RecoveryService() {}
 
 RecoveryService.prototype = {
@@ -69,49 +64,6 @@ RecoveryService.prototype = {
     interfaces: [Ci.nsIRecoveryService],
     classDescription: "B2G Recovery Service"
   }),
-
-  factoryReset: function RS_factoryReset(reason) {
-    if (!isGonk) {
-      Cr.NS_ERROR_FAILURE;
-    }
-
-    function doReset() {
-      // If this succeeds, then the device reboots and this never returns
-      if (librecovery.factoryReset() != 0) {
-        log("Error: Factory reset failed. Trying again after clearing cache.");
-      }
-      let cache = Cc["@mozilla.org/netwerk/cache-storage-service;1"]
-                    .getService(Ci.nsICacheStorageService);
-      cache.clear();
-      if (librecovery.factoryReset() != 0) {
-        log("Error: Factory reset failed again");
-      }
-    }
-
-    log("factoryReset " + reason);
-    let commands = [];
-      commands.push("root");
-
-    if (commands.length > 0) {
-      Cu.import("resource://gre/modules/osfile.jsm");
-      let dir = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-      dir.initWithPath("/persist");
-      var postResetFile = dir.exists() ?
-                          OS.Path.join("/persist", gFactoryResetFile):
-                          OS.Path.join("/cache", gFactoryResetFile);
-      let encoder = new TextEncoder();
-      let text = commands.join("\n");
-      let array = encoder.encode(text);
-      let promise = OS.File.writeAtomic(postResetFile, array,
-                                        { tmpPath: postResetFile + ".tmp" });
-
-      promise.then(doReset, function onError(error) {
-        log("Error: " + error);
-      });
-    } else {
-      doReset();
-    }
-  },
 
   installFotaUpdate: function RS_installFotaUpdate(updatePath) {
     if (!isGonk) {

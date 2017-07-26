@@ -79,12 +79,6 @@ PowerManager::Reboot(ErrorResult& aRv)
 }
 
 void
-PowerManager::FactoryReset(mozilla::dom::FactoryResetReason& aReason)
-{
-  hal::FactoryReset(aReason);
-}
-
-void
 PowerManager::PowerOff(ErrorResult& aRv)
 {
   nsCOMPtr<nsIPowerManagerService> pmService =
