@@ -85,7 +85,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.os.Vibrator;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -186,14 +185,6 @@ public class GeckoAppShell
 
     static private int sDensityDpi;
     static private int sScreenDepth;
-
-    /* Is the value in sVibrationEndTime valid? */
-    private static boolean sVibrationMaybePlaying;
-
-    /* Time (in System.nanoTime() units) when the currently-playing vibration
-     * is scheduled to end.  This value is valid only when
-     * sVibrationMaybePlaying is true. */
-    private static long sVibrationEndTime;
 
     private static Sensor gAccelerometerSensor;
     private static Sensor gLinearAccelerometerSensor;
@@ -1046,18 +1037,10 @@ public class GeckoAppShell
 
     @WrapForJNI(calledFrom = "gecko")
     private static void performHapticFeedback(boolean aIsLongPress) {
-        // Don't perform haptic feedback if a vibration is currently playing,
-        // because the haptic feedback will nuke the vibration.
-        if (!sVibrationMaybePlaying || System.nanoTime() >= sVibrationEndTime) {
             LayerView layerView = getLayerView();
             layerView.performHapticFeedback(aIsLongPress ?
                                             HapticFeedbackConstants.LONG_PRESS :
                                             HapticFeedbackConstants.VIRTUAL_KEY);
-        }
-    }
-
-    private static Vibrator vibrator() {
-        return (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     // Helper method to convert integer array to long array.
@@ -1067,43 +1050,6 @@ public class GeckoAppShell
             output[i] = input[i];
         }
         return output;
-    }
-
-    // Vibrate only if haptic feedback is enabled.
-    public static void vibrateOnHapticFeedbackEnabled(int[] milliseconds) {
-        if (Settings.System.getInt(getApplicationContext().getContentResolver(),
-                                   Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) > 0) {
-            vibrate(convertIntToLongArray(milliseconds), -1);
-        }
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static void vibrate(long milliseconds) {
-        sVibrationEndTime = System.nanoTime() + milliseconds * 1000000;
-        sVibrationMaybePlaying = true;
-        vibrator().vibrate(milliseconds);
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static void vibrate(long[] pattern, int repeat) {
-        // If pattern.length is even, the last element in the pattern is a
-        // meaningless delay, so don't include it in vibrationDuration.
-        long vibrationDuration = 0;
-        int iterLen = pattern.length - (pattern.length % 2 == 0 ? 1 : 0);
-        for (int i = 0; i < iterLen; i++) {
-          vibrationDuration += pattern[i];
-        }
-
-        sVibrationEndTime = System.nanoTime() + vibrationDuration * 1000000;
-        sVibrationMaybePlaying = true;
-        vibrator().vibrate(pattern, repeat);
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static void cancelVibrate() {
-        sVibrationMaybePlaying = false;
-        sVibrationEndTime = 0;
-        vibrator().cancel();
     }
 
     @WrapForJNI(calledFrom = "gecko")

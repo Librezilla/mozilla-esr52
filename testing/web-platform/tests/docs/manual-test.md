@@ -21,10 +21,6 @@ possible. For example:
 * Tests that require non-default browser configuration e.g. images
   disabled
 
-* Tests that require interaction with the physical environment
-  e.g. tests that the vibration API causes the device to vibrate or
-  that various sensor APIs respond in the expected way.
-
 There are also some rare cases where it isn't possible to write a layout
 test as a reftest, and a manual test must be written instead.
 

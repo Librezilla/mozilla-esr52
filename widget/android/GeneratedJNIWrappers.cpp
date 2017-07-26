@@ -63,14 +63,6 @@ auto GeckoAppShell::AddFullScreenPluginView(mozilla::jni::Object::Param a0) -> v
     return mozilla::jni::Method<AddFullScreenPluginView_t>::Call(GeckoAppShell::Context(), nullptr, a0);
 }
 
-constexpr char GeckoAppShell::CancelVibrate_t::name[];
-constexpr char GeckoAppShell::CancelVibrate_t::signature[];
-
-auto GeckoAppShell::CancelVibrate() -> void
-{
-    return mozilla::jni::Method<CancelVibrate_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 constexpr char GeckoAppShell::CheckURIVisited_t::name[];
 constexpr char GeckoAppShell::CheckURIVisited_t::signature[];
 
@@ -629,22 +621,6 @@ constexpr char GeckoAppShell::UnlockScreenOrientation_t::signature[];
 auto GeckoAppShell::UnlockScreenOrientation() -> void
 {
     return mozilla::jni::Method<UnlockScreenOrientation_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::Vibrate_t::name[];
-constexpr char GeckoAppShell::Vibrate_t::signature[];
-
-auto GeckoAppShell::Vibrate(int64_t a0) -> void
-{
-    return mozilla::jni::Method<Vibrate_t>::Call(GeckoAppShell::Context(), nullptr, a0);
-}
-
-constexpr char GeckoAppShell::Vibrate2_t::name[];
-constexpr char GeckoAppShell::Vibrate2_t::signature[];
-
-auto GeckoAppShell::Vibrate(mozilla::jni::LongArray::Param a0, int32_t a1) -> void
-{
-    return mozilla::jni::Method<Vibrate2_t>::Call(GeckoAppShell::Context(), nullptr, a0, a1);
 }
 
 const char GeckoAppShell::CameraCallback::name[] =

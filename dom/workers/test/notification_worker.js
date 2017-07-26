@@ -22,7 +22,6 @@ if (self.Notification) {
         tag: "sometag",
         icon: "icon.png",
         data: ["a complex object that should be", { "structured": "cloned" }],
-        mozbehavior: { vibrationPattern: [30, 200, 30] },
       };
       var notification = new Notification("This is a title", options);
 
