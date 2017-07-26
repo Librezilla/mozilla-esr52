@@ -81,7 +81,10 @@
 #include "AudioChannelService.h"
 
 #include "mozilla/dom/power/PowerManagerService.h"
+
+#ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
+#endif
 
 #include "mozilla/dom/AudioTrack.h"
 #include "mozilla/dom/AudioTrackList.h"
@@ -3291,6 +3294,7 @@ HTMLMediaElement::WakeLockBoolWrapper::operator=(bool val)
   return *this;
 }
 
+#ifdef MOZ_WAKELOCK
 HTMLMediaElement::WakeLockBoolWrapper::~WakeLockBoolWrapper()
 {
   if (mTimer) {
@@ -3366,6 +3370,7 @@ HTMLMediaElement::WakeLockRelease()
     mWakeLock = nullptr;
   }
 }
+#endif /* MOZ_WAKELOCK */
 
 HTMLMediaElement::OutputMediaStream::OutputMediaStream()
   : mFinishWhenEnded(false)

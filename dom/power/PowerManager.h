@@ -8,7 +8,9 @@
 
 #include "nsCOMPtr.h"
 #include "nsTArray.h"
+#ifdef MOZ_WAKELOCK
 #include "nsIDOMWakeLockListener.h"
+#endif
 #include "nsIDOMWindow.h"
 #include "nsWeakReference.h"
 #include "nsCycleCollectionParticipant.h"
@@ -22,13 +24,18 @@ class ErrorResult;
 
 namespace dom {
 
-class PowerManager final : public nsIDOMMozWakeLockListener
-                         , public nsWrapperCache
+class PowerManager final :
+#ifdef MOZ_WAKELOCK
+                           public nsIDOMMozWakeLockListener,
+#endif
+                           public nsWrapperCache
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(PowerManager)
+#ifdef MOZ_WAKELOCK
   NS_DECL_NSIDOMMOZWAKELOCKLISTENER
+#endif
 
   nsresult Init(nsPIDOMWindowInner* aWindow);
   nsresult Shutdown();
@@ -41,16 +48,21 @@ public:
     return mWindow;
   }
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
+
+#ifdef MOZ_WAKELOCK
   void AddWakeLockListener(nsIDOMMozWakeLockListener* aListener);
   void RemoveWakeLockListener(nsIDOMMozWakeLockListener* aListener);
   void GetWakeLockState(const nsAString& aTopic, nsAString& aState,
                         ErrorResult& aRv);
+#endif
 
 private:
   ~PowerManager() {}
 
   nsCOMPtr<nsPIDOMWindowInner> mWindow;
+#ifdef MOZ_WAKELOCK
   nsTArray<nsCOMPtr<nsIDOMMozWakeLockListener> > mListeners;
+#endif
 };
 
 } // namespace dom

@@ -31,7 +31,9 @@
 #include "nsBidiKeyboard.h"
 #include "nsScreenManagerGtk.h"
 #include "nsGTKToolkit.h"
+#ifdef MOZ_WAKELOCK
 #include "WakeLockListener.h"
+#endif
 
 #ifdef NS_PRINTING
 #include "nsPrintOptionsGTK.h"
