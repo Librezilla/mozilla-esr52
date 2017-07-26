@@ -368,18 +368,6 @@ SetThreadPriority(PlatformThreadId aThreadId,
 }
 
 void
-FactoryReset(FactoryResetReason& aReason)
-{
-  if (aReason == FactoryResetReason::Normal) {
-    Hal()->SendFactoryReset(NS_LITERAL_STRING("normal"));
-  } else if (aReason == FactoryResetReason::Wipe) {
-    Hal()->SendFactoryReset(NS_LITERAL_STRING("wipe"));
-  } else if (aReason == FactoryResetReason::Root) {
-    Hal()->SendFactoryReset(NS_LITERAL_STRING("root"));
-  }
-}
-
-void
 StartDiskSpaceWatcher()
 {
   NS_RUNTIMEABORT("StartDiskSpaceWatcher() can't be called from sandboxed contexts.");
@@ -807,29 +795,6 @@ public:
   void Notify(const SystemTimezoneChangeInformation& aSystemTimezoneChangeInfo) override
   {
     Unused << SendNotifySystemTimezoneChange(aSystemTimezoneChangeInfo);
-  }
-
-  virtual bool
-  RecvFactoryReset(const nsString& aReason) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-
-    FactoryResetReason reason = FactoryResetReason::Normal;
-    if (aReason.EqualsLiteral("normal")) {
-      reason = FactoryResetReason::Normal;
-    } else if (aReason.EqualsLiteral("wipe")) {
-      reason = FactoryResetReason::Wipe;
-    } else if (aReason.EqualsLiteral("root")) {
-      reason = FactoryResetReason::Root;
-    } else {
-      // Invalid factory reset reason. That should never happen.
-      return false;
-    }
-
-    hal::FactoryReset(reason);
-    return true;
   }
 };
 

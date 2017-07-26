@@ -2022,24 +2022,5 @@ SetThreadPriority(PlatformThreadId aThreadId,
   }
 }
 
-void
-FactoryReset(FactoryResetReason& aReason)
-{
-  nsCOMPtr<nsIRecoveryService> recoveryService =
-    do_GetService("@mozilla.org/recovery-service;1");
-  if (!recoveryService) {
-    NS_WARNING("Could not get recovery service!");
-    return;
-  }
-
-  if (aReason == FactoryResetReason::Wipe) {
-    recoveryService->FactoryReset("wipe");
-  } else if (aReason == FactoryResetReason::Root) {
-    recoveryService->FactoryReset("root");
-  } else {
-    recoveryService->FactoryReset("normal");
-  }
-}
-
 } // hal_impl
 } // mozilla
