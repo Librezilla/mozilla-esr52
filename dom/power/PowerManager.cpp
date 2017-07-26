@@ -153,18 +153,6 @@ PowerManager::SetScreenBrightness(double aBrightness, ErrorResult& aRv)
   }
 }
 
-bool
-PowerManager::CpuSleepAllowed()
-{
-  return hal::GetCpuSleepAllowed();
-}
-
-void
-PowerManager::SetCpuSleepAllowed(bool aAllowed)
-{
-  hal::SetCpuSleepAllowed(aAllowed);
-}
-
 already_AddRefed<PowerManager>
 PowerManager::CreateInstance(nsPIDOMWindowInner* aWindow)
 {

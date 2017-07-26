@@ -51,8 +51,6 @@ public:
   void SetKeyLightEnabled(bool aEnabled);
   double ScreenBrightness();
   void SetScreenBrightness(double aBrightness, ErrorResult& aRv);
-  bool CpuSleepAllowed();
-  void SetCpuSleepAllowed(bool aAllowed);
 
 private:
   ~PowerManager() {}
