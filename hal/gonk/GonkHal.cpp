@@ -846,20 +846,6 @@ InternalUnlockCpu() {
   UpdateCpuSleepState();
 }
 
-bool
-GetCpuSleepAllowed()
-{
-  return sCpuSleepAllowed;
-}
-
-void
-SetCpuSleepAllowed(bool aAllowed)
-{
-  StaticMutexAutoLock lock(sInternalLockCpuMutex);
-  sCpuSleepAllowed = aAllowed;
-  UpdateCpuSleepState();
-}
-
 void
 AdjustSystemClock(int64_t aDeltaMilliseconds)
 {

@@ -104,9 +104,6 @@ parent:
     sync GetKeyLightEnabled() returns (bool enabled);
     async SetKeyLightEnabled(bool aEnabled);
 
-    sync GetCpuSleepAllowed() returns (bool allowed);
-    async SetCpuSleepAllowed(bool aAllowed);
-
     sync GetScreenBrightness() returns (double brightness);
     async SetScreenBrightness(double aBrightness);
 
