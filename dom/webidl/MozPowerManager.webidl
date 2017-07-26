@@ -11,11 +11,6 @@ interface MozWakeLockListener;
 [ChromeOnly]
 interface MozPowerManager
 {
-    [Throws]
-    void    powerOff();
-    [Throws]
-    void    reboot();
-
     /**
      * The listeners are notified when a resource changes its lock state to:
      *  - unlocked
