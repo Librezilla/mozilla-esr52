@@ -114,48 +114,6 @@ UnlockScreenOrientation()
   Hal()->SendUnlockScreenOrientation();
 }
 
-bool
-GetScreenEnabled()
-{
-  bool enabled = false;
-  Hal()->SendGetScreenEnabled(&enabled);
-  return enabled;
-}
-
-void
-SetScreenEnabled(bool aEnabled)
-{
-  Hal()->SendSetScreenEnabled(aEnabled);
-}
-
-bool
-GetKeyLightEnabled()
-{
-  bool enabled = false;
-  Hal()->SendGetKeyLightEnabled(&enabled);
-  return enabled;
-}
-
-void
-SetKeyLightEnabled(bool aEnabled)
-{
-  Hal()->SendSetKeyLightEnabled(aEnabled);
-}
-
-double
-GetScreenBrightness()
-{
-  double brightness = 0;
-  Hal()->SendGetScreenBrightness(&brightness);
-  return brightness;
-}
-
-void
-SetScreenBrightness(double aBrightness)
-{
-  Hal()->SendSetScreenBrightness(aBrightness);
-}
-
 void
 AdjustSystemClock(int64_t aDeltaMilliseconds)
 {
@@ -434,66 +392,6 @@ public:
 
   void Notify(const ScreenConfiguration& aScreenConfiguration) override {
     Unused << SendNotifyScreenConfigurationChange(aScreenConfiguration);
-  }
-
-  virtual bool
-  RecvGetScreenEnabled(bool* aEnabled) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    *aEnabled = hal::GetScreenEnabled();
-    return true;
-  }
-
-  virtual bool
-  RecvSetScreenEnabled(const bool& aEnabled) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    hal::SetScreenEnabled(aEnabled);
-    return true;
-  }
-
-  virtual bool
-  RecvGetKeyLightEnabled(bool* aEnabled) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    *aEnabled = hal::GetKeyLightEnabled();
-    return true;
-  }
-
-  virtual bool
-  RecvSetKeyLightEnabled(const bool& aEnabled) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    hal::SetKeyLightEnabled(aEnabled);
-    return true;
-  }
-
-  virtual bool
-  RecvGetScreenBrightness(double* aBrightness) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    *aBrightness = hal::GetScreenBrightness();
-    return true;
-  }
-
-  virtual bool
-  RecvSetScreenBrightness(const double& aBrightness) override
-  {
-    if (!AssertAppProcessPermission(this, "power")) {
-      return false;
-    }
-    hal::SetScreenBrightness(aBrightness);
-    return true;
   }
 
   virtual bool

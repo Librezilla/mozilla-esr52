@@ -313,42 +313,6 @@ NotifyBatteryChange(const BatteryInformation& aInfo)
   BatteryObservers().BroadcastCachedInformation();
 }
 
-bool GetScreenEnabled()
-{
-  AssertMainThread();
-  RETURN_PROXY_IF_SANDBOXED(GetScreenEnabled(), false);
-}
-
-void SetScreenEnabled(bool aEnabled)
-{
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(SetScreenEnabled(aEnabled));
-}
-
-bool GetKeyLightEnabled()
-{
-  AssertMainThread();
-  RETURN_PROXY_IF_SANDBOXED(GetKeyLightEnabled(), false);
-}
-
-void SetKeyLightEnabled(bool aEnabled)
-{
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(SetKeyLightEnabled(aEnabled));
-}
-
-double GetScreenBrightness()
-{
-  AssertMainThread();
-  RETURN_PROXY_IF_SANDBOXED(GetScreenBrightness(), 0);
-}
-
-void SetScreenBrightness(double aBrightness)
-{
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(SetScreenBrightness(clamped(aBrightness, 0.0, 1.0)));
-}
-
 class SystemClockChangeObserversManager : public ObserversManager<int64_t>
 {
 protected:

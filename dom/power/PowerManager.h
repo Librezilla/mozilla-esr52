@@ -45,12 +45,6 @@ public:
   void RemoveWakeLockListener(nsIDOMMozWakeLockListener* aListener);
   void GetWakeLockState(const nsAString& aTopic, nsAString& aState,
                         ErrorResult& aRv);
-  bool ScreenEnabled();
-  void SetScreenEnabled(bool aEnabled);
-  bool KeyLightEnabled();
-  void SetKeyLightEnabled(bool aEnabled);
-  double ScreenBrightness();
-  void SetScreenBrightness(double aBrightness, ErrorResult& aRv);
 
 private:
   ~PowerManager() {}
