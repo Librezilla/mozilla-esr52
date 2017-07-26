@@ -203,25 +203,6 @@ public:
 
     static auto AddFullScreenPluginView(mozilla::jni::Object::Param) -> void;
 
-    struct CancelVibrate_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "cancelVibrate";
-        static constexpr char signature[] =
-                "()V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto CancelVibrate() -> void;
-
     struct CheckURIVisited_t {
         typedef GeckoAppShell Owner;
         typedef void ReturnType;
@@ -1713,47 +1694,6 @@ public:
     };
 
     static auto UnlockScreenOrientation() -> void;
-
-    struct Vibrate_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int64_t> Args;
-        static constexpr char name[] = "vibrate";
-        static constexpr char signature[] =
-                "(J)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto Vibrate(int64_t) -> void;
-
-    struct Vibrate2_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                mozilla::jni::LongArray::Param,
-                int32_t> Args;
-        static constexpr char name[] = "vibrate";
-        static constexpr char signature[] =
-                "([JI)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto Vibrate(mozilla::jni::LongArray::Param, int32_t) -> void;
 
     static const mozilla::jni::CallingThread callingThread =
             mozilla::jni::CallingThread::ANY;

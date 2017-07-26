@@ -3614,46 +3614,6 @@
         "url": "/uievents/order-of-events/mouse-events/mouseover-out-manual.html"
       },
       {
-        "path": "vibration/cancel-when-hidden-manual.html",
-        "url": "/vibration/cancel-when-hidden-manual.html"
-      },
-      {
-        "path": "vibration/cancel-with-0-manual.html",
-        "url": "/vibration/cancel-with-0-manual.html"
-      },
-      {
-        "path": "vibration/cancel-with-array-0-manual.html",
-        "url": "/vibration/cancel-with-array-0-manual.html"
-      },
-      {
-        "path": "vibration/cancel-with-empty-array-manual.html",
-        "url": "/vibration/cancel-with-empty-array-manual.html"
-      },
-      {
-        "path": "vibration/cancel-with-new-manual.html",
-        "url": "/vibration/cancel-with-new-manual.html"
-      },
-      {
-        "path": "vibration/pattern-array-extra-manual.html",
-        "url": "/vibration/pattern-array-extra-manual.html"
-      },
-      {
-        "path": "vibration/pattern-array-manual.html",
-        "url": "/vibration/pattern-array-manual.html"
-      },
-      {
-        "path": "vibration/pattern-array-with-0-manual.html",
-        "url": "/vibration/pattern-array-with-0-manual.html"
-      },
-      {
-        "path": "vibration/simple-array-manual.html",
-        "url": "/vibration/simple-array-manual.html"
-      },
-      {
-        "path": "vibration/simple-scalar-manual.html",
-        "url": "/vibration/simple-scalar-manual.html"
-      },
-      {
         "path": "webstorage/storage_local-manual.html",
         "url": "/webstorage/storage_local-manual.html"
       },
@@ -31122,22 +31082,6 @@
       {
         "path": "user-timing/test_user_timing_measure_navigation_timing.html",
         "url": "/user-timing/test_user_timing_measure_navigation_timing.html"
-      },
-      {
-        "path": "vibration/api-is-present.html",
-        "url": "/vibration/api-is-present.html"
-      },
-      {
-        "path": "vibration/idl.html",
-        "url": "/vibration/idl.html"
-      },
-      {
-        "path": "vibration/invalid-values.html",
-        "url": "/vibration/invalid-values.html"
-      },
-      {
-        "path": "vibration/silent-ignore.html",
-        "url": "/vibration/silent-ignore.html"
       },
       {
         "path": "web-animations/animation-model/animation-types/discrete-animation.html",

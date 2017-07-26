@@ -80,7 +80,6 @@ dictionary NotificationBehavior {
   boolean noclear = false;
   boolean showOnlyOnce = false;
   DOMString soundFile = "";
-  sequence<unsigned long> vibrationPattern;
 };
 
 enum NotificationPermission {

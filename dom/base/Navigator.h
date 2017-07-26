@@ -160,9 +160,6 @@ public:
   // NavigatorBinding::ClearCachedUserAgentValue(this);
   void ClearUserAgentCache();
 
-  bool Vibrate(uint32_t aDuration);
-  bool Vibrate(const nsTArray<uint32_t>& aDuration);
-  void SetVibrationPermission(bool aPermitted, bool aPersistent);
   uint32_t MaxTouchPoints();
   void GetAppCodeName(nsString& aAppCodeName, ErrorResult& aRv)
   {
@@ -296,7 +293,6 @@ private:
   RefPtr<GamepadServiceTest> mGamepadServiceTest;
 #endif
   nsTArray<RefPtr<Promise> > mVRGetDisplaysPromises;
-  nsTArray<uint32_t> mRequestedVibrationPattern;
   RefPtr<StorageManager> mStorageManager;
 };
 

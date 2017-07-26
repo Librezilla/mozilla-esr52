@@ -564,62 +564,6 @@ bool EventHub::setKeyboardLayoutOverlay(int32_t deviceId,
     return false;
 }
 
-void EventHub::vibrate(int32_t deviceId, nsecs_t duration) {
-    AutoMutex _l(mLock);
-    Device* device = getDeviceLocked(deviceId);
-    if (device && !device->isVirtual()) {
-        ff_effect effect;
-        memset(&effect, 0, sizeof(effect));
-        effect.type = FF_RUMBLE;
-        effect.id = device->ffEffectId;
-        effect.u.rumble.strong_magnitude = 0xc000;
-        effect.u.rumble.weak_magnitude = 0xc000;
-        effect.replay.length = (duration + 999999LL) / 1000000LL;
-        effect.replay.delay = 0;
-        if (ioctl(device->fd, EVIOCSFF, &effect)) {
-            ALOGW("Could not upload force feedback effect to device %s due to error %d.",
-                    device->identifier.name.string(), errno);
-            return;
-        }
-        device->ffEffectId = effect.id;
-
-        struct input_event ev;
-        ev.time.tv_sec = 0;
-        ev.time.tv_usec = 0;
-        ev.type = EV_FF;
-        ev.code = device->ffEffectId;
-        ev.value = 1;
-        if (write(device->fd, &ev, sizeof(ev)) != sizeof(ev)) {
-            ALOGW("Could not start force feedback effect on device %s due to error %d.",
-                    device->identifier.name.string(), errno);
-            return;
-        }
-        device->ffEffectPlaying = true;
-    }
-}
-
-void EventHub::cancelVibrate(int32_t deviceId) {
-    AutoMutex _l(mLock);
-    Device* device = getDeviceLocked(deviceId);
-    if (device && !device->isVirtual()) {
-        if (device->ffEffectPlaying) {
-            device->ffEffectPlaying = false;
-
-            struct input_event ev;
-            ev.time.tv_sec = 0;
-            ev.time.tv_usec = 0;
-            ev.type = EV_FF;
-            ev.code = device->ffEffectId;
-            ev.value = 0;
-            if (write(device->fd, &ev, sizeof(ev)) != sizeof(ev)) {
-                ALOGW("Could not stop force feedback effect on device %s due to error %d.",
-                        device->identifier.name.string(), errno);
-                return;
-            }
-        }
-    }
-}
-
 EventHub::Device* EventHub::getDeviceLocked(int32_t deviceId) const {
     if (deviceId == BUILT_IN_KEYBOARD_ID) {
         deviceId = mBuiltInKeyboardId;
@@ -1154,11 +1098,6 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
             device->classes |= INPUT_DEVICE_CLASS_SWITCH;
             break;
         }
-    }
-
-    // Check whether this device supports the vibrator.
-    if (test_bit(FF_RUMBLE, device->ffBitmask)) {
-        device->classes |= INPUT_DEVICE_CLASS_VIBRATOR;
     }
 
     // Configure virtual keys.

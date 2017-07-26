@@ -403,56 +403,6 @@ AndroidBridge::GetScreenDepth()
 
     return sDepth;
 }
-void
-AndroidBridge::Vibrate(const nsTArray<uint32_t>& aPattern)
-{
-    ALOG_BRIDGE("%s", __PRETTY_FUNCTION__);
-
-    uint32_t len = aPattern.Length();
-    if (!len) {
-        ALOG_BRIDGE("  invalid 0-length array");
-        return;
-    }
-
-    // It's clear if this worth special-casing, but it creates less
-    // java junk, so dodges the GC.
-    if (len == 1) {
-        jlong d = aPattern[0];
-        if (d < 0) {
-            ALOG_BRIDGE("  invalid vibration duration < 0");
-            return;
-        }
-        GeckoAppShell::Vibrate(d);
-        return;
-    }
-
-    // First element of the array vibrate() expects is how long to wait
-    // *before* vibrating.  For us, this is always 0.
-
-    JNIEnv* const env = jni::GetGeckoThreadEnv();
-    AutoLocalJNIFrame jniFrame(env, 1);
-
-    jlongArray array = env->NewLongArray(len + 1);
-    if (!array) {
-        ALOG_BRIDGE("  failed to allocate array");
-        return;
-    }
-
-    jlong* elts = env->GetLongArrayElements(array, nullptr);
-    elts[0] = 0;
-    for (uint32_t i = 0; i < aPattern.Length(); ++i) {
-        jlong d = aPattern[i];
-        if (d < 0) {
-            ALOG_BRIDGE("  invalid vibration duration < 0");
-            env->ReleaseLongArrayElements(array, elts, JNI_ABORT);
-            return;
-        }
-        elts[i + 1] = d;
-    }
-    env->ReleaseLongArrayElements(array, elts, 0);
-
-    GeckoAppShell::Vibrate(LongArray::Ref::From(array), -1 /* don't repeat */);
-}
 
 void
 AndroidBridge::GetSystemColors(AndroidSystemColors *aColors)

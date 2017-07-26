@@ -67,7 +67,6 @@ elif CONFIG['OS_TARGET'] == 'Linux':
         'fallback/FallbackAlarm.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'fallback/FallbackSensor.cpp',
-        'fallback/FallbackVibration.cpp',
         'linux/LinuxMemory.cpp',
     ]
     if CONFIG['MOZ_ENABLE_DBUS']:
@@ -83,7 +82,6 @@ elif CONFIG['OS_TARGET'] == 'WINNT':
         'fallback/FallbackAlarm.cpp',
         'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
-        'fallback/FallbackVibration.cpp',
         'windows/WindowsSensor.cpp',
     ]
     # WindowsBattery.cpp cannot be built in unified mode because it relies on HalImpl.h.
@@ -96,7 +94,6 @@ elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
         'fallback/FallbackAlarm.cpp',
         'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
-        'fallback/FallbackVibration.cpp',
     ]
 elif CONFIG['OS_TARGET'] in ('OpenBSD', 'NetBSD', 'FreeBSD', 'DragonFly'):
     UNIFIED_SOURCES += [
@@ -104,7 +101,6 @@ elif CONFIG['OS_TARGET'] in ('OpenBSD', 'NetBSD', 'FreeBSD', 'DragonFly'):
         'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'fallback/FallbackSensor.cpp',
-        'fallback/FallbackVibration.cpp',
     ]
     if CONFIG['MOZ_ENABLE_DBUS']:
         UNIFIED_SOURCES += [
@@ -121,7 +117,6 @@ else:
         'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'fallback/FallbackSensor.cpp',
-        'fallback/FallbackVibration.cpp',
     ]
 
 # Fallbacks for backends implemented on Gonk only.
