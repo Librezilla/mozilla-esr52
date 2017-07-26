@@ -10,7 +10,9 @@ include protocol PBrowser;
 include "mozilla/GfxMessageUtils.h";
 
 using mozilla::dom::ScreenOrientationInternal from "mozilla/dom/ScreenOrientation.h";
+#ifdef MOZ_WAKELOCK
 using mozilla::hal::WakeLockControl from "mozilla/HalTypes.h";
+#endif
 using mozilla::hal::ProcessPriority from "mozilla/HalTypes.h";
 using nsIntRect from "nsRect.h";
 using PRTime from "prtime.h";
@@ -24,12 +26,14 @@ struct NetworkInformation {
   uint32_t dhcpGateway;
 };
 
+#ifdef MOZ_WAKELOCK
 struct WakeLockInformation {
   nsString topic;
   uint32_t numLocks;
   uint32_t numHidden;
   uint64_t[] lockingProcesses;
 };
+#endif
 
 struct ScreenConfiguration {
   nsIntRect rect;
@@ -55,7 +59,9 @@ nested(upto inside_cpow) sync protocol PHal {
 
 child:
     async NotifyNetworkChange(NetworkInformation aNetworkInfo);
+#ifdef MOZ_WAKELOCK
     async NotifyWakeLockChange(WakeLockInformation aWakeLockInfo);
+#endif
     async NotifyScreenConfigurationChange(ScreenConfiguration aScreenOrientation);
     async NotifySystemClockChange(int64_t aClockDeltaMS); 
     async NotifySystemTimezoneChange(SystemTimezoneChangeInformation aSystemTimezoneChangeInfo); 
@@ -78,6 +84,7 @@ parent:
     async EnableSystemTimezoneChangeNotifications();
     async DisableSystemTimezoneChangeNotifications();
 
+#ifdef MOZ_WAKELOCK
     async ModifyWakeLock(nsString aTopic,
                          WakeLockControl aLockAdjust,
                          WakeLockControl aHiddenAdjust,
@@ -86,6 +93,7 @@ parent:
     async DisableWakeLockNotifications();
     sync GetWakeLockInfo(nsString aTopic)
       returns (WakeLockInformation aWakeLockInfo);
+#endif /* MOZ_WAKELOCK */
 
     async EnableScreenConfigurationNotifications();
     async DisableScreenConfigurationNotifications();

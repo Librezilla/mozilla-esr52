@@ -113,7 +113,9 @@
 #include "nsIDOMGeoGeolocation.h"
 #include "nsIDOMGeoPositionError.h"
 #include "nsIDragService.h"
+#ifdef MOZ_WAKELOCK
 #include "mozilla/dom/WakeLock.h"
+#endif
 #include "nsIDOMWindow.h"
 #include "nsIExternalProtocolService.h"
 #include "nsIFormProcessor.h"

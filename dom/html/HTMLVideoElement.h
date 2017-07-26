@@ -13,7 +13,10 @@
 namespace mozilla {
 namespace dom {
 
+#ifdef MOZ_WAKELOCK
 class WakeLock;
+#endif
+
 class VideoPlaybackQuality;
 
 class HTMLVideoElement final : public HTMLMediaElement
@@ -124,9 +127,11 @@ public:
 
   bool MozHasAudio() const;
 
+#ifdef MOZ_WAKELOCK
   bool MozUseScreenWakeLock() const;
 
   void SetMozUseScreenWakeLock(bool aValue);
+#endif /* MOZ_WAKELOCK */
 
   void NotifyOwnerDocumentActivityChanged() override;
 
@@ -140,12 +145,14 @@ protected:
 
   virtual JSObject* WrapNode(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
 
+#ifdef MOZ_WAKELOCK
   virtual void WakeLockCreate() override;
   virtual void WakeLockRelease() override;
   void UpdateScreenWakeLock();
 
   bool mUseScreenWakeLock;
   RefPtr<WakeLock> mScreenWakeLock;
+#endif /* MOZ_WAKELOCK */
 
 private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,

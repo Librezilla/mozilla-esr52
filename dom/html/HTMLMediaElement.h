@@ -57,7 +57,9 @@ class MediaKeys;
 #endif
 class TextTrack;
 class TimeRanges;
+#ifdef MOZ_WAKELOCK
 class WakeLock;
+#endif
 class MediaTrack;
 class MediaStreamTrack;
 class VideoStreamTrack;
@@ -783,6 +785,7 @@ protected:
     mDecoder = aDecoder;
   }
 
+#ifdef MOZ_WAKELOCK
   class WakeLockBoolWrapper {
   public:
     explicit WakeLockBoolWrapper(bool val = false)
@@ -809,6 +812,29 @@ protected:
     HTMLMediaElement* mOuter;
     nsCOMPtr<nsITimer> mTimer;
   };
+#else /* MOZ_WAKELOCK */
+  class WakeLockBoolWrapper {
+  public:
+    explicit WakeLockBoolWrapper(bool val = false)
+      : mValue(val) {}
+
+    inline void SetOuter(HTMLMediaElement* outer) {}
+    inline void SetCanPlay(bool aCanPlay) {}
+
+    MOZ_IMPLICIT operator bool() const { return mValue; }
+
+    WakeLockBoolWrapper& operator=(bool val)
+    {
+      mValue = val;
+      return *this;
+    }
+
+    bool operator !() const { return !mValue; }
+
+  private:
+    bool mValue;
+  };
+#endif /* MOZ_WAKELOCK */
 
   // Holds references to the DOM wrappers for the MediaStreams that we're
   // writing to.
@@ -840,6 +866,7 @@ protected:
    */
   void ChangeNetworkState(nsMediaNetworkState aState);
 
+#ifdef MOZ_WAKELOCK
   /**
    * These two methods are called by the WakeLockBoolWrapper when the wakelock
    * has to be created or released.
@@ -847,6 +874,10 @@ protected:
   virtual void WakeLockCreate();
   virtual void WakeLockRelease();
   RefPtr<WakeLock> mWakeLock;
+#else
+  inline void WakeLockCreate() {}
+  inline void WakeLockRelease() {}
+#endif /* MOZ_WAKELOCK */
 
   /**
    * Logs a warning message to the web console to report various failures.

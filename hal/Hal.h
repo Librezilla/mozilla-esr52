@@ -141,6 +141,7 @@ void UnregisterSystemTimezoneChangeObserver(
 void NotifySystemTimezoneChange(
   const hal::SystemTimezoneChangeInformation& aSystemTimezoneChangeInfo);
 
+#ifdef MOZ_WAKELOCK
 /**
  * Enable wake lock notifications from the backend.
  *
@@ -200,6 +201,7 @@ void GetWakeLockInfo(const nsAString &aTopic, hal::WakeLockInformation *aWakeLoc
  * @param aWakeLockInfo The new wake lock information.
  */
 void NotifyWakeLockChange(const hal::WakeLockInformation& aWakeLockInfo);
+#endif /* WAKELOCK */
 
 /**
  * Inform the backend there is a new screen configuration observer.

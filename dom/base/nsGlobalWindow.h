@@ -134,7 +134,9 @@ class Timeout;
 class U2F;
 class VRDisplay;
 class VREventObserver;
+#ifdef MOZ_WAKELOCK
 class WakeLock;
+#endif
 class Worklet;
 namespace cache {
 class CacheStorage;
@@ -1344,7 +1346,9 @@ protected:
 
   nsCOMPtr <nsIIdleService> mIdleService;
 
+#ifdef MOZ_WAKELOCK
   RefPtr<mozilla::dom::WakeLock> mWakeLock;
+#endif
 
   static bool sIdleObserversAPIFuzzTimeDisabled;
 

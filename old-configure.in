@@ -2986,6 +2986,14 @@ if test -n "$MOZ_DIRECTSHOW"; then
 fi;
 
 dnl ========================================================
+dnl = Wakelock (android only)
+dnl ========================================================
+if test "$OS_TARGET" = Android ; then
+  MOZ_WAKELOCK=1
+  AC_DEFINE(MOZ_WAKELOCK)
+fi
+
+dnl ========================================================
 dnl = Enable media plugin support
 dnl ========================================================
 if test "$OS_TARGET" = Android ; then

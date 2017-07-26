@@ -310,7 +310,6 @@ WEBIDL_FILES = [
     'MozPowerManager.webidl',
     'MozSelfSupport.webidl',
     'MozTimeManager.webidl',
-    'MozWakeLock.webidl',
     'MutationEvent.webidl',
     'MutationObserver.webidl',
     'NamedNodeMap.webidl',
@@ -594,6 +593,11 @@ if CONFIG['MOZ_EME_MODULES']:
 if CONFIG['NECKO_PROTOCOL_websocket']:
     WEBIDL_FILES = [
         'WebSocket.webidl'
+    ]
+
+if CONFIG['MOZ_WAKELOCK']:
+    WEBIDL_FILES += [
+        'MozWakeLock.webidl'
     ]
 
 if CONFIG['MOZ_AUDIO_CHANNEL_MANAGER']:

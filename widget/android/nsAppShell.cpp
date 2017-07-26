@@ -21,7 +21,9 @@
 #include "nsIDOMEventListener.h"
 #include "nsIDOMClientRectList.h"
 #include "nsIDOMClientRect.h"
+#ifdef MOZ_WAKELOCK
 #include "nsIDOMWakeLockListener.h"
+#endif
 #include "nsIPowerManagerService.h"
 #include "nsISpeculativeConnect.h"
 #include "nsIURIFixup.h"
@@ -81,6 +83,7 @@ StaticAutoPtr<Mutex> nsAppShell::sAppShellLock;
 
 NS_IMPL_ISUPPORTS_INHERITED(nsAppShell, nsBaseAppShell, nsIObserver)
 
+#ifdef MOZ_WAKELOCK
 class WakeLockListener final : public nsIDOMMozWakeLockListener {
 private:
   ~WakeLockListener() {}
@@ -95,8 +98,10 @@ public:
 };
 
 NS_IMPL_ISUPPORTS(WakeLockListener, nsIDOMMozWakeLockListener)
-nsCOMPtr<nsIPowerManagerService> sPowerManagerService = nullptr;
 StaticRefPtr<WakeLockListener> sWakeLockListener;
+#endif
+
+nsCOMPtr<nsIPowerManagerService> sPowerManagerService = nullptr;
 
 
 class GeckoThreadSupport final
@@ -345,7 +350,9 @@ nsAppShell::nsAppShell()
     sPowerManagerService = do_GetService(POWERMANAGERSERVICE_CONTRACTID);
 
     if (sPowerManagerService) {
+#ifdef MOZ_WAKELOCK
         sWakeLockListener = new WakeLockListener();
+#endif
     } else {
         NS_WARNING("Failed to retrieve PowerManagerService, wakelocks will be broken!");
     }
@@ -363,10 +370,11 @@ nsAppShell::~nsAppShell()
     }
 
     if (sPowerManagerService) {
+#ifdef MOZ_WAKELOCK
         sPowerManagerService->RemoveWakeLockListener(sWakeLockListener);
-
-        sPowerManagerService = nullptr;
         sWakeLockListener = nullptr;
+#endif
+        sPowerManagerService = nullptr;
     }
 
     if (jni::IsAvailable()) {
@@ -400,8 +408,10 @@ nsAppShell::Init()
         obsServ->AddObserver(this, "xpcom-shutdown", false);
     }
 
+#ifdef MOZ_WAKELOCK
     if (sPowerManagerService)
         sPowerManagerService->AddWakeLockListener(sWakeLockListener);
+#endif
 
     Preferences::AddStrongObservers(this, kObservedPrefs);
     mAllowCoalescingTouches = Preferences::GetBool(PREFNAME_COALESCE_TOUCHES, true);

@@ -203,6 +203,7 @@ NetworkObservers()
   return sNetworkObservers;
 }
 
+#ifdef MOZ_WAKELOCK
 class WakeLockObserversManager : public ObserversManager<WakeLockInformation>
 {
 protected:
@@ -222,6 +223,7 @@ WakeLockObservers()
   AssertMainThread();
   return sWakeLockObservers;
 }
+#endif /* MOZ_WAKELOCK */
 
 class ScreenConfigurationObserversManager : public CachingObserversManager<ScreenConfiguration>
 {
@@ -383,6 +385,7 @@ NotifyNetworkChange(const NetworkInformation& aInfo)
   NetworkObservers().BroadcastCachedInformation();
 }
 
+#ifdef MOZ_WAKELOCK
 void
 RegisterWakeLockObserver(WakeLockObserver* aObserver)
 {
@@ -427,6 +430,7 @@ NotifyWakeLockChange(const WakeLockInformation& aInfo)
   AssertMainThread();
   WakeLockObservers().BroadcastInformation(aInfo);
 }
+#endif /* MOZ_WAKELOCK */
 
 void
 RegisterScreenConfigurationObserver(ScreenConfigurationObserver* aObserver)
