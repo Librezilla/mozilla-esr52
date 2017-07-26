@@ -616,7 +616,6 @@ AndroidBridge::GetCurrentNetworkInformation(hal::NetworkInformation* aNetworkInf
     jdouble* info = env->GetDoubleArrayElements(arr.Get(), 0);
 
     aNetworkInfo->type() = info[0];
-    aNetworkInfo->isWifi() = info[1] == 1.0f;
     aNetworkInfo->dhcpGateway() = info[2];
 
     env->ReleaseDoubleArrayElements(arr.Get(), info, 0);

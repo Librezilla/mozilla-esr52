@@ -1435,21 +1435,6 @@ Navigator::HasWakeLockSupport(JSContext* /* unused*/, JSObject* /*unused */)
 
 /* static */
 bool
-Navigator::HasWifiManagerSupport(JSContext* /* unused */,
-                                 JSObject* aGlobal)
-{
-  // On XBL scope, the global object is NOT |window|. So we have
-  // to use nsContentUtils::GetObjectPrincipal to get the principal
-  // and test directly with permission manager.
-
-  nsIPrincipal* principal = nsContentUtils::ObjectPrincipal(aGlobal);
-  uint32_t permission = GetPermission(principal, "wifi-manage");
-
-  return permission == nsIPermissionManager::ALLOW_ACTION;
-}
-
-/* static */
-bool
 Navigator::HasUserMediaSupport(JSContext* /* unused */,
                                JSObject* /* unused */)
 {

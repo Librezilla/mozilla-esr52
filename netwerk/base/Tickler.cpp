@@ -134,26 +134,6 @@ void Tickler::MaybeStartTickler()
     int32_t val;
     bool boolVal;
 
-    if (NS_SUCCEEDED(mPrefs->GetBoolPref("network.tickle-wifi.enabled", &boolVal)))
-      mEnabled = boolVal;
-
-    if (NS_SUCCEEDED(mPrefs->GetIntPref("network.tickle-wifi.duration", &val))) {
-      if (val < 1)
-        val = 1;
-      if (val > 100000)
-        val = 100000;
-      mDuration = TimeDuration::FromMilliseconds(val);
-    }
-
-    if (NS_SUCCEEDED(mPrefs->GetIntPref("network.tickle-wifi.delay", &val))) {
-      if (val < 1)
-        val = 1;
-      if (val > 1000)
-        val = 1000;
-      mDelay = static_cast<uint32_t>(val);
-    }
-  }
-
   PostCheckTickler();
 }
 

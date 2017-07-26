@@ -91,9 +91,6 @@ DEFAULT_NO_CONNECTIONS_PREFS = {
     'browser.search.isUS' : True,
     'browser.search.countryCode' : 'US',
 
-    'geo.wifi.uri' : 'http://localhost/extensions-dummy/geowifiURL',
-    'geo.wifi.scan' : False,
-
     # We don't want to hit the real Firefox Accounts server for tests.  We don't
     # actually need a functioning FxA server, so just set it to something that
     # resolves and accepts requests, even if they all fail.

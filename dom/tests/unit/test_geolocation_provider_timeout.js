@@ -36,13 +36,7 @@ function run_test()
   httpserver.registerPathHandler("/geo", geoHandler);
   httpserver.start(-1);
   var prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-  prefs.setCharPref("geo.wifi.uri", "http://localhost:" +
-                      httpserver.identity.primaryPort + "/geo");
   prefs.setBoolPref("dom.testing.ignore_ipc_principal", true);
-  prefs.setBoolPref("geo.wifi.scan", false);
-
-  // Setting timeout to a very low value to ensure time out will happen.
-  prefs.setIntPref("geo.wifi.xhr.timeout", 5);
 
   geolocation = Cc["@mozilla.org/geolocation;1"].getService(Ci.nsISupports);
   geolocation.getCurrentPosition(successCallback, errorCallback);

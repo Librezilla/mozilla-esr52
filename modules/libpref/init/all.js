@@ -952,12 +952,6 @@ pref("devtools.dump.emit", false);
 
 // Disable device discovery logging
 pref("devtools.discovery.log", false);
-// Whether to scan for DevTools devices via WiFi
-pref("devtools.remote.wifi.scan", true);
-// Whether UI options for controlling device visibility over WiFi are shown
-// N.B.: This does not set whether the device can be discovered via WiFi, only
-// whether the UI control to make such a choice is shown to the user
-pref("devtools.remote.wifi.visible", true);
 // Client must complete TLS handshake within this window (ms)
 pref("devtools.remote.tls-handshake-timeout", 10000);
 
@@ -1314,12 +1308,6 @@ pref("network.notify.IPv6", false);
 #else
 pref("network.notify.IPv6", true);
 #endif
-
-// Transmit UDP busy-work to the LAN when anticipating low latency
-// network reads and on wifi to mitigate 802.11 Power Save Polling delays
-pref("network.tickle-wifi.enabled", false);
-pref("network.tickle-wifi.duration", 400);
-pref("network.tickle-wifi.delay", 16);
 
 // Turn off interprocess security checks. Needed to run xpcshell tests.
 pref("network.disable.ipc.security", false);

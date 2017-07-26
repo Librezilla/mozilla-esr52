@@ -8,7 +8,6 @@ var httpserver = null;
 
 function run_test() {
   var prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-  prefs.setBoolPref("geo.wifi.scan", false);
 
   httpserver = new HttpServer();
   httpserver.start(-1);

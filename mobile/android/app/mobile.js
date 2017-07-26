@@ -415,7 +415,6 @@ pref("dom.max_script_run_time", 20);
 pref("devtools.debugger.unix-domain-socket", "/data/data/@ANDROID_PACKAGE_NAME@/firefox-debugger-socket");
 
 pref("devtools.remote.usb.enabled", false);
-pref("devtools.remote.wifi.enabled", false);
 
 pref("font.size.inflation.minTwips", 0);
 
@@ -704,10 +703,6 @@ pref("accessibility.accessfu.quicknav_index", 0);
 pref("accessibility.accessfu.utterance", 1);
 // Whether to skip images with empty alt text
 pref("accessibility.accessfu.skip_empty_images", true);
-
-// Transmit UDP busy-work to the LAN when anticipating low latency
-// network reads and on wifi to mitigate 802.11 Power Save Polling delays
-pref("network.tickle-wifi.enabled", true);
 
 // Mobile manages state by autodetection
 pref("network.manage-offline-status", true);
