@@ -504,11 +504,6 @@ void SetThreadPriority(PlatformThreadId aThreadId,
 void StartForceQuitWatchdog(hal::ShutdownMode aMode, int32_t aTimeoutSecs);
 
 /**
- * Perform Factory Reset to wipe out all user data.
- */
-void FactoryReset(mozilla::dom::FactoryResetReason& aReason);
-
-/**
  * Start monitoring disk space for low space situations.
  *
  * This API is currently only allowed to be used from the main process.

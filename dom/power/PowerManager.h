@@ -42,7 +42,6 @@ public:
   }
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
   void Reboot(ErrorResult& aRv);
-  void FactoryReset(mozilla::dom::FactoryResetReason& aReason);
   void PowerOff(ErrorResult& aRv);
   void AddWakeLockListener(nsIDOMMozWakeLockListener* aListener);
   void RemoveWakeLockListener(nsIDOMMozWakeLockListener* aListener);

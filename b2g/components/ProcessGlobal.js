@@ -80,8 +80,6 @@ ConsoleMessage.prototype = {
   toString: function() { return this.msg; }
 };
 
-const gFactoryResetFile = "__post_reset_cmd__";
-
 function ProcessGlobal() {}
 ProcessGlobal.prototype = {
   classID: Components.ID('{1a94c87a-5ece-4d11-91e1-d29c29f21b28}'),
@@ -126,37 +124,6 @@ ProcessGlobal.prototype = {
     });
   },
 
-  cleanupAfterFactoryReset: function() {
-    log("cleanupAfterWipe start");
-
-    Cu.import("resource://gre/modules/osfile.jsm");
-    let dir = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-    dir.initWithPath("/persist");
-    var postResetFile = dir.exists() ?
-                        OS.Path.join("/persist", gFactoryResetFile):
-                        OS.Path.join("/cache", gFactoryResetFile);
-    let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-    file.initWithPath(postResetFile);
-    if (!file.exists()) {
-      debug("No additional command.")
-      return;
-    }
-
-    let promise = OS.File.read(postResetFile);
-    promise.then(
-      (array) => {
-        file.remove(false);
-        let decoder = new TextDecoder();
-        this.processCommandsFile(decoder.decode(array));
-      },
-      function onError(error) {
-        debug("Error: " + error);
-      }
-    );
-
-    log("cleanupAfterWipe end.");
-  },
-
   observe: function pg_observe(subject, topic, data) {
     switch (topic) {
     case 'app-startup': {
@@ -168,8 +135,6 @@ ProcessGlobal.prototype = {
         Services.ppmm.addMessageListener("getProfD", function(message) {
           return Services.dirsvc.get("ProfD", Ci.nsIFile).path;
         });
-
-        this.cleanupAfterFactoryReset();
       }
       break;
     }

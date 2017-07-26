@@ -134,7 +134,6 @@ else:
 if CONFIG['MOZ_WIDGET_TOOLKIT'] != 'gonk':
     UNIFIED_SOURCES += [
         'fallback/FallbackDiskSpaceWatcher.cpp',
-        'fallback/FallbackFactoryReset.cpp',
         'fallback/FallbackProcessPriority.cpp',
         'fallback/FallbackScreenPower.cpp',
         'fallback/FallbackSwitch.cpp',

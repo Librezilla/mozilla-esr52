@@ -6,19 +6,6 @@
 interface MozWakeLockListener;
 
 /**
-  * The reason for the factory reset.
-  * "normal" : simple factory reset.
-  * "wipe"   : will also attempt to wipe all user storage areas.
-  * "root"   : simple factory reset that also root the phone to get more
-  *            privileges when using devtools.
-  */
-enum FactoryResetReason {
-    "normal",
-    "wipe",
-    "root"
-};
-
-/**
  * This interface implements navigator.mozPower
  */
 [ChromeOnly]
@@ -28,7 +15,6 @@ interface MozPowerManager
     void    powerOff();
     [Throws]
     void    reboot();
-    void    factoryReset(optional FactoryResetReason reason = "normal");
 
     /**
      * The listeners are notified when a resource changes its lock state to:
