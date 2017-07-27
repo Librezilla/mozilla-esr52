@@ -30,10 +30,6 @@
                 type="wstring"/>
 
 #ifdef HAVE_SHELL_SERVICE
-    <preference id="browser.shell.checkDefaultBrowser"
-                name="browser.shell.checkDefaultBrowser"
-                type="bool"/>
-
     <preference id="pref.general.disable_button.default_browser"
                 name="pref.general.disable_button.default_browser"
                 type="bool"/>
@@ -138,27 +134,6 @@
 #ifdef E10S_TESTING_ONLY
   <checkbox id="e10sAutoStart"
             label="&e10sEnabled.label;"/>
-#endif
-
-#ifdef HAVE_SHELL_SERVICE
-  <vbox id="defaultBrowserBox">
-    <hbox align="center">
-      <checkbox id="alwaysCheckDefault" preference="browser.shell.checkDefaultBrowser"
-                label="&alwaysCheckDefault2.label;" accesskey="&alwaysCheckDefault2.accesskey;"/>
-    </hbox>
-    <deck id="setDefaultPane">
-      <hbox align="center" class="indent">
-        <label id="isNotDefaultLabel" flex="1">&isNotDefault.label;</label>
-        <button id="setDefaultButton"
-                label="&setAsMyDefaultBrowser2.label;" accesskey="&setAsMyDefaultBrowser2.accesskey;"
-                preference="pref.general.disable_button.default_browser"/>
-      </hbox>
-      <hbox align="center" class="indent">
-        <label id="isDefaultLabel" flex="1">&isDefault.label;</label>
-      </hbox>
-    </deck>
-    <separator class="thin"/>
-  </vbox>
 #endif
 
   <html:table id="startupTable">

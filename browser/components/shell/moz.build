@@ -44,11 +44,6 @@ elif 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
 if SOURCES:
     FINAL_LIBRARY = 'browsercomps'
 
-EXTRA_COMPONENTS += [
-    'nsSetDefaultBrowser.js',
-    'nsSetDefaultBrowser.manifest',
-]
-
 EXTRA_JS_MODULES += [
     'ShellService.jsm',
 ]

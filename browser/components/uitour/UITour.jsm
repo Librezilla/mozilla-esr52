@@ -1824,31 +1824,6 @@ this.UITour = {
         } catch (e) {}
         appinfo["distribution"] = distribution;
 
-        let isDefaultBrowser = null;
-        try {
-          let shell = aWindow.getShellService();
-          if (shell) {
-            isDefaultBrowser = shell.isDefaultBrowser(false);
-          }
-        } catch (e) {}
-        appinfo["defaultBrowser"] = isDefaultBrowser;
-
-        let canSetDefaultBrowserInBackground = true;
-        if (AppConstants.isPlatformAndVersionAtLeast("win", "6.2") ||
-            AppConstants.isPlatformAndVersionAtLeast("macosx", "10.10")) {
-          canSetDefaultBrowserInBackground = false;
-        } else if (AppConstants.platform == "linux") {
-          // The ShellService may not exist on some versions of Linux.
-          try {
-            aWindow.getShellService();
-          } catch (e) {
-            canSetDefaultBrowserInBackground = null;
-          }
-        }
-
-        appinfo["canSetDefaultBrowserInBackground"] =
-          canSetDefaultBrowserInBackground;
-
         this.sendPageCallback(aMessageManager, aCallbackID, appinfo);
         break;
       case "availableTargets":
@@ -1890,16 +1865,6 @@ this.UITour = {
 
   setConfiguration: function(aWindow, aConfiguration, aValue) {
     switch (aConfiguration) {
-      case "defaultBrowser":
-        // Ignore aValue in this case because the default browser can only
-        // be set, not unset.
-        try {
-          let shell = aWindow.getShellService();
-          if (shell) {
-            shell.setDefaultBrowser(true, false);
-          }
-        } catch (e) {}
-        break;
       default:
         log.error("setConfiguration: Unknown configuration requested: " + aConfiguration);
         break;

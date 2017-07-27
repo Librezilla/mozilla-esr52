@@ -190,7 +190,6 @@ DEFAULT_TEST_PREFS = {
     'dom.popup_maximum': -1,
     'dom.send_after_paint_to_content': True,
     'dom.successive_dialog_time_limit': 0,
-    'browser.shell.checkDefaultBrowser': False,
     'shell.checkDefaultClient': False,
     'browser.warnOnQuit': False,
     'accessibility.typeaheadfind.autostart': False,

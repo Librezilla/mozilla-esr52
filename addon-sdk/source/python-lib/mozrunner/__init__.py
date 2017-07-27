@@ -318,8 +318,6 @@ class FirefoxProfile(Profile):
                    'app.update.enabled' : False,
                    # Don't restore the last open set of tabs if the browser has crashed
                    'browser.sessionstore.resume_from_crash': False,
-                   # Don't check for the default web browser
-                   'browser.shell.checkDefaultBrowser' : False,
                    # Don't warn on exit when multiple tabs are open
                    'browser.tabs.warnOnClose' : False,
                    # Don't warn when exiting the browser
@@ -353,7 +351,6 @@ class FirefoxProfile(Profile):
 class ThunderbirdProfile(Profile):
     preferences = {'extensions.update.enabled'    : False,
                    'extensions.update.notifyUser' : False,
-                   'browser.shell.checkDefaultBrowser' : False,
                    'browser.tabs.warnOnClose' : False,
                    'browser.warnOnQuit': False,
                    'browser.sessionstore.resume_from_crash': False,

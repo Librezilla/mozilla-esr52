@@ -135,7 +135,6 @@ const DEFAULT_ENVIRONMENT_PREFS = new Map([
   ["browser.newtab.url", {what: RECORD_PREF_STATE}],
   ["browser.newtabpage.enabled", {what: RECORD_PREF_VALUE}],
   ["browser.newtabpage.enhanced", {what: RECORD_PREF_VALUE}],
-  ["browser.shell.checkDefaultBrowser", {what: RECORD_PREF_VALUE}],
   ["browser.search.suggest.enabled", {what: RECORD_PREF_VALUE}],
   ["browser.startup.homepage", {what: RECORD_PREF_STATE}],
   ["browser.startup.page", {what: RECORD_PREF_VALUE}],
@@ -1093,44 +1092,6 @@ EnvironmentCache.prototype = {
   },
 
   /**
-   * Determine if we're the default browser.
-   * @returns null on error, true if we are the default browser, or false otherwise.
-   */
-  _isDefaultBrowser: function () {
-    if (!("@mozilla.org/browser/shell-service;1" in Cc)) {
-      this._log.info("_isDefaultBrowser - Could not obtain browser shell service");
-      return null;
-    }
-
-    let shellService;
-    try {
-      let scope = {};
-      Cu.import("resource:///modules/ShellService.jsm", scope);
-      shellService = scope.ShellService;
-    } catch (ex) {
-      this._log.error("_isDefaultBrowser - Could not obtain shell service JSM");
-    }
-
-    if (!shellService) {
-      try {
-        shellService = Cc["@mozilla.org/browser/shell-service;1"]
-                         .getService(Ci.nsIShellService);
-      } catch (ex) {
-        this._log.error("_isDefaultBrowser - Could not obtain shell service", ex);
-        return null;
-      }
-    }
-
-    try {
-      // This uses the same set of flags used by the pref pane.
-      return shellService.isDefaultBrowser(false, true) ? true : false;
-    } catch (ex) {
-      this._log.error("_isDefaultBrowser - Could not determine if default browser", ex);
-      return null;
-    }
-  },
-
-  /**
    * Update the cached settings data.
    */
   _updateSettings: function () {
@@ -1155,11 +1116,6 @@ EnvironmentCache.prototype = {
 
       this._currentEnvironment.settings.addonCompatibilityCheckEnabled =
         AddonManager.checkCompatibility;
-
-    if (AppConstants.platform !== "android") {
-      this._currentEnvironment.settings.isDefaultBrowser =
-        this._isDefaultBrowser();
-    }
 
     this._updateSearchEngine();
   },

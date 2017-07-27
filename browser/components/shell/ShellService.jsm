@@ -79,19 +79,6 @@ let ShellServiceInternal = {
   set shouldCheckDefaultBrowser(shouldCheck) {
     Services.prefs.setBoolPref("browser.shell.checkDefaultBrowser", !!shouldCheck);
   },
-
-  isDefaultBrowser(startupCheck, forAllTypes) {
-    // If this is the first browser window, maintain internal state that we've
-    // checked this session (so that subsequent window opens don't show the
-    // default browser dialog).
-    if (startupCheck) {
-      this._checkedThisSession = true;
-    }
-    if (this.shellService) {
-      return this.shellService.isDefaultBrowser(startupCheck, forAllTypes);
-    }
-    return false;
-  }
 };
 
 XPCOMUtils.defineLazyServiceGetter(ShellServiceInternal, "shellService",

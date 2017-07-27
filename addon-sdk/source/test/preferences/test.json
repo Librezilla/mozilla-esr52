@@ -14,7 +14,6 @@
   "dom.popup_maximum": -1,
   "dom.send_after_paint_to_content": true,
   "dom.successive_dialog_time_limit": 0,
-  "browser.shell.checkDefaultBrowser": false,
   "shell.checkDefaultClient": false,
   "browser.warnOnQuit": false,
   "accessibility.typeaheadfind.autostart": false,

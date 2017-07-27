@@ -28,18 +28,6 @@ var gMainPane = {
               .addEventListener(aEventType, aCallback.bind(gMainPane));
     }
 
-    if (AppConstants.HAVE_SHELL_SERVICE) {
-      this.updateSetDefaultBrowser();
-      if (AppConstants.platform == "win") {
-        // In Windows 8 we launch the control panel since it's the only
-        // way to get all file type association prefs. So we don't know
-        // when the user will select the default.  We refresh here periodically
-        // in case the default changes. On other Windows OS's defaults can also
-        // be set while the prefs are open.
-        window.setInterval(this.updateSetDefaultBrowser.bind(this), 1000);
-      }
-    }
-
     // set up the "use current page" label-changing listener
     this._updateUseCurrentButton();
     window.addEventListener("focus", this._updateUseCurrentButton.bind(this), false);
@@ -70,10 +58,6 @@ var gMainPane = {
                      gMainPane.updateBrowserStartupLastSession);
     setEventListener("browser.download.dir", "change",
                      gMainPane.displayDownloadDirPref);
-    if (AppConstants.HAVE_SHELL_SERVICE) {
-      setEventListener("setDefaultButton", "command",
-                       gMainPane.setDefaultBrowser);
-    }
     setEventListener("useCurrent", "command",
                      gMainPane.setHomePageToCurrent);
     setEventListener("useBookmark", "command",
@@ -664,58 +648,5 @@ var gMainPane = {
   writeLinkTarget: function() {
     var linkTargeting = document.getElementById("linkTargeting");
     return linkTargeting.checked ? 3 : 2;
-  },
-  /*
-   * Preferences:
-   *
-   * browser.shell.checkDefault
-   * - true if a default-browser check (and prompt to make it so if necessary)
-   *   occurs at startup, false otherwise
-   */
-
-  /**
-   * Show button for setting browser as default browser or information that
-   * browser is already the default browser.
-   */
-  updateSetDefaultBrowser: function()
-  {
-    if (AppConstants.HAVE_SHELL_SERVICE) {
-      let shellSvc = getShellService();
-      let defaultBrowserBox = document.getElementById("defaultBrowserBox");
-      if (!shellSvc) {
-        defaultBrowserBox.hidden = true;
-        return;
-      }
-      let setDefaultPane = document.getElementById("setDefaultPane");
-      let isDefault = shellSvc.isDefaultBrowser(false, true);
-      setDefaultPane.selectedIndex = isDefault ? 1 : 0;
-      let alwaysCheck = document.getElementById("alwaysCheckDefault");
-      alwaysCheck.disabled = alwaysCheck.disabled ||
-                             isDefault && alwaysCheck.checked;
-    }
-  },
-
-  /**
-   * Set browser as the operating system default browser.
-   */
-  setDefaultBrowser: function()
-  {
-    if (AppConstants.HAVE_SHELL_SERVICE) {
-      let alwaysCheckPref = document.getElementById("browser.shell.checkDefaultBrowser");
-      alwaysCheckPref.value = true;
-
-      let shellSvc = getShellService();
-      if (!shellSvc)
-        return;
-      try {
-        shellSvc.setDefaultBrowser(true, false);
-      } catch (ex) {
-        Cu.reportError(ex);
-        return;
-      }
-
-      let selectedIndex = shellSvc.isDefaultBrowser(false, true) ? 1 : 0;
-      document.getElementById("setDefaultPane").selectedIndex = selectedIndex;
-    }
   },
 };

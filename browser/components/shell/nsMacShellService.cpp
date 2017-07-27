@@ -35,69 +35,6 @@
 NS_IMPL_ISUPPORTS(nsMacShellService, nsIMacShellService, nsIShellService, nsIWebProgressListener)
 
 NS_IMETHODIMP
-nsMacShellService::IsDefaultBrowser(bool aStartupCheck,
-                                    bool aForAllTypes,
-                                    bool* aIsDefaultBrowser)
-{
-  *aIsDefaultBrowser = false;
-
-  CFStringRef firefoxID = ::CFBundleGetIdentifier(::CFBundleGetMainBundle());
-  if (!firefoxID) {
-    // CFBundleGetIdentifier is expected to return nullptr only if the specified
-    // bundle doesn't have a bundle identifier in its plist. In this case, that
-    // means a failure, since our bundle does have an identifier.
-    return NS_ERROR_FAILURE;
-  }
-
-  // Get the default http handler's bundle ID (or nullptr if it has not been
-  // explicitly set)
-  CFStringRef defaultBrowserID = ::LSCopyDefaultHandlerForURLScheme(CFSTR("http"));
-  if (defaultBrowserID) {
-    *aIsDefaultBrowser = ::CFStringCompare(firefoxID, defaultBrowserID, 0) == kCFCompareEqualTo;
-    ::CFRelease(defaultBrowserID);
-  }
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsMacShellService::SetDefaultBrowser(bool aClaimAllTypes, bool aForAllUsers)
-{
-  // Note: We don't support aForAllUsers on Mac OS X.
-
-  CFStringRef firefoxID = ::CFBundleGetIdentifier(::CFBundleGetMainBundle());
-  if (!firefoxID) {
-    return NS_ERROR_FAILURE;
-  }
-
-  if (::LSSetDefaultHandlerForURLScheme(CFSTR("http"), firefoxID) != noErr) {
-    return NS_ERROR_FAILURE;
-  }
-  if (::LSSetDefaultHandlerForURLScheme(CFSTR("https"), firefoxID) != noErr) {
-    return NS_ERROR_FAILURE;
-  }
-
-  if (aClaimAllTypes) {
-    if (::LSSetDefaultHandlerForURLScheme(CFSTR("ftp"), firefoxID) != noErr) {
-      return NS_ERROR_FAILURE;
-    }
-    if (::LSSetDefaultRoleHandlerForContentType(kUTTypeHTML, kLSRolesAll, firefoxID) != noErr) {
-      return NS_ERROR_FAILURE;
-    }
-  }
-
-  nsCOMPtr<nsIPrefBranch> prefs(do_GetService(NS_PREFSERVICE_CONTRACTID));
-  if (prefs) {
-    (void) prefs->SetBoolPref(PREF_CHECKDEFAULTBROWSER, true);
-    // Reset the number of times the dialog should be shown
-    // before it is silenced.
-    (void) prefs->SetIntPref(PREF_DEFAULTBROWSERCHECKCOUNT, 0);
-  }
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
 nsMacShellService::SetDesktopBackground(nsIDOMElement* aElement, 
                                         int32_t aPosition)
 {

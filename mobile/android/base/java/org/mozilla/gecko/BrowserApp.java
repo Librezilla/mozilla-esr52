@@ -1851,7 +1851,6 @@ public class BrowserApp extends GeckoApp
                 final ContentResolver cr = getContentResolver();
                 Telemetry.addToHistogram("PLACES_PAGES_COUNT", db.getCount(cr, "history"));
                 Telemetry.addToHistogram("FENNEC_BOOKMARKS_COUNT", db.getCount(cr, "bookmarks"));
-                Telemetry.addToHistogram("BROWSER_IS_USER_DEFAULT", (isDefaultBrowser(Intent.ACTION_VIEW) ? 1 : 0));
                 Telemetry.addToHistogram("FENNEC_CUSTOM_HOMEPAGE", (TextUtils.isEmpty(getHomepage()) ? 0 : 1));
                 final SharedPreferences prefs = GeckoSharedPrefs.forProfile(getContext());
                 final boolean hasCustomHomepanels =
@@ -1860,10 +1859,6 @@ public class BrowserApp extends GeckoApp
 
                 Telemetry.addToHistogram("FENNEC_READER_VIEW_CACHE_SIZE",
                         SavedReaderViewHelper.getSavedReaderViewHelper(getContext()).getDiskSpacedUsedKB());
-
-                if (Versions.feature16Plus) {
-                    Telemetry.addToHistogram("BROWSER_IS_ASSIST_DEFAULT", (isDefaultBrowser(Intent.ACTION_ASSIST) ? 1 : 0));
-                }
 
                 Telemetry.addToHistogram("FENNEC_ORBOT_INSTALLED",
                     ContextUtils.isPackageInstalled(getContext(), "org.torproject.android") ? 1 : 0);
@@ -1976,23 +1971,6 @@ public class BrowserApp extends GeckoApp
                         }
                     }
                 });
-    }
-
-    /**
-     * Use a dummy Intent to do a default browser check.
-     *
-     * @return true if this package is the default browser on this device, false otherwise.
-     */
-    private boolean isDefaultBrowser(String action) {
-        final Intent viewIntent = new Intent(action, Uri.parse("http://www.mozilla.org"));
-        final ResolveInfo info = getPackageManager().resolveActivity(viewIntent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (info == null) {
-            // No default is set
-            return false;
-        }
-
-        final String packageName = info.activityInfo.packageName;
-        return (TextUtils.equals(packageName, getPackageName()));
     }
 
     @Override

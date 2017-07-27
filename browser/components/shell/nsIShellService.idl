@@ -11,33 +11,6 @@ interface nsIFile;
 [scriptable, uuid(2d1a95e4-5bd8-4eeb-b0a8-c1455fd2a357)]
 interface nsIShellService : nsISupports
 {
-  /**
-   * Determines whether or not Firefox is the "Default Browser."
-   * This is simply whether or not Firefox is registered to handle
-   * http links.
-   *
-   * @param aStartupCheck true if this is the check being performed
-   *                      by the first browser window at startup,
-   *                      false otherwise.
-   * @param aForAllTypes  true if the check should be made for HTTP and HTML.
-   *                      false if the check should be made for HTTP only.
-   *                      This parameter may be ignored on some platforms.
-   */
-  boolean isDefaultBrowser(in boolean aStartupCheck,
-                           [optional] in boolean aForAllTypes);
-
-  /**
-   * Registers Firefox as the "Default Browser."
-   *
-   * @param aClaimAllTypes Register Firefox as the handler for 
-   *                       additional protocols (ftp, chrome etc)
-   *                       and web documents (.html, .xhtml etc).
-   * @param aForAllUsers   Whether or not Firefox should attempt
-   *                       to become the default browser for all
-   *                       users on a multi-user system. 
-   */
-  void setDefaultBrowser(in boolean aClaimAllTypes, in boolean aForAllUsers);
-
   /** 
    * Flags for positioning/sizing of the Desktop Background image.
    */
