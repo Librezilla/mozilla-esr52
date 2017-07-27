@@ -36,6 +36,8 @@ A protocol Foo in the namespace bar will cause the sources
 to be generated""")
 
 
+_verbosity=99
+
 options, files = op.parse_args()
 _verbosity = options.verbosity
 headersdir = options.headersdir
