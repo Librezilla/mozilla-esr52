@@ -21,24 +21,6 @@ namespace mozilla {
 namespace hal_impl {
 
 void
-EnableBatteryNotifications()
-{
-  java::GeckoAppShell::EnableBatteryNotifications();
-}
-
-void
-DisableBatteryNotifications()
-{
-  java::GeckoAppShell::DisableBatteryNotifications();
-}
-
-void
-GetCurrentBatteryInformation(hal::BatteryInformation* aBatteryInfo)
-{
-  AndroidBridge::Bridge()->GetCurrentBatteryInformation(aBatteryInfo);
-}
-
-void
 EnableNetworkNotifications()
 {
   java::GeckoAppShell::EnableNetworkNotifications();

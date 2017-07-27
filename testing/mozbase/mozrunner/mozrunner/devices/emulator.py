@@ -13,7 +13,6 @@ import time
 from mozprocess import ProcessHandler
 
 from .base import Device
-from .emulator_battery import EmulatorBattery
 from .emulator_geo import EmulatorGeo
 from .emulator_screen import EmulatorScreen
 from ..errors import TimeoutException
@@ -85,7 +84,6 @@ class BaseEmulator(Device):
         super(BaseEmulator, self).__init__(app_ctx, **kwargs)
         self.tmpdir = tempfile.mkdtemp()
         # These rely on telnet
-        self.battery = EmulatorBattery(self)
         self.geo = EmulatorGeo(self)
         self.screen = EmulatorScreen(self)
 

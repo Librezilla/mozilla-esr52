@@ -342,25 +342,6 @@ public:
 
     static auto DisableAlarm() -> void;
 
-    struct DisableBatteryNotifications_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "disableBatteryNotifications";
-        static constexpr char signature[] =
-                "()V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto DisableBatteryNotifications() -> void;
-
     struct DisableNetworkNotifications_t {
         typedef GeckoAppShell Owner;
         typedef void ReturnType;
@@ -418,25 +399,6 @@ public:
     };
 
     static auto DisableSensor(int32_t) -> void;
-
-    struct EnableBatteryNotifications_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "enableBatteryNotifications";
-        static constexpr char signature[] =
-                "()V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto EnableBatteryNotifications() -> void;
 
     struct EnableLocation_t {
         typedef GeckoAppShell Owner;
@@ -593,25 +555,6 @@ public:
     };
 
     static auto GetContext() -> mozilla::jni::Object::LocalRef;
-
-    struct GetCurrentBatteryInformation_t {
-        typedef GeckoAppShell Owner;
-        typedef mozilla::jni::DoubleArray::LocalRef ReturnType;
-        typedef mozilla::jni::DoubleArray::Param SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "getCurrentBatteryInformation";
-        static constexpr char signature[] =
-                "()[D";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto GetCurrentBatteryInformation() -> mozilla::jni::DoubleArray::LocalRef;
 
     struct GetCurrentNetworkInformation_t {
         typedef GeckoAppShell Owner;
@@ -1729,39 +1672,6 @@ public:
 
     static const mozilla::jni::CallingThread callingThread =
             mozilla::jni::CallingThread::GECKO;
-
-    template<class Impl> class Natives;
-};
-
-class GeckoBatteryManager : public mozilla::jni::ObjectBase<GeckoBatteryManager>
-{
-public:
-    static const char name[];
-
-    explicit GeckoBatteryManager(const Context& ctx) : ObjectBase<GeckoBatteryManager>(ctx) {}
-
-    struct OnBatteryChange_t {
-        typedef GeckoBatteryManager Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                double,
-                bool,
-                double> Args;
-        static constexpr char name[] = "onBatteryChange";
-        static constexpr char signature[] =
-                "(DZD)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::UI;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::GECKO;
-    };
-
-    static const mozilla::jni::CallingThread callingThread =
-            mozilla::jni::CallingThread::UI;
 
     template<class Impl> class Natives;
 };
