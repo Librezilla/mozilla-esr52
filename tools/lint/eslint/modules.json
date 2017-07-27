@@ -16,7 +16,6 @@
   "assertions.js": ["Assert", "Expect"],
   "async.js": ["Async"],
   "AsyncSpellCheckTestHelper.jsm": ["onSpellCheck"],
-  "Battery.jsm": ["GetBattery", "Battery"],
   "blocklist-clients.js": ["AddonBlocklistClient", "GfxBlocklistClient", "OneCRLBlocklistClient", "PluginBlocklistClient", "FILENAME_ADDONS_JSON", "FILENAME_GFX_JSON", "FILENAME_PLUGINS_JSON"],
   "blocklist-updater.js": ["checkVersions", "addTestBlocklistClient"],
   "bogus_element_type.jsm": [],

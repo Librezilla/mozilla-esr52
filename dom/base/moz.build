@@ -423,7 +423,6 @@ EXTRA_JS_MODULES += [
 ]
 
 LOCAL_INCLUDES += [
-    '../battery',
     '../events',
     '../media',
     '../network',

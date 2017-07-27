@@ -30,7 +30,7 @@ const PROMPT_ACTION = Ci.nsIPermissionManager.PROMPT_ACTION;
 // Permissions Matrix: https://docs.google.com/spreadsheet/ccc?key=0Akyz_Bqjgf5pdENVekxYRjBTX0dCXzItMnRyUU1RQ0E#gid=0
 
 // Permissions that are implicit:
-// battery-status, network-information,
+// network-information,
 // device-capabilities
 
 this.PermissionsTable =  { geolocation: {

@@ -5,9 +5,8 @@
 from emulator import BaseEmulator, Emulator, EmulatorAVD
 from base import Device
 
-import emulator_battery
 import emulator_geo
 import emulator_screen
 
 __all__ = ['BaseEmulator', 'Emulator', 'EmulatorAVD', 'Device',
-           'emulator_battery', 'emulator_geo', 'emulator_screen']
+           'emulator_geo', 'emulator_screen']

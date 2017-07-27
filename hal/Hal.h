@@ -10,7 +10,6 @@
 #include "base/basictypes.h"
 #include "base/platform_thread.h"
 #include "nsTArray.h"
-#include "mozilla/dom/battery/Types.h"
 #include "mozilla/dom/MozPowerManagerBinding.h"
 #include "mozilla/dom/network/Types.h"
 #include "mozilla/dom/power/Types.h"
@@ -52,29 +51,6 @@ typedef Observer<SystemTimezoneChangeInformation> SystemTimezoneChangeObserver;
 } // namespace hal
 
 namespace MOZ_HAL_NAMESPACE {
-
-/**
- * Inform the battery backend there is a new battery observer.
- * @param aBatteryObserver The observer that should be added.
- */
-void RegisterBatteryObserver(BatteryObserver* aBatteryObserver);
-
-/**
- * Inform the battery backend a battery observer unregistered.
- * @param aBatteryObserver The observer that should be removed.
- */
-void UnregisterBatteryObserver(BatteryObserver* aBatteryObserver);
-
-/**
- * Returns the current battery information.
- */
-void GetCurrentBatteryInformation(hal::BatteryInformation* aBatteryInfo);
-
-/**
- * Notify of a change in the battery state.
- * @param aBatteryInfo The new battery information.
- */
-void NotifyBatteryChange(const hal::BatteryInformation& aBatteryInfo);
 
 /**
  * Register an observer for the sensor of given type.

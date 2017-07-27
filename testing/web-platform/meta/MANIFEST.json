@@ -118,26 +118,6 @@
         "url": "/annotation-protocol/server/server-manual.html"
       },
       {
-        "path": "battery-status/battery-charging-manual.html",
-        "url": "/battery-status/battery-charging-manual.html"
-      },
-      {
-        "path": "battery-status/battery-discharging-manual.html",
-        "url": "/battery-status/battery-discharging-manual.html"
-      },
-      {
-        "path": "battery-status/battery-full-manual.html",
-        "url": "/battery-status/battery-full-manual.html"
-      },
-      {
-        "path": "battery-status/battery-plugging-in-manual.html",
-        "url": "/battery-status/battery-plugging-in-manual.html"
-      },
-      {
-        "path": "battery-status/battery-unplugging-manual.html",
-        "url": "/battery-status/battery-unplugging-manual.html"
-      },
-      {
         "path": "fullscreen/api/document-exit-fullscreen-manual.html",
         "url": "/fullscreen/api/document-exit-fullscreen-manual.html"
       },
@@ -14078,22 +14058,6 @@
       {
         "path": "app-uri/appURI_test.html",
         "url": "/app-uri/appURI_test.html"
-      },
-      {
-        "path": "battery-status/battery-interface-idlharness.html",
-        "url": "/battery-status/battery-interface-idlharness.html"
-      },
-      {
-        "path": "battery-status/battery-promise-iframe.html",
-        "url": "/battery-status/battery-promise-iframe.html"
-      },
-      {
-        "path": "battery-status/battery-promise-window.html",
-        "url": "/battery-status/battery-promise-window.html"
-      },
-      {
-        "path": "battery-status/battery-promise.html",
-        "url": "/battery-status/battery-promise.html"
       },
       {
         "path": "compat/webkit-text-fill-color-currentColor.html",

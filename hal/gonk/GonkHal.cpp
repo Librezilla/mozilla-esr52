@@ -49,7 +49,6 @@
 #include "HalLog.h"
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/ClearOnShutdown.h"
-#include "mozilla/dom/battery/Constants.h"
 #include "mozilla/DebugOnly.h"
 #include "mozilla/FileUtils.h"
 #include "mozilla/Monitor.h"
@@ -101,13 +100,6 @@
 #define OOM_SCORE_ADJ_MAX  1000
 #endif
 
-#ifndef BATTERY_CHARGING_ARGB
-#define BATTERY_CHARGING_ARGB 0x00FF0000
-#endif
-#ifndef BATTERY_FULL_ARGB
-#define BATTERY_FULL_ARGB 0x0000FF00
-#endif
-
 using namespace mozilla;
 using namespace mozilla::hal;
 using namespace mozilla::dom;
@@ -124,7 +116,6 @@ enum LightType {
   eHalLightID_Backlight     = 0,
   eHalLightID_Keyboard      = 1,
   eHalLightID_Buttons       = 2,
-  eHalLightID_Battery       = 3,
   eHalLightID_Notifications = 4,
   eHalLightID_Attention     = 5,
   eHalLightID_Bluetooth     = 6,
@@ -184,8 +175,6 @@ InitLights()
              = GetDevice(module, LIGHT_ID_KEYBOARD);
       sLights[eHalLightID_Buttons]
              = GetDevice(module, LIGHT_ID_BUTTONS);
-      sLights[eHalLightID_Battery]
-             = GetDevice(module, LIGHT_ID_BATTERY);
       sLights[eHalLightID_Notifications]
              = GetDevice(module, LIGHT_ID_NOTIFICATIONS);
       sLights[eHalLightID_Attention]
@@ -263,291 +252,6 @@ GetLight(LightType light, LightConfiguration* aConfig)
   aConfig->mode = LightMode(state.brightnessMode);
 
   return true;
-}
-
-namespace {
-
-class BatteryUpdater : public Runnable {
-public:
-  NS_IMETHOD Run() override
-  {
-    hal::BatteryInformation info;
-    hal_impl::GetCurrentBatteryInformation(&info);
-
-    // Control the battery indicator (led light) here using BatteryInformation
-    // we just retrieved.
-    uint32_t color = 0; // Format: 0x00rrggbb.
-    if (info.charging() && (info.level() == 1)) {
-      // Charging and battery full.
-      color = BATTERY_FULL_ARGB;
-    } else if (info.charging() && (info.level() < 1)) {
-      // Charging but not full.
-      color = BATTERY_CHARGING_ARGB;
-    } // else turn off battery indicator.
-
-    LightConfiguration aConfig;
-    aConfig.light = eHalLightID_Battery;
-    aConfig.mode = eHalLightMode_User;
-    aConfig.flash = eHalLightFlash_None;
-    aConfig.flashOnMS = aConfig.flashOffMS = 0;
-    aConfig.color = color;
-
-    SetLight(eHalLightID_Battery, aConfig);
-
-    hal::NotifyBatteryChange(info);
-
-    {
-      // bug 975667
-      // Gecko gonk hal is required to emit battery charging/level notification via nsIObserverService.
-      // This is useful for XPCOM components that are not statically linked to Gecko and cannot call
-      // hal::EnableBatteryNotifications
-      nsCOMPtr<nsIObserverService> obsService = mozilla::services::GetObserverService();
-      nsCOMPtr<nsIWritablePropertyBag2> propbag =
-        do_CreateInstance("@mozilla.org/hash-property-bag;1");
-      if (obsService && propbag) {
-        propbag->SetPropertyAsBool(NS_LITERAL_STRING("charging"),
-                                   info.charging());
-        propbag->SetPropertyAsDouble(NS_LITERAL_STRING("level"),
-                                   info.level());
-
-        obsService->NotifyObservers(propbag, "gonkhal-battery-notifier", nullptr);
-      }
-    }
-
-    return NS_OK;
-  }
-};
-
-} // namespace
-
-class BatteryObserver final : public IUeventObserver
-{
-public:
-  NS_INLINE_DECL_REFCOUNTING(BatteryObserver)
-
-  BatteryObserver()
-    :mUpdater(new BatteryUpdater())
-  {
-  }
-
-  virtual void Notify(const NetlinkEvent &aEvent)
-  {
-    // this will run on IO thread
-    NetlinkEvent *event = const_cast<NetlinkEvent*>(&aEvent);
-    const char *subsystem = event->getSubsystem();
-    // e.g. DEVPATH=/devices/platform/sec-battery/power_supply/battery
-    const char *devpath = event->findParam("DEVPATH");
-    if (strcmp(subsystem, "power_supply") == 0 &&
-        strstr(devpath, "battery")) {
-      // aEvent will be valid only in this method.
-      NS_DispatchToMainThread(mUpdater);
-    }
-  }
-
-protected:
-  ~BatteryObserver() {}
-
-private:
-  RefPtr<BatteryUpdater> mUpdater;
-};
-
-// sBatteryObserver is owned by the IO thread. Only the IO thread may
-// create or destroy it.
-static StaticRefPtr<BatteryObserver> sBatteryObserver;
-
-static void
-RegisterBatteryObserverIOThread()
-{
-  MOZ_ASSERT(MessageLoop::current() == XRE_GetIOMessageLoop());
-  MOZ_ASSERT(!sBatteryObserver);
-
-  sBatteryObserver = new BatteryObserver();
-  RegisterUeventListener(sBatteryObserver);
-}
-
-void
-EnableBatteryNotifications()
-{
-  XRE_GetIOMessageLoop()->PostTask(
-      NewRunnableFunction(RegisterBatteryObserverIOThread));
-}
-
-static void
-UnregisterBatteryObserverIOThread()
-{
-  MOZ_ASSERT(MessageLoop::current() == XRE_GetIOMessageLoop());
-  MOZ_ASSERT(sBatteryObserver);
-
-  UnregisterUeventListener(sBatteryObserver);
-  sBatteryObserver = nullptr;
-}
-
-void
-DisableBatteryNotifications()
-{
-  XRE_GetIOMessageLoop()->PostTask(
-      NewRunnableFunction(UnregisterBatteryObserverIOThread));
-}
-
-static bool
-GetCurrentBatteryCharge(int* aCharge)
-{
-  bool success = ReadSysFile("/sys/class/power_supply/battery/capacity",
-                             aCharge);
-  if (!success) {
-    return false;
-  }
-
-  #ifdef DEBUG
-  if ((*aCharge < 0) || (*aCharge > 100)) {
-    HAL_LOG("charge level contains unknown value: %d", *aCharge);
-  }
-  #endif
-
-  return (*aCharge >= 0) && (*aCharge <= 100);
-}
-
-static bool
-GetCurrentBatteryCharging(int* aCharging)
-{
-  static const DebugOnly<int> BATTERY_NOT_CHARGING = 0;
-  static const int BATTERY_CHARGING_USB = 1;
-  static const int BATTERY_CHARGING_AC  = 2;
-
-  // Generic device support
-
-  int chargingSrc;
-  bool success =
-    ReadSysFile("/sys/class/power_supply/battery/charging_source", &chargingSrc);
-
-  if (success) {
-    #ifdef DEBUG
-    if (chargingSrc != BATTERY_NOT_CHARGING &&
-        chargingSrc != BATTERY_CHARGING_USB &&
-        chargingSrc != BATTERY_CHARGING_AC) {
-      HAL_LOG("charging_source contained unknown value: %d", chargingSrc);
-    }
-    #endif
-
-    *aCharging = (chargingSrc == BATTERY_CHARGING_USB ||
-                  chargingSrc == BATTERY_CHARGING_AC);
-    return true;
-  }
-
-  // Otoro device support
-
-  char chargingSrcString[16];
-
-  success = ReadSysFile("/sys/class/power_supply/battery/status",
-                        chargingSrcString, sizeof(chargingSrcString));
-  if (success) {
-    *aCharging = strcmp(chargingSrcString, "Charging") == 0 ||
-                 strcmp(chargingSrcString, "Full") == 0;
-    return true;
-  }
-
-  return false;
-}
-
-void
-GetCurrentBatteryInformation(hal::BatteryInformation* aBatteryInfo)
-{
-  int charge;
-  static bool previousCharging = false;
-  static double previousLevel = 0.0, remainingTime = 0.0;
-  static struct timespec lastLevelChange;
-  struct timespec now;
-  double dtime, dlevel;
-
-  if (GetCurrentBatteryCharge(&charge)) {
-    aBatteryInfo->level() = (double)charge / 100.0;
-  } else {
-    aBatteryInfo->level() = dom::battery::kDefaultLevel;
-  }
-
-  int charging;
-
-  if (GetCurrentBatteryCharging(&charging)) {
-    aBatteryInfo->charging() = charging;
-  } else {
-    aBatteryInfo->charging() = true;
-  }
-
-  if (aBatteryInfo->charging() != previousCharging){
-    aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-    memset(&lastLevelChange, 0, sizeof(struct timespec));
-    remainingTime = 0.0;
-  }
-
-  if (aBatteryInfo->charging()) {
-    if (aBatteryInfo->level() == 1.0) {
-      aBatteryInfo->remainingTime() = dom::battery::kDefaultRemainingTime;
-    } else if (aBatteryInfo->level() != previousLevel){
-      if (lastLevelChange.tv_sec != 0) {
-        clock_gettime(CLOCK_MONOTONIC, &now);
-        dtime = now.tv_sec - lastLevelChange.tv_sec;
-        dlevel = aBatteryInfo->level() - previousLevel;
-
-        if (dlevel <= 0.0) {
-          aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-        } else {
-          remainingTime = (double) round(dtime / dlevel * (1.0 - aBatteryInfo->level()));
-          aBatteryInfo->remainingTime() = remainingTime;
-        }
-
-        lastLevelChange = now;
-      } else { // lastLevelChange.tv_sec == 0
-        clock_gettime(CLOCK_MONOTONIC, &lastLevelChange);
-        aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-      }
-
-    } else {
-      clock_gettime(CLOCK_MONOTONIC, &now);
-      dtime = now.tv_sec - lastLevelChange.tv_sec;
-      if (dtime < remainingTime) {
-        aBatteryInfo->remainingTime() = round(remainingTime - dtime);
-      } else {
-        aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-      }
-
-    }
-
-  } else {
-    if (aBatteryInfo->level() == 0.0) {
-      aBatteryInfo->remainingTime() = dom::battery::kDefaultRemainingTime;
-    } else if (aBatteryInfo->level() != previousLevel){
-      if (lastLevelChange.tv_sec != 0) {
-        clock_gettime(CLOCK_MONOTONIC, &now);
-        dtime = now.tv_sec - lastLevelChange.tv_sec;
-        dlevel = previousLevel - aBatteryInfo->level();
-
-        if (dlevel <= 0.0) {
-          aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-        } else {
-          remainingTime = (double) round(dtime / dlevel * aBatteryInfo->level());
-          aBatteryInfo->remainingTime() = remainingTime;
-        }
-
-        lastLevelChange = now;
-      } else { // lastLevelChange.tv_sec == 0
-        clock_gettime(CLOCK_MONOTONIC, &lastLevelChange);
-        aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-      }
-
-    } else {
-      clock_gettime(CLOCK_MONOTONIC, &now);
-      dtime = now.tv_sec - lastLevelChange.tv_sec;
-      if (dtime < remainingTime) {
-        aBatteryInfo->remainingTime() = round(remainingTime - dtime);
-      } else {
-        aBatteryInfo->remainingTime() = dom::battery::kUnknownRemainingTime;
-      }
-
-    }
-  }
-
-  previousCharging = aBatteryInfo->charging();
-  previousLevel = aBatteryInfo->level();
 }
 
 namespace {

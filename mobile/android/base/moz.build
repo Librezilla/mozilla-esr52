@@ -228,7 +228,6 @@ gvjar.sources += [geckoview_source_dir + 'java/org/mozilla/gecko/' + x
     'EventDispatcher.java',
     'GeckoAccessibility.java',
     'GeckoAppShell.java',
-    'GeckoBatteryManager.java',
     'GeckoEditable.java',
     'GeckoEditableClient.java',
     'GeckoEditableListener.java',
