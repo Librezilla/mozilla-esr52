@@ -648,6 +648,8 @@ add_old_configure_assignment('MOZ_WEBSPEECH', webspeech)
 # ==============================================================
 @depends(build_project, milestone, webspeech)
 def webspeech_models(build_project, milestone, webspeech):
+    if webspeech and milestone.is_nightly and build_project == 'b2g':
+        return True
 
 set_config('MOZ_WEBSPEECH_MODELS', webspeech_models)
 set_define('MOZ_WEBSPEECH_MODELS', webspeech_models)
