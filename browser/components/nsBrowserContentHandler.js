@@ -627,23 +627,7 @@ nsBrowserContentHandler.prototype = {
     var urlFlagIdx = cmdLine.findFlag("url", false);
     if (urlFlagIdx > -1 && (osintFlagIdx > -1 ||
         cmdLine.state == nsICommandLine.STATE_REMOTE_EXPLICIT)) {
-      var urlParam = cmdLine.getArgument(urlFlagIdx + 1);
-      if (cmdLine.length != urlFlagIdx + 2 || /firefoxurl:/.test(urlParam))
         throw NS_ERROR_ABORT;
-      var isDefault = false;
-      try {
-        var url = Services.urlFormatter.formatURLPref("app.support.baseURL") +
-                  "win10-default-browser";
-        if (urlParam == url) {
-          isDefault = ShellService.isDefaultBrowser(false, false);
-        }
-      } catch (ex) {}
-      if (isDefault) {
-        // Firefox is already the default HTTP handler.
-        // We don't have to show the instruction page.
-        throw NS_ERROR_ABORT;
-      }
-      cmdLine.handleFlag("osint", false)
     }
   },
 };
@@ -703,8 +687,7 @@ nsDefaultCommandLineHandler.prototype = {
     // Note that users who launch firefox manually with the -url flag will
     // get erroneously counted.
     try {
-      if (cmdLine.findFlag("url", false) &&
-          ShellService.isDefaultBrowser(false, false)) {
+      if (cmdLine.findFlag("url", false)) {
         Services.telemetry.getHistogramById("FX_STARTUP_EXTERNAL_CONTENT_HANDLER").add();
       }
     } catch (e) {}

@@ -59,7 +59,6 @@ class TPSTestRunner(object):
         'app.update.enabled': False,
         'browser.dom.window.dump.enabled': True,
         'browser.sessionstore.resume_from_crash': False,
-        'browser.shell.checkDefaultBrowser': False,
         'browser.tabs.warnOnClose': False,
         'browser.warnOnQuit': False,
         # Allow installing extensions dropped into the profile folder

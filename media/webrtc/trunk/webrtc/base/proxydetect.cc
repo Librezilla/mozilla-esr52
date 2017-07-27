@@ -614,37 +614,6 @@ BOOL MyWinHttpGetProxyForUrl(pfnWinHttpGetProxyForUrl pWHGPFU,
   return success;
 }
 
-bool IsDefaultBrowserFirefox() {
-  HKEY key;
-  LONG result = RegOpenKeyEx(HKEY_CLASSES_ROOT, L"http\\shell\\open\\command",
-                             0, KEY_READ, &key);
-  if (ERROR_SUCCESS != result)
-    return false;
-
-  DWORD size, type;
-  bool success = false;
-  result = RegQueryValueEx(key, L"", 0, &type, NULL, &size);
-  if (result == ERROR_SUCCESS && type == REG_SZ) {
-    wchar_t* value = new wchar_t[size+1];
-    BYTE* buffer = reinterpret_cast<BYTE*>(value);
-    result = RegQueryValueEx(key, L"", 0, &type, buffer, &size);
-    if (result == ERROR_SUCCESS) {
-      // Size returned by RegQueryValueEx is in bytes, convert to number of
-      // wchar_t's.
-      size /= sizeof(value[0]);
-      value[size] = L'\0';
-      for (size_t i = 0; i < size; ++i) {
-        value[i] = tolowercase(value[i]);
-      }
-      success = (NULL != strstr(value, L"firefox.exe"));
-    }
-    delete[] value;
-  }
-
-  RegCloseKey(key);
-  return success;
-}
-
 bool GetWinHttpProxySettings(const char* url, ProxyInfo* proxy) {
   HMODULE winhttp_handle = LoadLibrary(L"winhttp.dll");
   if (winhttp_handle == NULL) {
@@ -1216,11 +1185,7 @@ bool GetProxySettingsForUrl(const char* agent, const char* url,
       break;
     case UA_UNKNOWN:
       // Agent not defined, check default browser.
-      if (IsDefaultBrowserFirefox()) {
         result = GetFirefoxProxySettings(url, proxy);
-      } else {
-        result = GetIeProxySettings(agent, url, proxy);
-      }
       break;
 #endif  // WEBRTC_WIN 
     default:

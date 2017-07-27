@@ -12,7 +12,6 @@ Cc["@mozilla.org/moz/jssubscript-loader;1"]
 function MockShellService() {}
 MockShellService.prototype = {
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIShellService]),
-  isDefaultBrowser: function(aStartupCheck, aForAllTypes) { return false; },
   setDefaultBrowser: function(aClaimAllTypes, aForAllUsers) {
     setDefaultBrowserCalled = true;
   },
@@ -51,11 +50,3 @@ add_UITour_task(function* test_setDefaultBrowser() {
   }
 });
 */
-
-add_UITour_task(function* test_isDefaultBrowser() {
-  let shell = Components.classes["@mozilla.org/browser/shell-service;1"]
-        .getService(Components.interfaces.nsIShellService);
-  let isDefault = shell.isDefaultBrowser(false);
-  let data = yield getConfigurationPromise("appinfo");
-  is(isDefault, data.defaultBrowser, "gContentAPI result should match shellService.isDefaultBrowser");
-});

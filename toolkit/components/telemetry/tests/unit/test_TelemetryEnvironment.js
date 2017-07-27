@@ -419,14 +419,6 @@ function checkSettingsSection(data) {
   // Check "addonCompatibilityCheckEnabled" separately
   Assert.equal(data.settings.addonCompatibilityCheckEnabled, AddonManager.checkCompatibility);
 
-  // Check "isDefaultBrowser" separately, as it is not available on Android an can either be
-  // null or boolean on other platforms.
-  if (gIsAndroid) {
-    Assert.ok(!("isDefaultBrowser" in data.settings), "Must not be available on Android.");
-  } else {
-    Assert.ok(checkNullOrBool(data.settings.isDefaultBrowser));
-  }
-
   // Check "channel" separately, as it can either be null or string.
   let update = data.settings.update;
   Assert.ok(checkNullOrString(update.channel));
