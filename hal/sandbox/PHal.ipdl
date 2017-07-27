@@ -20,11 +20,6 @@ using PRTime from "prtime.h";
 namespace mozilla {
 
 namespace hal {
-struct BatteryInformation {
-  double level;
-  bool   charging;
-  double remainingTime;
-};
 
 struct SensorData {
   SensorType sensor;
@@ -69,7 +64,6 @@ nested(upto inside_cpow) sync protocol PHal {
     manager PContent;
 
 child:
-    async NotifyBatteryChange(BatteryInformation aBatteryInfo);
     async NotifyNetworkChange(NetworkInformation aNetworkInfo);
     async NotifyWakeLockChange(WakeLockInformation aWakeLockInfo);
     async NotifyScreenConfigurationChange(ScreenConfiguration aScreenOrientation);
@@ -77,11 +71,6 @@ child:
     async NotifySystemTimezoneChange(SystemTimezoneChangeInformation aSystemTimezoneChangeInfo); 
 
 parent:
-
-    async EnableBatteryNotifications();
-    async DisableBatteryNotifications();
-    sync GetCurrentBatteryInformation()
-      returns (BatteryInformation aBatteryInfo);
 
     async EnableNetworkNotifications();
     async DisableNetworkNotifications();

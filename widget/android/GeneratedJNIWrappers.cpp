@@ -119,14 +119,6 @@ auto GeckoAppShell::DisableAlarm() -> void
     return mozilla::jni::Method<DisableAlarm_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
-constexpr char GeckoAppShell::DisableBatteryNotifications_t::name[];
-constexpr char GeckoAppShell::DisableBatteryNotifications_t::signature[];
-
-auto GeckoAppShell::DisableBatteryNotifications() -> void
-{
-    return mozilla::jni::Method<DisableBatteryNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 constexpr char GeckoAppShell::DisableNetworkNotifications_t::name[];
 constexpr char GeckoAppShell::DisableNetworkNotifications_t::signature[];
 
@@ -149,14 +141,6 @@ constexpr char GeckoAppShell::DisableSensor_t::signature[];
 auto GeckoAppShell::DisableSensor(int32_t a0) -> void
 {
     return mozilla::jni::Method<DisableSensor_t>::Call(GeckoAppShell::Context(), nullptr, a0);
-}
-
-constexpr char GeckoAppShell::EnableBatteryNotifications_t::name[];
-constexpr char GeckoAppShell::EnableBatteryNotifications_t::signature[];
-
-auto GeckoAppShell::EnableBatteryNotifications() -> void
-{
-    return mozilla::jni::Method<EnableBatteryNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
 constexpr char GeckoAppShell::EnableLocation_t::name[];
@@ -221,14 +205,6 @@ constexpr char GeckoAppShell::GetContext_t::signature[];
 auto GeckoAppShell::GetContext() -> mozilla::jni::Object::LocalRef
 {
     return mozilla::jni::Method<GetContext_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::GetCurrentBatteryInformation_t::name[];
-constexpr char GeckoAppShell::GetCurrentBatteryInformation_t::signature[];
-
-auto GeckoAppShell::GetCurrentBatteryInformation() -> mozilla::jni::DoubleArray::LocalRef
-{
-    return mozilla::jni::Method<GetCurrentBatteryInformation_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
 constexpr char GeckoAppShell::GetCurrentNetworkInformation_t::name[];
@@ -628,12 +604,6 @@ const char GeckoAppShell::CameraCallback::name[] =
 
 constexpr char GeckoAppShell::CameraCallback::OnFrameData_t::name[];
 constexpr char GeckoAppShell::CameraCallback::OnFrameData_t::signature[];
-
-const char GeckoBatteryManager::name[] =
-        "org/mozilla/gecko/GeckoBatteryManager";
-
-constexpr char GeckoBatteryManager::OnBatteryChange_t::name[];
-constexpr char GeckoBatteryManager::OnBatteryChange_t::signature[];
 
 const char GeckoEditable::name[] =
         "org/mozilla/gecko/GeckoEditable";

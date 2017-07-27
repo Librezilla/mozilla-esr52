@@ -1869,14 +1869,6 @@ public class GeckoAppShell
         }
     }
 
-    /*
-     * Battery API related methods.
-     */
-    @WrapForJNI(calledFrom = "gecko")
-    private static void enableBatteryNotifications() {
-        GeckoBatteryManager.enableNotifications();
-    }
-
     @WrapForJNI(calledFrom = "gecko")
     private static void handleGeckoMessage(final NativeJSContainer message) {
         boolean success = EventDispatcher.getInstance().dispatchEvent(message);
@@ -1892,16 +1884,6 @@ public class GeckoAppShell
             }
         }
         message.disposeNative();
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static void disableBatteryNotifications() {
-        GeckoBatteryManager.disableNotifications();
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static double[] getCurrentBatteryInformation() {
-        return GeckoBatteryManager.getCurrentInformation();
     }
 
     @WrapForJNI(stubName = "CheckURIVisited", calledFrom = "gecko")

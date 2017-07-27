@@ -192,30 +192,6 @@ private:
   bool                    mHasValidCache;
 };
 
-class BatteryObserversManager : public CachingObserversManager<BatteryInformation>
-{
-protected:
-  void EnableNotifications() {
-    PROXY_IF_SANDBOXED(EnableBatteryNotifications());
-  }
-
-  void DisableNotifications() {
-    PROXY_IF_SANDBOXED(DisableBatteryNotifications());
-  }
-
-  void GetCurrentInformationInternal(BatteryInformation* aInfo) {
-    PROXY_IF_SANDBOXED(GetCurrentBatteryInformation(aInfo));
-  }
-};
-
-static BatteryObserversManager&
-BatteryObservers()
-{
-  static BatteryObserversManager sBatteryObservers;
-  AssertMainThread();
-  return sBatteryObservers;
-}
-
 class NetworkObserversManager : public CachingObserversManager<NetworkInformation>
 {
 protected:
@@ -282,35 +258,6 @@ ScreenConfigurationObservers()
   AssertMainThread();
   static ScreenConfigurationObserversManager sScreenConfigurationObservers;
   return sScreenConfigurationObservers;
-}
-
-void
-RegisterBatteryObserver(BatteryObserver* aObserver)
-{
-  AssertMainThread();
-  BatteryObservers().AddObserver(aObserver);
-}
-
-void
-UnregisterBatteryObserver(BatteryObserver* aObserver)
-{
-  AssertMainThread();
-  BatteryObservers().RemoveObserver(aObserver);
-}
-
-void
-GetCurrentBatteryInformation(BatteryInformation* aInfo)
-{
-  AssertMainThread();
-  *aInfo = BatteryObservers().GetCurrentInformation();
-}
-
-void
-NotifyBatteryChange(const BatteryInformation& aInfo)
-{
-  AssertMainThread();
-  BatteryObservers().CacheInformation(aInfo);
-  BatteryObservers().BroadcastCachedInformation();
 }
 
 class SystemClockChangeObserversManager : public ObserversManager<int64_t>

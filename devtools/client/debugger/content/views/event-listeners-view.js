@@ -112,8 +112,6 @@ EventListenersView.prototype = Heritage.extend(WidgetMethods, {
       group = L10N.getStr("animationEvents");
     } else if (starts("audio")) {
       group = L10N.getStr("audioEvents");
-    } else if (is("levelchange")) {
-      group = L10N.getStr("batteryEvents");
     } else if (is("cut", "copy", "paste")) {
       group = L10N.getStr("clipboardEvents");
     } else if (starts("composition")) {

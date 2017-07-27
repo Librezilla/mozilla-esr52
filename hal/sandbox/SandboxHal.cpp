@@ -13,7 +13,6 @@
 #include "mozilla/hal_sandbox/PHalParent.h"
 #include "mozilla/dom/TabParent.h"
 #include "mozilla/dom/TabChild.h"
-#include "mozilla/dom/battery/Types.h"
 #include "mozilla/dom/network/Types.h"
 #include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/Observer.h"
@@ -44,24 +43,6 @@ Hal()
     sHal = ContentChild::GetSingleton()->SendPHalConstructor();
   }
   return sHal;
-}
-
-void
-EnableBatteryNotifications()
-{
-  Hal()->SendEnableBatteryNotifications();
-}
-
-void
-DisableBatteryNotifications()
-{
-  Hal()->SendDisableBatteryNotifications();
-}
-
-void
-GetCurrentBatteryInformation(BatteryInformation* aBatteryInfo)
-{
-  Hal()->SendGetCurrentBatteryInformation(aBatteryInfo);
 }
 
 void
@@ -279,7 +260,6 @@ bool SystemServiceIsRunning(const char* aSvcName)
 }
 
 class HalParent : public PHalParent
-                , public BatteryObserver
                 , public NetworkObserver
                 , public ISensorObserver
                 , public WakeLockObserver
@@ -293,7 +273,6 @@ public:
   {
     // NB: you *must* unconditionally unregister your observer here,
     // if it *may* be registered below.
-    hal::UnregisterBatteryObserver(this);
     hal::UnregisterNetworkObserver(this);
     hal::UnregisterScreenConfigurationObserver(this);
     for (int32_t sensor = SENSOR_UNKNOWN + 1;
@@ -303,30 +282,6 @@ public:
     hal::UnregisterWakeLockObserver(this);
     hal::UnregisterSystemClockChangeObserver(this);
     hal::UnregisterSystemTimezoneChangeObserver(this);
-  }
-
-  virtual bool
-  RecvEnableBatteryNotifications() override {
-    // We give all content battery-status permission.
-    hal::RegisterBatteryObserver(this);
-    return true;
-  }
-
-  virtual bool
-  RecvDisableBatteryNotifications() override {
-    hal::UnregisterBatteryObserver(this);
-    return true;
-  }
-
-  virtual bool
-  RecvGetCurrentBatteryInformation(BatteryInformation* aBatteryInfo) override {
-    // We give all content battery-status permission.
-    hal::GetCurrentBatteryInformation(aBatteryInfo);
-    return true;
-  }
-
-  void Notify(const BatteryInformation& aBatteryInfo) override {
-    Unused << SendNotifyBatteryChange(aBatteryInfo);
   }
 
   virtual bool
@@ -537,12 +492,6 @@ public:
   ActorDestroy(ActorDestroyReason aWhy) override
   {
     sHalChildDestroyed = true;
-  }
-
-  virtual bool
-  RecvNotifyBatteryChange(const BatteryInformation& aBatteryInfo) override {
-    hal::NotifyBatteryChange(aBatteryInfo);
-    return true;
   }
 
   virtual bool

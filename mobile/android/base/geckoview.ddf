@@ -19,7 +19,6 @@ show allResults
   org.mozilla.gecko.EventDispatcher \
   org.mozilla.gecko.GeckoAccessibility \
   org.mozilla.gecko.GeckoAppShell \
-  org.mozilla.gecko.GeckoBatteryManager \
   org.mozilla.gecko.GeckoEditable \
   org.mozilla.gecko.GeckoEditableClient \
   org.mozilla.gecko.GeckoEditableListener \
