@@ -3226,11 +3226,6 @@ nsSocketTransport::SendPRBlockingTelemetry(PRIntervalTime aStart,
                < 60) {
         Telemetry::Accumulate(aIDConnectivityChange,
                               PR_IntervalToMilliseconds(now - aStart));
-    } else if (PR_IntervalToSeconds(now - gIOService->LastNetworkLinkChange())
-               < 60) {
-        Telemetry::Accumulate(aIDLinkChange,
-                              PR_IntervalToMilliseconds(now - aStart));
-
     } else if (PR_IntervalToSeconds(now - gIOService->LastOfflineStateChange())
                < 60) {
         Telemetry::Accumulate(aIDOffline,

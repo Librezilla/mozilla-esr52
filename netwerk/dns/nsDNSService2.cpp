@@ -31,7 +31,6 @@
 #include "nsNetAddr.h"
 #include "nsProxyRelease.h"
 #include "nsIObserverService.h"
-#include "nsINetworkLinkService.h"
 
 #include "mozilla/Attributes.h"
 #include "mozilla/net/NeckoCommon.h"
@@ -592,7 +591,6 @@ nsDNSService::Init()
         mozilla::services::GetObserverService();
     if (observerService) {
         observerService->AddObserver(this, "last-pb-context-exited", false);
-        observerService->AddObserver(this, NS_NETWORK_LINK_TOPIC, false);
     }
 
     nsDNSPrefetch::Initialize(this);
@@ -652,7 +650,6 @@ nsDNSService::Shutdown()
     nsCOMPtr<nsIObserverService> observerService =
         mozilla::services::GetObserverService();
     if (observerService) {
-        observerService->RemoveObserver(this, NS_NETWORK_LINK_TOPIC);
         observerService->RemoveObserver(this, "last-pb-context-exited");
     }
 
@@ -941,16 +938,10 @@ nsDNSService::Observe(nsISupports *subject, const char *topic, const char16_t *d
     // network link event.
     NS_ASSERTION(strcmp(topic, NS_PREFBRANCH_PREFCHANGE_TOPIC_ID) == 0 ||
                  strcmp(topic, "last-pb-context-exited") == 0 ||
-                 strcmp(topic, NS_NETWORK_LINK_TOPIC) == 0,
                  "unexpected observe call");
 
     bool flushCache = false;
-    if (!strcmp(topic, NS_NETWORK_LINK_TOPIC)) {
-        nsAutoCString converted = NS_ConvertUTF16toUTF8(data);
-        if (mResolver && !strcmp(converted.get(), NS_NETWORK_LINK_DATA_CHANGED)) {
-            flushCache = true;
-        }
-    } else if (!strcmp(topic, "last-pb-context-exited")) {
+    if (!strcmp(topic, "last-pb-context-exited")) {
         flushCache = true;
     }
     if (flushCache) {

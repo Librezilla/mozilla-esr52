@@ -402,21 +402,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsSimpleNestedURI)
 NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIDNService, Init)
 
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(XP_WIN)
-#include "nsNotifyAddrListener.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsNotifyAddrListener, Init)
-#elif defined(MOZ_WIDGET_COCOA)
-#include "nsNetworkLinkService.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsNetworkLinkService, Init)
-#elif defined(MOZ_WIDGET_ANDROID)
-#include "nsAndroidNetworkLinkService.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsAndroidNetworkLinkService)
-#elif defined(XP_LINUX)
-#include "nsNotifyAddrListener_Linux.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsNotifyAddrListener, Init)
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 
 #ifdef NECKO_PROTOCOL_ftp
 #include "nsFTPDirListingConv.h"
@@ -835,15 +820,6 @@ NS_DEFINE_NAMED_CID(NS_WEBSOCKETSSLPROTOCOLHANDLER_CID);
 #ifdef NECKO_PROTOCOL_rtsp
 NS_DEFINE_NAMED_CID(NS_RTSPPROTOCOLHANDLER_CID);
 #endif
-#if defined(XP_WIN)
-NS_DEFINE_NAMED_CID(NS_NETWORK_LINK_SERVICE_CID);
-#elif defined(MOZ_WIDGET_COCOA)
-NS_DEFINE_NAMED_CID(NS_NETWORK_LINK_SERVICE_CID);
-#elif defined(MOZ_WIDGET_ANDROID)
-NS_DEFINE_NAMED_CID(NS_NETWORK_LINK_SERVICE_CID);
-#elif defined(XP_LINUX)
-NS_DEFINE_NAMED_CID(NS_NETWORK_LINK_SERVICE_CID);
-#endif
 NS_DEFINE_NAMED_CID(NS_SERIALIZATION_HELPER_CID);
 NS_DEFINE_NAMED_CID(NS_REDIRECTCHANNELREGISTRAR_CID);
 NS_DEFINE_NAMED_CID(NS_CACHE_STORAGE_SERVICE_CID);
@@ -982,15 +958,6 @@ static const mozilla::Module::CIDEntry kNeckoCIDs[] = {
 #endif
 #ifdef NECKO_PROTOCOL_rtsp
     { &kNS_RTSPPROTOCOLHANDLER_CID, false, nullptr, mozilla::net::RtspHandlerConstructor },
-#endif
-#if defined(XP_WIN)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsNotifyAddrListenerConstructor },
-#elif defined(MOZ_WIDGET_COCOA)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsNetworkLinkServiceConstructor },
-#elif defined(MOZ_WIDGET_ANDROID)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsAndroidNetworkLinkServiceConstructor },
-#elif defined(XP_LINUX)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsNotifyAddrListenerConstructor },
 #endif
     { &kNS_SERIALIZATION_HELPER_CID, false, nullptr, nsSerializationHelperConstructor },
     { &kNS_REDIRECTCHANNELREGISTRAR_CID, false, nullptr, RedirectChannelRegistrarConstructor },
@@ -1134,15 +1101,6 @@ static const mozilla::Module::ContractIDEntry kNeckoContracts[] = {
 #endif
 #ifdef NECKO_PROTOCOL_rtsp
     { NS_NETWORK_PROTOCOL_CONTRACTID_PREFIX "rtsp", &kNS_RTSPPROTOCOLHANDLER_CID },
-#endif
-#if defined(XP_WIN)
-    { NS_NETWORK_LINK_SERVICE_CONTRACTID, &kNS_NETWORK_LINK_SERVICE_CID },
-#elif defined(MOZ_WIDGET_COCOA)
-    { NS_NETWORK_LINK_SERVICE_CONTRACTID, &kNS_NETWORK_LINK_SERVICE_CID },
-#elif defined(MOZ_WIDGET_ANDROID)
-    { NS_NETWORK_LINK_SERVICE_CONTRACTID, &kNS_NETWORK_LINK_SERVICE_CID },
-#elif defined(XP_LINUX)
-    { NS_NETWORK_LINK_SERVICE_CONTRACTID, &kNS_NETWORK_LINK_SERVICE_CID },
 #endif
     { NS_SERIALIZATION_HELPER_CONTRACTID, &kNS_SERIALIZATION_HELPER_CID },
     { NS_REDIRECTCHANNELREGISTRAR_CONTRACTID, &kNS_REDIRECTCHANNELREGISTRAR_CID },

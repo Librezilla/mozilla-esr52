@@ -788,11 +788,6 @@ nsUDPSocket::CloseSocket()
           Telemetry::Accumulate(Telemetry::PRCLOSE_UDP_BLOCKING_TIME_CONNECTIVITY_CHANGE,
                                 PR_IntervalToMilliseconds(now - closeStarted));
 
-        } else if (PR_IntervalToSeconds(now - gIOService->LastNetworkLinkChange())
-                   < 60) {
-          Telemetry::Accumulate(Telemetry::PRCLOSE_UDP_BLOCKING_TIME_LINK_CHANGE,
-                                PR_IntervalToMilliseconds(now - closeStarted));
-
         } else if (PR_IntervalToSeconds(now - gIOService->LastOfflineStateChange())
                    < 60) {
           Telemetry::Accumulate(Telemetry::PRCLOSE_UDP_BLOCKING_TIME_OFFLINE,

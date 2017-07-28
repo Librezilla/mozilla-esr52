@@ -47,7 +47,6 @@
 #include "nsIMemoryReporter.h"
 #include "nsIParentalControlsService.h"
 #include "nsPIDOMWindow.h"
-#include "nsINetworkLinkService.h"
 #include "nsHttpChannelAuthProvider.h"
 #include "nsServiceManagerUtils.h"
 #include "nsComponentManagerUtils.h"
@@ -393,7 +392,6 @@ nsHttpHandler::Init()
         obsService->AddObserver(this, "last-pb-context-exited", true);
         obsService->AddObserver(this, "webapps-clear-data", true);
         obsService->AddObserver(this, "browser:purge-session-history", true);
-        obsService->AddObserver(this, NS_NETWORK_LINK_TOPIC, true);
         obsService->AddObserver(this, "application-background", true);
     }
 
@@ -2159,14 +2157,6 @@ nsHttpHandler::Observe(nsISupports *subject,
                 gSocketTransportService->Dispatch(event, NS_DISPATCH_NORMAL);
             }
             mConnMgr->ClearAltServiceMappings();
-        }
-    } else if (!strcmp(topic, NS_NETWORK_LINK_TOPIC)) {
-        nsAutoCString converted = NS_ConvertUTF16toUTF8(data);
-        if (!strcmp(converted.get(), NS_NETWORK_LINK_DATA_CHANGED)) {
-            if (mConnMgr) {
-                mConnMgr->PruneDeadConnections();
-                mConnMgr->VerifyTraffic();
-            }
         }
     } else if (!strcmp(topic, "application-background")) {
         // going to the background on android means we should close

@@ -6720,12 +6720,6 @@ var Tabs = {
     // Watch for opportunities to pre-connect to high probability targets.
     Services.obs.addObserver(this, "Session:Prefetch", false);
 
-    // Track the network connection so we can efficiently use the cache
-    // for possible offline rendering.
-    Services.obs.addObserver(this, "network:link-status-changed", false);
-    let network = Cc["@mozilla.org/network/network-link-service;1"].getService(Ci.nsINetworkLinkService);
-    this.useCache = !network.isLinkUp;
-
     BrowserApp.deck.addEventListener("pageshow", this, false);
     BrowserApp.deck.addEventListener("TabOpen", this, false);
   },
@@ -6753,12 +6747,6 @@ var Tabs = {
             }
           } catch (e) {}
         }
-        break;
-      case "network:link-status-changed":
-        if (["down", "unknown", "up"].indexOf(aData) == -1) {
-          return;
-        }
-        this.useCache = (aData === "down");
         break;
     }
   },

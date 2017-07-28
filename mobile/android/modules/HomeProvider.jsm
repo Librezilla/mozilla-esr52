@@ -78,15 +78,6 @@ const SQL = {
     "ALTER TABLE items ADD COLUMN background_url TEXT",
 }
 
-/**
- * Technically this function checks to see if the user is on a local network,
- * but we express this as "wifi" to the user.
- */
-function isUsingWifi() {
-  let network = Cc["@mozilla.org/network/network-link-service;1"].getService(Ci.nsINetworkLinkService);
-  return (network.linkType === Ci.nsINetworkLinkService.LINK_TYPE_WIFI || network.linkType === Ci.nsINetworkLinkService.LINK_TYPE_ETHERNET);
-}
-
 function getNowInSeconds() {
   return Math.round(Date.now() / 1000);
 }
@@ -161,11 +152,6 @@ this.HomeProvider = Object.freeze({
    */
   requestSync: function(datasetId, callback) {
     // Make sure it's a good time to sync.
-    if ((Services.prefs.getIntPref(PREF_SYNC_UPDATE_MODE) === 1) && !isUsingWifi()) {
-      Cu.reportError("HomeProvider: Failed to sync because device is not on a local network");
-      return false;
-    }
-
     callback(datasetId);
     return true;
   },

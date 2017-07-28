@@ -116,13 +116,10 @@ handlers.wifi = {
 
   onPageShown: function(browser) {
       // If we have a connection, don't bother showing the wifi toggle.
-      let network = Cc["@mozilla.org/network/network-link-service;1"].getService(Ci.nsINetworkLinkService);
-      if (network.isLinkUp && network.linkStatusKnown) {
         let nodes = browser.contentDocument.querySelectorAll("#wifi");
         for (let i = 0; i < nodes.length; i++) {
           nodes[i].style.display = "none";
         }
-      }
   },
 
   handleClick: function(event) {
@@ -141,7 +138,6 @@ handlers.wifi = {
     node.classList.add("inProgress");
 
     this.node = Cu.getWeakReference(node);
-    Services.obs.addObserver(this, "network:link-status-changed", true);
 
     Messaging.sendRequest({
       type: "Wifi:Enable"
@@ -158,11 +154,8 @@ handlers.wifi = {
     node.disabled = false;
     node.classList.remove("inProgress");
 
-    let network = Cc["@mozilla.org/network/network-link-service;1"].getService(Ci.nsINetworkLinkService);
-    if (network.isLinkUp && network.linkStatusKnown) {
       // If everything worked, reload the page
       UITelemetry.addEvent("neterror.1", "button", null, "wifitoggle.reload");
-      Services.obs.removeObserver(this, "network:link-status-changed");
 
       // Even at this point, Android sometimes lies about the real state of the network and this reload request fails.
       // Add a 500ms delay before refreshing the page.
@@ -170,6 +163,5 @@ handlers.wifi = {
         node.ownerDocument.location.reload(false);
       }, 500);
     }
-  }
 }
 

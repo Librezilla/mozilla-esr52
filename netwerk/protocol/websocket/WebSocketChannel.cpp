@@ -38,7 +38,6 @@
 #include "nsIRandomGenerator.h"
 #include "nsISocketTransport.h"
 #include "nsThreadUtils.h"
-#include "nsINetworkLinkService.h"
 #include "nsIObserverService.h"
 #include "nsITransportProvider.h"
 #include "nsCharSeparatedTokenizer.h"
@@ -1234,30 +1233,6 @@ WebSocketChannel::Observe(nsISupports *subject,
 {
   LOG(("WebSocketChannel::Observe [topic=\"%s\"]\n", topic));
 
-  if (strcmp(topic, NS_NETWORK_LINK_TOPIC) == 0) {
-    nsCString converted = NS_ConvertUTF16toUTF8(data);
-    const char *state = converted.get();
-
-    if (strcmp(state, NS_NETWORK_LINK_DATA_CHANGED) == 0) {
-      LOG(("WebSocket: received network CHANGED event"));
-
-      if (!mSocketThread) {
-        // there has not been an asyncopen yet on the object and then we need
-        // no ping.
-        LOG(("WebSocket: early object, no ping needed"));
-      } else {
-        // Next we check mDataStarted, which we need to do on mTargetThread.
-        if (!IsOnTargetThread()) {
-          mTargetThread->Dispatch(
-            NewRunnableMethod(this, &WebSocketChannel::OnNetworkChanged),
-            NS_DISPATCH_NORMAL);
-        } else {
-          OnNetworkChanged();
-        }
-      }
-    }
-  }
-
   return NS_OK;
 }
 
@@ -2278,7 +2253,6 @@ public:
       return NS_OK;
     }
 
-    observerService->RemoveObserver(mChannel, NS_NETWORK_LINK_TOPIC);
     return NS_OK;
   }
 };
@@ -3489,11 +3463,6 @@ WebSocketChannel::AsyncOpen(nsIURI *aURI,
   if (!observerService) {
     NS_WARNING("failed to get observer service");
     return NS_ERROR_FAILURE;
-  }
-
-  rv = observerService->AddObserver(this, NS_NETWORK_LINK_TOPIC, false);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
   }
 
   // Only set these if the open was successful:

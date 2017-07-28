@@ -271,14 +271,6 @@ auto GeckoAppShell::GetMimeTypeFromExtensions(mozilla::jni::String::Param a0) ->
     return mozilla::jni::Method<GetMimeTypeFromExtensions_t>::Call(GeckoAppShell::Context(), nullptr, a0);
 }
 
-constexpr char GeckoAppShell::GetNetworkLinkType_t::name[];
-constexpr char GeckoAppShell::GetNetworkLinkType_t::signature[];
-
-auto GeckoAppShell::GetNetworkLinkType() -> int32_t
-{
-    return mozilla::jni::Method<GetNetworkLinkType_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 constexpr char GeckoAppShell::GetProxyForURI_t::name[];
 constexpr char GeckoAppShell::GetProxyForURI_t::signature[];
 
@@ -349,22 +341,6 @@ constexpr char GeckoAppShell::InitCamera_t::signature[];
 auto GeckoAppShell::InitCamera(mozilla::jni::String::Param a0, int32_t a1, int32_t a2, int32_t a3) -> mozilla::jni::IntArray::LocalRef
 {
     return mozilla::jni::Method<InitCamera_t>::Call(GeckoAppShell::Context(), nullptr, a0, a1, a2, a3);
-}
-
-constexpr char GeckoAppShell::IsNetworkLinkKnown_t::name[];
-constexpr char GeckoAppShell::IsNetworkLinkKnown_t::signature[];
-
-auto GeckoAppShell::IsNetworkLinkKnown() -> bool
-{
-    return mozilla::jni::Method<IsNetworkLinkKnown_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::IsNetworkLinkUp_t::name[];
-constexpr char GeckoAppShell::IsNetworkLinkUp_t::signature[];
-
-auto GeckoAppShell::IsNetworkLinkUp() -> bool
-{
-    return mozilla::jni::Method<IsNetworkLinkUp_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
 constexpr char GeckoAppShell::IsTablet_t::name[];
@@ -631,12 +607,6 @@ const char GeckoEditableListener::name[] =
 
 const char GeckoNetworkManager::name[] =
         "org/mozilla/gecko/GeckoNetworkManager";
-
-constexpr char GeckoNetworkManager::OnConnectionChanged_t::name[];
-constexpr char GeckoNetworkManager::OnConnectionChanged_t::signature[];
-
-constexpr char GeckoNetworkManager::OnStatusChanged_t::name[];
-constexpr char GeckoNetworkManager::OnStatusChanged_t::signature[];
 
 const char GeckoThread::name[] =
         "org/mozilla/gecko/GeckoThread";

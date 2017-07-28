@@ -25,7 +25,6 @@ const PREF_IMAGEBLOCKING = "browser.image_blocking";
 //// Enabled options
 const OPTION_NEVER = 0;
 const OPTION_ALWAYS = 1;
-const OPTION_WIFI_ONLY = 2;
 
 
 /**
@@ -45,7 +44,7 @@ ImageBlockingPolicy.prototype = {
   // nsIContentPolicy interface implementation
   shouldLoad: function(contentType, contentLocation, requestOrigin, node, mimeTypeGuess, extra) {
     // When enabled or when on cellular, and option for cellular-only is selected
-    if (this._enabled() == OPTION_NEVER || (this._enabled() == OPTION_WIFI_ONLY && this._usingCellular())) {
+    if (this._enabled() == OPTION_NEVER) {
       if (contentType === Ci.nsIContentPolicy.TYPE_IMAGE || contentType === Ci.nsIContentPolicy.TYPE_IMAGESET) {
         // Accept any non-http(s) image URLs
         if (!contentLocation.schemeIs("http") && !contentLocation.schemeIs("https")) {
@@ -81,14 +80,6 @@ ImageBlockingPolicy.prototype = {
 
   shouldProcess: function(contentType, contentLocation, requestOrigin, node, mimeTypeGuess, extra) {
     return Ci.nsIContentPolicy.ACCEPT;
-  },
-
-  _usingCellular: function() {
-    let network = Cc["@mozilla.org/network/network-link-service;1"].getService(Ci.nsINetworkLinkService);
-    return !(network.linkType == Ci.nsINetworkLinkService.LINK_TYPE_UNKNOWN ||
-        network.linkType == Ci.nsINetworkLinkService.LINK_TYPE_ETHERNET ||
-        network.linkType == Ci.nsINetworkLinkService.LINK_TYPE_USB  ||
-        network.linkType == Ci.nsINetworkLinkService.LINK_TYPE_WIFI);
   },
 
   _enabled: function() {
