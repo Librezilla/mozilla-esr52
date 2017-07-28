@@ -194,18 +194,6 @@ public class GeckoAppShell
     static public final int WPL_STATE_IS_DOCUMENT = 0x00020000;
     static public final int WPL_STATE_IS_NETWORK = 0x00040000;
 
-    /* Keep in sync with constants found here:
-      http://dxr.mozilla.org/mozilla-central/source/netwerk/base/nsINetworkLinkService.idl
-    */
-    static public final int LINK_TYPE_UNKNOWN = 0;
-    static public final int LINK_TYPE_ETHERNET = 1;
-    static public final int LINK_TYPE_USB = 2;
-    static public final int LINK_TYPE_WIFI = 3;
-    static public final int LINK_TYPE_WIMAX = 4;
-    static public final int LINK_TYPE_2G = 5;
-    static public final int LINK_TYPE_3G = 6;
-    static public final int LINK_TYPE_4G = 7;
-
     public static final String PREFS_OOM_EXCEPTION = "OOMException";
 
     /* The Android-side API: API methods that Android calls */
@@ -770,92 +758,6 @@ public class GeckoAppShell
                 // TODO
             }
         });
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static boolean isNetworkLinkUp() {
-        ConnectivityManager cm = (ConnectivityManager)
-           getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        try {
-            NetworkInfo info = cm.getActiveNetworkInfo();
-            if (info == null || !info.isConnected())
-                return false;
-        } catch (SecurityException se) {
-            return false;
-        }
-        return true;
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static boolean isNetworkLinkKnown() {
-        ConnectivityManager cm = (ConnectivityManager)
-            getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        try {
-            if (cm.getActiveNetworkInfo() == null)
-                return false;
-        } catch (SecurityException se) {
-            return false;
-        }
-        return true;
-    }
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static int getNetworkLinkType() {
-        ConnectivityManager cm = (ConnectivityManager)
-            getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = cm.getActiveNetworkInfo();
-        if (info == null) {
-            return LINK_TYPE_UNKNOWN;
-        }
-
-        switch (info.getType()) {
-            case ConnectivityManager.TYPE_ETHERNET:
-                return LINK_TYPE_ETHERNET;
-            case ConnectivityManager.TYPE_WIFI:
-                return LINK_TYPE_WIFI;
-            case ConnectivityManager.TYPE_WIMAX:
-                return LINK_TYPE_WIMAX;
-            case ConnectivityManager.TYPE_MOBILE:
-                break; // We will handle sub-types after the switch.
-            default:
-                Log.w(LOGTAG, "Ignoring the current network type.");
-                return LINK_TYPE_UNKNOWN;
-        }
-
-        TelephonyManager tm = (TelephonyManager)
-            getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-        if (tm == null) {
-            Log.e(LOGTAG, "Telephony service does not exist");
-            return LINK_TYPE_UNKNOWN;
-        }
-
-        switch (tm.getNetworkType()) {
-            case TelephonyManager.NETWORK_TYPE_IDEN:
-            case TelephonyManager.NETWORK_TYPE_CDMA:
-            case TelephonyManager.NETWORK_TYPE_GPRS:
-                return LINK_TYPE_2G;
-            case TelephonyManager.NETWORK_TYPE_1xRTT:
-            case TelephonyManager.NETWORK_TYPE_EDGE:
-                return LINK_TYPE_2G; // 2.5G
-            case TelephonyManager.NETWORK_TYPE_UMTS:
-            case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                return LINK_TYPE_3G;
-            case TelephonyManager.NETWORK_TYPE_HSPA:
-            case TelephonyManager.NETWORK_TYPE_HSDPA:
-            case TelephonyManager.NETWORK_TYPE_HSUPA:
-            case TelephonyManager.NETWORK_TYPE_EVDO_A:
-            case TelephonyManager.NETWORK_TYPE_EVDO_B:
-            case TelephonyManager.NETWORK_TYPE_EHRPD:
-                return LINK_TYPE_3G; // 3.5G
-            case TelephonyManager.NETWORK_TYPE_HSPAP:
-                return LINK_TYPE_3G; // 3.75G
-            case TelephonyManager.NETWORK_TYPE_LTE:
-                return LINK_TYPE_4G; // 3.9G
-            case TelephonyManager.NETWORK_TYPE_UNKNOWN:
-            default:
-                Log.w(LOGTAG, "Connected to an unknown mobile network!");
-                return LINK_TYPE_UNKNOWN;
-        }
     }
 
     @WrapForJNI(calledFrom = "gecko")

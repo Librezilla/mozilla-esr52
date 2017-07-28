@@ -152,18 +152,6 @@ public:
 };
 
 template<class Impl>
-const JNINativeMethod GeckoNetworkManager::Natives<Impl>::methods[] = {
-
-    mozilla::jni::MakeNativeMethod<GeckoNetworkManager::OnConnectionChanged_t>(
-            mozilla::jni::NativeStub<GeckoNetworkManager::OnConnectionChanged_t, Impl>
-            ::template Wrap<&Impl::OnConnectionChanged>),
-
-    mozilla::jni::MakeNativeMethod<GeckoNetworkManager::OnStatusChanged_t>(
-            mozilla::jni::NativeStub<GeckoNetworkManager::OnStatusChanged_t, Impl>
-            ::template Wrap<&Impl::OnStatusChanged>)
-};
-
-template<class Impl>
 class GeckoScreenOrientation::Natives : public mozilla::jni::NativeImpl<GeckoScreenOrientation, Impl>
 {
 public:

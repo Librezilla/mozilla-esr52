@@ -17,10 +17,6 @@ interface nsIPrincipal;
 interface nsIIOService2 : nsIIOService
 {
   /**
-   * While this is set, IOService will monitor an nsINetworkLinkService
-   * (if available) and set its offline status to "true" whenever
-   * isLinkUp is false.
-   *
    * Applications that want to control changes to the IOService's offline
    * status should set this to false, watch for network:link-status-changed
    * broadcasts, and change nsIIOService::offline as they see fit. Note

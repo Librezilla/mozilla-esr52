@@ -35,7 +35,6 @@
 #include "nsIScriptSecurityManager.h"
 #include "nsIProtocolProxyCallback.h"
 #include "nsICancelable.h"
-#include "nsINetworkLinkService.h"
 #include "nsPISocketTransportService.h"
 #include "nsAsyncRedirectVerifyHelper.h"
 #include "nsURLHelper.h"
@@ -180,12 +179,10 @@ nsIOService::nsIOService()
     , mSetOfflineValue(false)
     , mShutdown(false)
     , mHttpHandlerAlreadyShutingDown(false)
-    , mNetworkLinkServiceInitialized(false)
     , mChannelEventSinks(NS_CHANNEL_EVENT_SINK_CATEGORY)
     , mNetworkNotifyChanged(true)
     , mLastOfflineStateChange(PR_IntervalNow())
     , mLastConnectivityChange(PR_IntervalNow())
-    , mLastNetworkLinkChange(PR_IntervalNow())
     , mNetTearingDownStarted(0)
 {
 }
@@ -239,7 +236,6 @@ nsIOService::Init()
         observerService->AddObserver(this, kProfileChangeNetRestoreTopic, true);
         observerService->AddObserver(this, kProfileDoChange, true);
         observerService->AddObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, true);
-        observerService->AddObserver(this, NS_NETWORK_LINK_TOPIC, true);
         observerService->AddObserver(this, NS_WIDGET_WAKE_OBSERVER_TOPIC, true);
     }
     else
@@ -249,8 +245,6 @@ nsIOService::Init()
     Preferences::AddBoolVarCache(&mOfflineMirrorsConnectivity, OFFLINE_MIRRORS_CONNECTIVITY, true);
 
     gIOService = this;
-
-    InitializeNetworkLinkService();
 
     SetOffline(false);
 
@@ -296,35 +290,6 @@ nsIOService::InitializeSocketTransportService()
         NS_ASSERTION(NS_SUCCEEDED(rv), "socket transport service init failed");
         mSocketTransportService->SetOffline(false);
     }
-
-    return rv;
-}
-
-nsresult
-nsIOService::InitializeNetworkLinkService()
-{
-    nsresult rv = NS_OK;
-
-    if (mNetworkLinkServiceInitialized)
-        return rv;
-
-    if (!NS_IsMainThread()) {
-        NS_WARNING("Network link service should be created on main thread"); 
-        return NS_ERROR_FAILURE; 
-    }
-
-    // go into managed mode if we can, and chrome process
-    if (XRE_IsParentProcess())
-    {
-        mNetworkLinkService = do_GetService(NS_NETWORK_LINK_SERVICE_CONTRACTID, &rv);
-    }
-
-    if (mNetworkLinkService) {
-        mNetworkLinkServiceInitialized = true;
-    }
-
-    // After initializing the networkLinkService, query the connectivity state
-    OnNetworkLinkEvent(NS_NETWORK_LINK_DATA_UNKNOWN);
 
     return rv;
 }
@@ -984,21 +949,7 @@ nsIOService::NewChannel(const nsACString &aSpec, const char *aCharset, nsIURI *a
 bool
 nsIOService::IsLinkUp()
 {
-    InitializeNetworkLinkService();
-
-    if (!mNetworkLinkService) {
-        // We cannot decide, assume the link is up
-        return true;
-    }
-
-    bool isLinkUp;
-    nsresult rv;
-    rv = mNetworkLinkService->GetIsLinkUp(&isLinkUp);
-    if (NS_FAILED(rv)) {
-        return true;
-    }
-
-    return isLinkUp;
+    return true;
 }
 
 NS_IMETHODIMP
@@ -1246,16 +1197,6 @@ nsIOService::PrefsChanged(nsIPrefBranch *prefs, const char *pref)
     if (!pref || strcmp(pref, PORT_PREF("banned.override")) == 0)
         ParsePortList(prefs, PORT_PREF("banned.override"), true);
 
-    if (!pref || strcmp(pref, MANAGE_OFFLINE_STATUS_PREF) == 0) {
-        bool manage;
-        if (mNetworkLinkServiceInitialized &&
-            NS_SUCCEEDED(prefs->GetBoolPref(MANAGE_OFFLINE_STATUS_PREF,
-                                            &manage))) {
-            LOG(("nsIOService::PrefsChanged ManageOfflineStatus manage=%d\n", manage));
-            SetManageOfflineStatus(manage);
-        }
-    }
-
     if (!pref || strcmp(pref, NECKO_BUFFER_CACHE_COUNT_PREF) == 0) {
         int32_t count;
         if (NS_SUCCEEDED(prefs->GetIntPref(NECKO_BUFFER_CACHE_COUNT_PREF,
@@ -1373,13 +1314,6 @@ nsIOService::NotifyWakeup()
 
     NS_ASSERTION(observerService, "The observer service should not be null");
 
-    if (observerService && mNetworkNotifyChanged) {
-        (void)observerService->
-            NotifyObservers(nullptr,
-                            NS_NETWORK_LINK_TOPIC,
-                            (u"" NS_NETWORK_LINK_DATA_CHANGED));
-    }
-
     RecheckCaptivePortal();
 
     return NS_OK;
@@ -1420,12 +1354,6 @@ nsIOService::Observe(nsISupports *subject,
         }
     } else if (!strcmp(topic, kProfileDoChange)) { 
         if (data && NS_LITERAL_STRING("startup").Equals(data)) {
-            // Lazy initialization of network link service (see bug 620472)
-            InitializeNetworkLinkService();
-            // Set up the initilization flag regardless the actuall result.
-            // If we fail here, we will fail always on.
-            mNetworkLinkServiceInitialized = true;
-
             // And now reflect the preference setting
             nsCOMPtr<nsIPrefBranch> prefBranch;
             GetPrefBranch(getter_AddRefs(prefBranch));
@@ -1451,8 +1379,6 @@ nsIOService::Observe(nsISupports *subject,
 
         // Break circular reference.
         mProxyService = nullptr;
-    } else if (!strcmp(topic, NS_NETWORK_LINK_TOPIC)) {
-        OnNetworkLinkEvent(NS_ConvertUTF16toUTF8(data).get());
     } else if (!strcmp(topic, NS_WIDGET_WAKE_OBSERVER_TOPIC)) {
         // coming back alive from sleep
         // this indirection brought to you by:
@@ -1582,11 +1508,6 @@ nsIOService::SetManageOfflineStatus(bool aManage)
         return NS_OK;
     }
 
-    InitializeNetworkLinkService();
-    // If the NetworkLinkService is already initialized, it does not call
-    // OnNetworkLinkEvent. This is needed, when mManageLinkStatus goes from
-    // false to true.
-    OnNetworkLinkEvent(NS_NETWORK_LINK_DATA_UNKNOWN);
     return NS_OK;
 }
 
@@ -1595,44 +1516,6 @@ nsIOService::GetManageOfflineStatus(bool* aManage)
 {
     *aManage = mManageLinkStatus;
     return NS_OK;
-}
-
-// input argument 'data' is already UTF8'ed
-nsresult
-nsIOService::OnNetworkLinkEvent(const char *data)
-{
-    LOG(("nsIOService::OnNetworkLinkEvent data:%s\n", data));
-    if (!mNetworkLinkService)
-        return NS_ERROR_FAILURE;
-
-    if (mShutdown)
-        return NS_ERROR_NOT_AVAILABLE;
-
-    if (!mManageLinkStatus) {
-        LOG(("nsIOService::OnNetworkLinkEvent mManageLinkStatus=false\n"));
-        return NS_OK;
-    }
-
-    bool isUp = true;
-    if (!strcmp(data, NS_NETWORK_LINK_DATA_CHANGED)) {
-        mLastNetworkLinkChange = PR_IntervalNow();
-        // CHANGED means UP/DOWN didn't change
-        // but the status of the captive portal may have changed.
-        RecheckCaptivePortal();
-        return NS_OK;
-    } else if (!strcmp(data, NS_NETWORK_LINK_DATA_DOWN)) {
-        isUp = false;
-    } else if (!strcmp(data, NS_NETWORK_LINK_DATA_UP)) {
-        isUp = true;
-    } else if (!strcmp(data, NS_NETWORK_LINK_DATA_UNKNOWN)) {
-        nsresult rv = mNetworkLinkService->GetIsLinkUp(&isUp);
-        NS_ENSURE_SUCCESS(rv, rv);
-    } else {
-        NS_WARNING("Unhandled network event!");
-        return NS_OK;
-    }
-
-    return SetConnectivityInternal(isUp);
 }
 
 NS_IMETHODIMP

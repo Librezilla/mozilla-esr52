@@ -34,7 +34,6 @@
 static const char gScheme[][sizeof("moz-safe-about")] =
     {"chrome", "file", "http", "https", "jar", "data", "about", "moz-safe-about", "resource"};
 
-class nsINetworkLinkService;
 class nsIPrefBranch;
 class nsIProtocolProxyService2;
 class nsIProxyInfo;
@@ -81,7 +80,6 @@ public:
     bool IsOffline() { return mOffline; }
     PRIntervalTime LastOfflineStateChange() { return mLastOfflineStateChange; }
     PRIntervalTime LastConnectivityChange() { return mLastConnectivityChange; }
-    PRIntervalTime LastNetworkLinkChange() { return mLastNetworkLinkChange; }
     bool IsNetTearingDown() { return mShutdown || mOfflineForProfileChange ||
                                      mHttpHandlerAlreadyShutingDown; }
     PRIntervalTime NetTearingDownStarted() { return mNetTearingDownStarted; }
@@ -105,8 +103,6 @@ private:
     ~nsIOService();
     nsresult SetConnectivityInternal(bool aConnectivity);
 
-    nsresult OnNetworkLinkEvent(const char *data);
-
     nsresult GetCachedProtocolHandler(const char *scheme,
                                                   nsIProtocolHandler* *hdlrResult,
                                                   uint32_t start=0,
@@ -123,7 +119,6 @@ private:
     void ParsePortList(nsIPrefBranch *prefBranch, const char *pref, bool remove);
 
     nsresult InitializeSocketTransportService();
-    nsresult InitializeNetworkLinkService();
 
     // consolidated helper function
     void LookupProxyInfo(nsIURI *aURI, nsIURI *aProxyURI, uint32_t aProxyFlags,
@@ -161,8 +156,6 @@ private:
     nsCOMPtr<nsPIDNSService>             mDNSService;
     nsCOMPtr<nsIProtocolProxyService2>   mProxyService;
     nsCOMPtr<nsICaptivePortalService>    mCaptivePortalService;
-    nsCOMPtr<nsINetworkLinkService>      mNetworkLinkService;
-    bool                                 mNetworkLinkServiceInitialized;
 
     // Cached protocol handlers, only accessed on the main thread
     nsWeakPtr                            mWeakHandler[NS_N(gScheme)];
@@ -182,7 +175,6 @@ private:
     // change has happened shortly before.
     mozilla::Atomic<PRIntervalTime> mLastOfflineStateChange;
     mozilla::Atomic<PRIntervalTime> mLastConnectivityChange;
-    mozilla::Atomic<PRIntervalTime> mLastNetworkLinkChange;
 
     // Time a network tearing down started.
     mozilla::Atomic<PRIntervalTime> mNetTearingDownStarted;
