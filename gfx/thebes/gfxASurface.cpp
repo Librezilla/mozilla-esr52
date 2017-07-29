@@ -207,9 +207,25 @@ gfxSurfaceType
 gfxASurface::GetType() const
 {
     if (!mSurfaceValid)
-        return (gfxSurfaceType)-1;
+        return gfxSurfaceType::Invalid;
 
-    return (gfxSurfaceType)cairo_surface_get_type(mSurface);
+    switch (cairo_surface_get_type(mSurface)) {
+        case CAIRO_SURFACE_TYPE_IMAGE:          return gfxSurfaceType::Image;
+        case CAIRO_SURFACE_TYPE_PDF:            return gfxSurfaceType::PDF;
+        case CAIRO_SURFACE_TYPE_PS:             return gfxSurfaceType::PS;
+        case CAIRO_SURFACE_TYPE_XLIB:           return gfxSurfaceType::Xlib;
+        case CAIRO_SURFACE_TYPE_XCB:            return gfxSurfaceType::Xcb;
+        case CAIRO_SURFACE_TYPE_QUARTZ:         return gfxSurfaceType::Quartz;
+        case CAIRO_SURFACE_TYPE_WIN32:          return gfxSurfaceType::Win32;
+        case CAIRO_SURFACE_TYPE_SVG:            return gfxSurfaceType::SVG;
+        case CAIRO_SURFACE_TYPE_WIN32_PRINTING: return gfxSurfaceType::Win32Printing;
+        case CAIRO_SURFACE_TYPE_QT:             return gfxSurfaceType::QPainter;
+        case CAIRO_SURFACE_TYPE_RECORDING:      return gfxSurfaceType::Recording;
+        case CAIRO_SURFACE_TYPE_SUBSURFACE:     return gfxSurfaceType::Subsurface;
+        default:                                return gfxSurfaceType::Invalid;
+    }
+
+    return gfxSurfaceType::Invalid;
 }
 
 gfxContentType
@@ -427,40 +443,26 @@ struct SurfaceMemoryReporterAttrs {
 };
 
 static const SurfaceMemoryReporterAttrs sSurfaceMemoryReporterAttrs[] = {
-    {"gfx-surface-image", nullptr},
-    {"gfx-surface-pdf", nullptr},
-    {"gfx-surface-ps", nullptr},
-    {"gfx-surface-xlib",
+    [gfxSurfaceType::Image]         = { "gfx-surface-image" },
+    [gfxSurfaceType::PDF]           = { "gfx-surface-pdf" },
+    [gfxSurfaceType::PS]            = { "gfx-surface-ps" },
+    [gfxSurfaceType::Xlib]          = { "gfx-surface-xlib",
      "Memory used by xlib surfaces to store pixmaps. This memory lives in "
      "the X server's process rather than in this application, so the bytes "
      "accounted for here aren't counted in vsize, resident, explicit, or any of "
      "the other measurements on this page."},
-    {"gfx-surface-xcb", nullptr},
-    {"gfx-surface-glitz???", nullptr},       // should never be used
-    {"gfx-surface-quartz", nullptr},
-    {"gfx-surface-win32", nullptr},
-    {"gfx-surface-beos", nullptr},
-    {"gfx-surface-directfb???", nullptr},    // should never be used
-    {"gfx-surface-svg", nullptr},
-    {"gfx-surface-os2", nullptr},
-    {"gfx-surface-win32printing", nullptr},
-    {"gfx-surface-quartzimage", nullptr},
-    {"gfx-surface-script", nullptr},
-    {"gfx-surface-qpainter", nullptr},
-    {"gfx-surface-recording", nullptr},
-    {"gfx-surface-vg", nullptr},
-    {"gfx-surface-gl", nullptr},
-    {"gfx-surface-drm", nullptr},
-    {"gfx-surface-tee", nullptr},
-    {"gfx-surface-xml", nullptr},
-    {"gfx-surface-skia", nullptr},
-    {"gfx-surface-subsurface", nullptr},
+    [gfxSurfaceType::Xcb]           = { "gfx-surface-xcb" },
+    [gfxSurfaceType::Quartz]        = { "gfx-surface-quartz" },
+    [gfxSurfaceType::Win32]         = { "gfx-surface-win32" },
+    [gfxSurfaceType::Win32Printing] = { "gfx-surface-win32printing" },
+    [gfxSurfaceType::SVG]           = { "gfx-surface-svg" },
+    [gfxSurfaceType::QPainter]      = { "gfx-surface-qpainter" },
+    [gfxSurfaceType::Recording]     = { "gfx-surface-recording" },
+    [gfxSurfaceType::Subsurface]    = { "gfx-surface-subsurface" },
 };
 
 static_assert(MOZ_ARRAY_LENGTH(sSurfaceMemoryReporterAttrs) ==
                  size_t(gfxSurfaceType::Max), "sSurfaceMemoryReporterAttrs exceeds max capacity");
-static_assert(uint32_t(CAIRO_SURFACE_TYPE_SKIA) ==
-                 uint32_t(gfxSurfaceType::Skia), "CAIRO_SURFACE_TYPE_SKIA not equal to gfxSurfaceType::Skia");
 
 /* Surface size memory reporting */
 

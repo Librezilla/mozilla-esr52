@@ -50,26 +50,16 @@ enum class gfxSurfaceType {
   PS,
   Xlib,
   Xcb,
-  Glitz,           // unused, but needed for cairo parity
   Quartz,
   Win32,
-  BeOS,
-  DirectFB,        // unused, but needed for cairo parity
-  SVG,
-  OS2,
   Win32Printing,
-  QuartzImage,
-  Script,
+  SVG,
   QPainter,
   Recording,
-  VG,
-  GL,
-  DRM,
-  Tee,
-  XML,
-  Skia,
   Subsurface,
-  Max
+  Max,
+  Invalid = Max,
+  First = 0
 };
 
 enum class gfxContentType {
