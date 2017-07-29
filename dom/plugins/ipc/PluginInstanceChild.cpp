@@ -183,7 +183,7 @@ PluginInstanceChild::PluginInstanceChild(const NPPluginFuncs* aPluginIface,
 #endif
     , mAccumulatedInvalidRect(0,0,0,0)
     , mIsTransparent(false)
-    , mSurfaceType(gfxSurfaceType::Max)
+    , mSurfaceType(gfxSurfaceType::Invalid)
     , mPendingPluginCall(false)
     , mDoAlphaExtraction(false)
     , mHasPainted(false)
@@ -3395,7 +3395,7 @@ PluginInstanceChild::DoAsyncSetWindow(const gfxSurfaceType& aSurfaceType,
 bool
 PluginInstanceChild::CreateOptSurface(void)
 {
-    MOZ_ASSERT(mSurfaceType != gfxSurfaceType::Max,
+    MOZ_ASSERT(mSurfaceType != gfxSurfaceType::Invalid,
                "Need a valid surface type here");
     NS_ASSERTION(!mCurrentSurface, "mCurrentSurfaceActor can get out of sync.");
 

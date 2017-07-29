@@ -202,7 +202,7 @@ template <>
 struct ParamTraits<gfxSurfaceType>
   : public ContiguousEnumSerializer<
              gfxSurfaceType,
-             gfxSurfaceType::Image,
+             gfxSurfaceType::First,
              gfxSurfaceType::Max>
 {};
 
