@@ -45,31 +45,21 @@ enum class gfxBreakPriority {
 };
 
 enum class gfxSurfaceType {
-  Image,
+  First = 0,
+  Image = First,
   PDF,
   PS,
   Xlib,
   Xcb,
-  Glitz,           // unused, but needed for cairo parity
   Quartz,
   Win32,
-  BeOS,
-  DirectFB,        // unused, but needed for cairo parity
   SVG,
-  OS2,
   Win32Printing,
-  QuartzImage,
-  Script,
   QPainter,
   Recording,
-  VG,
-  GL,
-  DRM,
-  Tee,
-  XML,
-  Skia,
   Subsurface,
-  Max
+  Max,
+  Invalid = Max
 };
 
 enum class gfxContentType {
