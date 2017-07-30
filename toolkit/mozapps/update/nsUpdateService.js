@@ -857,11 +857,6 @@ function acquireSDCardMountLock() {
   if (AppConstants.platform != "gonk") {
     throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   }
-  let volsvc = Cc["@mozilla.org/telephony/volume-service;1"].
-                    getService(Ci.nsIVolumeService);
-  if (volsvc) {
-    gSDCardMountLock = volsvc.createMountLock("sdcard");
-  }
 }
 
 /**

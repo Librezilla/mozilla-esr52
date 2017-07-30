@@ -154,7 +154,6 @@
 
 #if defined(MOZ_WIDGET_GONK)
 #include "nsVolume.h"
-#include "nsVolumeService.h"
 #include "SpeakerManagerService.h"
 #endif
 
@@ -2505,73 +2504,6 @@ ContentChild::RecvLastPrivateDocShellDestroyed()
 {
   nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
   obs->NotifyObservers(nullptr, "last-pb-context-exited", nullptr);
-  return true;
-}
-
-bool
-ContentChild::RecvVolumes(nsTArray<VolumeInfo>&& aVolumes)
-{
-#ifdef MOZ_WIDGET_GONK
-  RefPtr<nsVolumeService> vs = nsVolumeService::GetSingleton();
-  if (vs) {
-    vs->RecvVolumesFromParent(aVolumes);
-  }
-#endif
-  return true;
-}
-
-bool
-ContentChild::RecvFileSystemUpdate(const nsString& aFsName,
-                                   const nsString& aVolumeName,
-                                   const int32_t& aState,
-                                   const int32_t& aMountGeneration,
-                                   const bool& aIsMediaPresent,
-                                   const bool& aIsSharing,
-                                   const bool& aIsFormatting,
-                                   const bool& aIsFake,
-                                   const bool& aIsUnmounting,
-                                   const bool& aIsRemovable,
-                                   const bool& aIsHotSwappable)
-{
-#ifdef MOZ_WIDGET_GONK
-  RefPtr<nsVolume> volume = new nsVolume(aFsName, aVolumeName, aState,
-                                         aMountGeneration, aIsMediaPresent,
-                                         aIsSharing, aIsFormatting, aIsFake,
-                                         aIsUnmounting, aIsRemovable, aIsHotSwappable);
-
-  RefPtr<nsVolumeService> vs = nsVolumeService::GetSingleton();
-  if (vs) {
-    vs->UpdateVolume(volume);
-  }
-#else
-  // Remove warnings about unused arguments
-  Unused << aFsName;
-  Unused << aVolumeName;
-  Unused << aState;
-  Unused << aMountGeneration;
-  Unused << aIsMediaPresent;
-  Unused << aIsSharing;
-  Unused << aIsFormatting;
-  Unused << aIsFake;
-  Unused << aIsUnmounting;
-  Unused << aIsRemovable;
-  Unused << aIsHotSwappable;
-#endif
-  return true;
-}
-
-bool
-ContentChild::RecvVolumeRemoved(const nsString& aFsName)
-{
-#ifdef MOZ_WIDGET_GONK
-  RefPtr<nsVolumeService> vs = nsVolumeService::GetSingleton();
-  if (vs) {
-    vs->RemoveVolumeByName(aFsName);
-  }
-#else
-  // Remove warnings about unused arguments
-  Unused << aFsName;
-#endif
   return true;
 }
 

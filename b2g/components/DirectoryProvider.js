@@ -26,10 +26,6 @@ XPCOMUtils.defineLazyServiceGetter(Services, "um",
                                    "@mozilla.org/updates/update-manager;1",
                                    "nsIUpdateManager");
 
-XPCOMUtils.defineLazyServiceGetter(Services, "volumeService",
-                                   "@mozilla.org/telephony/volume-service;1",
-                                   "nsIVolumeService");
-
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "@mozilla.org/childprocessmessagemanager;1",
                                    "nsISyncMessageSender");
@@ -152,50 +148,11 @@ DirectoryProvider.prototype = {
 
   // The VolumeService only exists on the device, and not on desktop
   volumeHasFreeSpace: function dp_volumeHasFreeSpace(volumePath, requiredSpace) {
-    if (!volumePath) {
       return false;
-    }
-    if (!Services.volumeService) {
-      return false;
-    }
-    let volume = Services.volumeService.createOrGetVolumeByPath(volumePath);
-    if (!volume || volume.state !== Ci.nsIVolume.STATE_MOUNTED) {
-      return false;
-    }
-    let stat = volume.getStats();
-    if (!stat) {
-      return false;
-    }
-    return requiredSpace <= stat.freeBytes;
   },
 
   findUpdateDirWithFreeSpace: function dp_findUpdateDirWithFreeSpace(requiredSpace, subdir) {
-    if (!Services.volumeService) {
       return this.createUpdatesDir(LOCAL_DIR, subdir);
-    }
-
-    let activeUpdate = Services.um.activeUpdate;
-    if (gUseSDCard) {
-      if (this.volumeHasFreeSpace(gExtStorage, requiredSpace)) {
-        let extUpdateDir = this.createUpdatesDir(gExtStorage, subdir);
-        if (extUpdateDir !== null) {
-          return extUpdateDir;
-        }
-        log("Warning: " + gExtStorage + " has enough free space for update " +
-            activeUpdate.name + ", but is not writable");
-      }
-    }
-
-    if (this.volumeHasFreeSpace(LOCAL_DIR, requiredSpace)) {
-      let localUpdateDir = this.createUpdatesDir(LOCAL_DIR, subdir);
-      if (localUpdateDir !== null) {
-        return localUpdateDir;
-      }
-      log("Warning: " + LOCAL_DIR + " has enough free space for update " +
-          activeUpdate.name + ", but is not writable");
-    }
-
-    return null;
   },
 
   getUpdateDir: function dp_getUpdateDir(persistent, subdir, multiple) {
@@ -265,13 +222,6 @@ DirectoryProvider.prototype = {
     let path = gExtStorage;
     if (!path) {
       path = LOCAL_DIR;
-    }
-
-    if (Services.volumeService) {
-      let extVolume = Services.volumeService.createOrGetVolumeByPath(path);
-      if (!extVolume) {
-        path = LOCAL_DIR;
-      }
     }
 
     let dir = Cc["@mozilla.org/file/local;1"]
