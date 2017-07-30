@@ -653,12 +653,6 @@ StopDiskSpaceWatcher()
   PROXY_IF_SANDBOXED(StopDiskSpaceWatcher());
 }
 
-uint32_t
-GetTotalSystemMemory()
-{
-  return hal_impl::GetTotalSystemMemory();
-}
-
 nsresult StartSystemService(const char* aSvcName, const char* aArgs)
 {
   AssertMainThread();
