@@ -32,7 +32,6 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
     UNIFIED_SOURCES += [
         'android/AndroidAlarm.cpp',
         'android/AndroidSensor.cpp',
-        'linux/LinuxMemory.cpp',
     ]
     # AndroidHal.cpp cannot be built in unified mode because it relies on HalImpl.h.
     SOURCES += [
@@ -43,25 +42,21 @@ elif CONFIG['OS_TARGET'] == 'Linux':
         'fallback/FallbackAlarm.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'fallback/FallbackSensor.cpp',
-        'linux/LinuxMemory.cpp',
     ]
 elif CONFIG['OS_TARGET'] == 'WINNT':
     UNIFIED_SOURCES += [
         'fallback/FallbackAlarm.cpp',
-        'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'windows/WindowsSensor.cpp',
     ]
 elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
     UNIFIED_SOURCES += [
         'fallback/FallbackAlarm.cpp',
-        'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
     ]
 elif CONFIG['OS_TARGET'] in ('OpenBSD', 'NetBSD', 'FreeBSD', 'DragonFly'):
     UNIFIED_SOURCES += [
         'fallback/FallbackAlarm.cpp',
-        'fallback/FallbackMemory.cpp',
         'fallback/FallbackScreenConfiguration.cpp',
         'fallback/FallbackSensor.cpp',
     ]
