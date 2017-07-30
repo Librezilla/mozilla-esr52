@@ -1165,25 +1165,6 @@ window.addEventListener('ContentStart', function update_onContentStart() {
 })();
 
 if (isGonk) {
-  // Devices don't have all the same partition size for /cache where we
-  // store the http cache.
-  (function setHTTPCacheSize() {
-    let path = Services.prefs.getCharPref("browser.cache.disk.parent_directory");
-    let volumeService = Cc["@mozilla.org/telephony/volume-service;1"]
-                          .getService(Ci.nsIVolumeService);
-
-    let stats = volumeService.createOrGetVolumeByPath(path).getStats();
-
-    // We must set the size in KB, and keep a bit of free space.
-    let size = Math.floor(stats.totalBytes / 1024) - 1024;
-
-    // keep the default value if it is smaller than the physical partition size.
-    let oldSize = Services.prefs.getIntPref("browser.cache.disk.capacity");
-    if (size < oldSize) {
-      Services.prefs.setIntPref("browser.cache.disk.capacity", size);
-    }
-  })();
-
   try {
     let gmpService = Cc["@mozilla.org/gecko-media-plugin-service;1"]
                        .getService(Ci.mozIGeckoMediaPluginChromeService);

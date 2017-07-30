@@ -959,14 +959,6 @@ private:
 
   virtual bool RecvSpeakerManagerForceSpeaker(const bool& aEnable) override;
 
-  virtual bool RecvCreateFakeVolume(const nsString& aFsName,
-                                    const nsString& aMountPoint) override;
-
-  virtual bool RecvSetFakeVolumeState(const nsString& aFsName,
-                                      const int32_t& aFsState) override;
-
-  virtual bool RecvRemoveFakeVolume(const nsString& fsName) override;
-
   virtual bool RecvKeywordToURI(const nsCString& aKeyword,
                                 nsString* aProviderName,
                                 OptionalInputStreamParams* aPostData,

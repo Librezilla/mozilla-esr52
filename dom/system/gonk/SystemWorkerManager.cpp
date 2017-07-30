@@ -24,7 +24,6 @@
 
 #include "jsfriendapi.h"
 #include "mozilla/dom/workers/Workers.h"
-#include "AutoMounter.h"
 #include "TimeZoneSettingObserver.h"
 #include "AudioManager.h"
 #include "mozilla/dom/ScriptSettings.h"
@@ -83,7 +82,6 @@ SystemWorkerManager::Init()
 
   InitKeyStore();
 
-  InitAutoMounter();
   InitializeTimeZoneSettingObserver();
   nsCOMPtr<nsIAudioManager> audioManager =
     do_GetService(NS_AUDIOMANAGER_CONTRACTID);
@@ -109,8 +107,6 @@ SystemWorkerManager::Shutdown()
   NS_ASSERTION(NS_IsMainThread(), "Wrong thread!");
 
   mShutdown = true;
-
-  ShutdownAutoMounter();
 
   nsCOMPtr<nsIWifi> wifi(do_QueryInterface(mWifiWorker));
   if (wifi) {

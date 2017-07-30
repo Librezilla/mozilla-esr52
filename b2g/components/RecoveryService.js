@@ -90,21 +90,7 @@ RecoveryService.prototype = {
 
     log("factoryReset " + reason);
     let commands = [];
-    if (reason == "wipe") {
-      let volumeService = Cc["@mozilla.org/telephony/volume-service;1"]
-                          .getService(Ci.nsIVolumeService);
-      let volNames = volumeService.getVolumeNames();
-      log("Found " + volNames.length + " volumes");
-
-      for (let i = 0; i < volNames.length; i++) {
-        let name = volNames.queryElementAt(i, Ci.nsISupportsString);
-        let volume = volumeService.getVolumeByName(name.data);
-        log("Got volume: " + name.data + " at " + volume.mountPoint);
-        commands.push("wipe " + volume.mountPoint);
-      }
-    } else if (reason == "root") {
       commands.push("root");
-    }
 
     if (commands.length > 0) {
       Cu.import("resource://gre/modules/osfile.jsm");

@@ -1187,7 +1187,6 @@ values.h
 varargs.h
 vcclr.h
 View.h
-Volume.h
 wab.h
 wait.h
 wchar.h

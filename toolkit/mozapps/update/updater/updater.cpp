@@ -111,7 +111,6 @@ struct UpdateServerThreadArgs
 #endif
 
 #if defined(MOZ_WIDGET_GONK)
-# include "automounter_gonk.h"
 # include <unistd.h>
 # include <android/log.h>
 # include <linux/ioprio.h>
@@ -3451,13 +3450,6 @@ int NS_main(int argc, NS_tchar **argv)
   // calling LogFinish() before the GonkAutoMounter destructor has a chance
   // to be called
   {
-#if !defined(TEST_UPDATER)
-    GonkAutoMounter mounter;
-    if (mounter.GetAccess() != MountAccess::ReadWrite) {
-      WriteStatusFile(FILESYSTEM_MOUNT_READWRITE_ERROR);
-      return 1;
-    }
-#endif
 #endif
 
   if (sStagedUpdate) {
