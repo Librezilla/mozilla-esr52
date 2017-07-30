@@ -312,13 +312,6 @@ void StartDiskSpaceWatcher();
 void StopDiskSpaceWatcher();
 
 /**
- * Get total system memory of device being run on in bytes.
- *
- * Returns 0 if we are unable to determine this information from /proc/meminfo.
- */
-uint32_t GetTotalSystemMemory();
-
-/**
  * Start the system service with the specified name and arguments.
  */
 nsresult StartSystemService(const char* aSvcName, const char* aArgs);
