@@ -17,9 +17,6 @@ Cu.import("resource://gre/modules/DownloadsIPC.jsm");
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "@mozilla.org/childprocessmessagemanager;1",
                                    "nsIMessageSender");
-XPCOMUtils.defineLazyServiceGetter(this, "volumeService",
-                                   "@mozilla.org/telephony/volume-service;1",
-                                    "nsIVolumeService");
 
 /**
   * The content process implementations of navigator.mozDownloadManager and its
@@ -139,20 +136,8 @@ DOMDownloadManagerImpl.prototype = {
         return;
       }
 
-      // Convert storageName/storagePath to a local filesystem path.
-      let volume;
-      // getVolumeByName throws if you give it something it doesn't like
-      // because XPConnect converts the NS_ERROR_NOT_AVAILABLE to an
-      // exception.  So catch it.
-      try {
-        volume = volumeService.getVolumeByName(aAdoptDownloadDict.storageName);
-      } catch (ex) {}
-      if (!volume) {
-        debug("Invalid storage name: " + aAdoptDownloadDict.storageName);
-        aReject("InvalidDownload");
-        return;
-      }
-      let computedPath = volume.mountPoint + '/' +
+      // FIXME: compute $HOME/Download/ here
+      let computedPath = "/var/dowload/" +
                            aAdoptDownloadDict.storagePath;
       // We validate that there is actually a file at the given path in the
       // parent process in DownloadsAPI.js because that's where the file
@@ -406,19 +391,6 @@ DOMDownloadImpl.prototype = {
         }
       });
       // Now get the path for this storage area.
-      let volume;
-      if (preferredStorageName) {
-        let volume = volumeService.getVolumeByName(preferredStorageName);
-        if (volume) {
-          // Finally, create the relative path of the file that can be used
-          // later on to retrieve the file via DeviceStorage. Our path
-          // needs to omit the starting '/'.
-          this.storageName = preferredStorageName;
-          this.storagePath =
-            this.path.substring(this.path.indexOf(volume.mountPoint) +
-                                volume.mountPoint.length + 1);
-        }
-      }
     }
 
     if (aDownload.error) {
