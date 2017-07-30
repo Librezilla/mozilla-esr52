@@ -30,14 +30,12 @@ XPIDL_MODULE = 'dom_system_gonk'
 
 EXPORTS += [
     'GeolocationUtil.h',
-    'GonkGPSGeolocationProvider.h',
     'SystemProperty.h',
 ]
 UNIFIED_SOURCES += [
     'AudioChannelManager.cpp',
     'AudioManager.cpp',
     'GeolocationUtil.cpp',
-    'GonkGPSGeolocationProvider.cpp',
     'NetIdManager.cpp',
     'NetworkUtils.cpp',
     'NetworkWorker.cpp',
