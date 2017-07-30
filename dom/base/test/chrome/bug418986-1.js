@@ -24,7 +24,6 @@ var test = function (isContent) {
     ["screen.height", "innerHeight"],
     ["screen.orientation.type", "'landscape-primary'"],
     ["screen.orientation.angle", 0],
-    ["screen.mozOrientation", "'landscape-primary'"],
     ["devicePixelRatio", 1]
   ];
 

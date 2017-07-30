@@ -18,7 +18,6 @@
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/TabChild.h"
 #include "mozilla/dom/ProfileTimelineMarkerBinding.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/dom/ToJSValue.h"
 #include "mozilla/dom/PermissionMessageUtils.h"
 #include "mozilla/dom/workers/ServiceWorkerManager.h"
@@ -770,7 +769,6 @@ nsDocShell::nsDocShell()
   , mPreviousTransIndex(-1)
   , mLoadedTransIndex(-1)
   , mSandboxFlags(0)
-  , mOrientationLock(eScreenOrientation_None)
   , mFullscreenAllowed(CHECK_ATTRIBUTES)
   , mCreated(false)
   , mAllowSubframes(true)
@@ -2621,18 +2619,6 @@ nsDocShell::SetFullscreenAllowed(bool aFullscreenAllowed)
   }
   mFullscreenAllowed = (aFullscreenAllowed ? PARENT_ALLOWS : PARENT_PROHIBITS);
   return NS_OK;
-}
-
-ScreenOrientationInternal
-nsDocShell::OrientationLock()
-{
-  return mOrientationLock;
-}
-
-void
-nsDocShell::SetOrientationLock(ScreenOrientationInternal aOrientationLock)
-{
-  mOrientationLock = aOrientationLock;
 }
 
 NS_IMETHODIMP
@@ -6232,7 +6218,6 @@ nsDocShell::SetIsActive(bool aIsActive)
         if (!parent) {
           // We only care about the top-level browsing context.
           uint16_t orientation = OrientationLock();
-          ScreenOrientation::UpdateActiveOrientationLock(orientation);
         }
       }
 
@@ -10585,24 +10570,6 @@ nsDocShell::InternalLoad(nsIURI* aURI,
                                        &shouldLoad);
     if (NS_SUCCEEDED(rv) && !shouldLoad) {
       return NS_OK;
-    }
-  }
-
-  // Whenever a top-level browsing context is navigated, the user agent MUST
-  // lock the orientation of the document to the document's default
-  // orientation. We don't explicitly check for a top-level browsing context
-  // here because orientation is only set on top-level browsing contexts.
-  // We make an exception for apps because they currently rely on
-  // orientation locks persisting across browsing contexts.
-  if (OrientationLock() != eScreenOrientation_None && !GetIsApp()) {
-#ifdef DEBUG
-    nsCOMPtr<nsIDocShellTreeItem> parent;
-    GetSameTypeParent(getter_AddRefs(parent));
-    MOZ_ASSERT(!parent);
-#endif
-    SetOrientationLock(eScreenOrientation_None);
-    if (mIsActive) {
-      ScreenOrientation::UpdateActiveOrientationLock(eScreenOrientation_None);
     }
   }
 

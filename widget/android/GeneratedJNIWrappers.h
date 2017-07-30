@@ -361,25 +361,6 @@ public:
 
     static auto DisableNetworkNotifications() -> void;
 
-    struct DisableScreenOrientationNotifications_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "disableScreenOrientationNotifications";
-        static constexpr char signature[] =
-                "()V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto DisableScreenOrientationNotifications() -> void;
-
     struct DisableSensor_t {
         typedef GeckoAppShell Owner;
         typedef void ReturnType;
@@ -458,25 +439,6 @@ public:
     };
 
     static auto EnableNetworkNotifications() -> void;
-
-    struct EnableScreenOrientationNotifications_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "enableScreenOrientationNotifications";
-        static constexpr char signature[] =
-                "()V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto EnableScreenOrientationNotifications() -> void;
 
     struct EnableSensor_t {
         typedef GeckoAppShell Owner;
@@ -835,25 +797,6 @@ public:
 
     static auto GetProxyForURI(mozilla::jni::String::Param, mozilla::jni::String::Param, mozilla::jni::String::Param, int32_t) -> mozilla::jni::String::LocalRef;
 
-    struct GetScreenAngle_t {
-        typedef GeckoAppShell Owner;
-        typedef int32_t ReturnType;
-        typedef int32_t SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "getScreenAngle";
-        static constexpr char signature[] =
-                "()I";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto GetScreenAngle() -> int32_t;
-
     struct GetScreenDepth_t {
         typedef GeckoAppShell Owner;
         typedef int32_t ReturnType;
@@ -872,25 +815,6 @@ public:
     };
 
     static auto GetScreenDepth() -> int32_t;
-
-    struct GetScreenOrientation_t {
-        typedef GeckoAppShell Owner;
-        typedef int16_t ReturnType;
-        typedef int16_t SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "getScreenOrientation";
-        static constexpr char signature[] =
-                "()S";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto GetScreenOrientation() -> int16_t;
 
     struct GetScreenSize_t {
         typedef GeckoAppShell Owner;
@@ -1127,26 +1051,6 @@ public:
     };
 
     static auto LoadPluginClass(mozilla::jni::String::Param, mozilla::jni::String::Param) -> mozilla::jni::Class::LocalRef;
-
-    struct LockScreenOrientation_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int32_t> Args;
-        static constexpr char name[] = "lockScreenOrientation";
-        static constexpr char signature[] =
-                "(I)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto LockScreenOrientation(int32_t) -> void;
 
     struct MarkURIVisited_t {
         typedef GeckoAppShell Owner;
@@ -1619,25 +1523,6 @@ public:
 
     static auto UnlockProfile() -> bool;
 
-    struct UnlockScreenOrientation_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "unlockScreenOrientation";
-        static constexpr char signature[] =
-                "()V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto UnlockScreenOrientation() -> void;
-
     static const mozilla::jni::CallingThread callingThread =
             mozilla::jni::CallingThread::ANY;
 
@@ -2063,38 +1948,6 @@ public:
         static constexpr char name[] = "onStatusChanged";
         static constexpr char signature[] =
                 "(Ljava/lang/String;)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::ANY;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::GECKO;
-    };
-
-    static const mozilla::jni::CallingThread callingThread =
-            mozilla::jni::CallingThread::ANY;
-
-    template<class Impl> class Natives;
-};
-
-class GeckoScreenOrientation : public mozilla::jni::ObjectBase<GeckoScreenOrientation>
-{
-public:
-    static const char name[];
-
-    explicit GeckoScreenOrientation(const Context& ctx) : ObjectBase<GeckoScreenOrientation>(ctx) {}
-
-    struct OnOrientationChange_t {
-        typedef GeckoScreenOrientation Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int16_t,
-                int16_t> Args;
-        static constexpr char name[] = "onOrientationChange";
-        static constexpr char signature[] =
-                "(SS)V";
         static const bool isStatic = true;
         static const mozilla::jni::ExceptionMode exceptionMode =
                 mozilla::jni::ExceptionMode::ABORT;

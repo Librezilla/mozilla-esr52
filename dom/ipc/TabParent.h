@@ -638,7 +638,6 @@ protected:
 
   nsIntRect mRect;
   ScreenIntSize mDimensions;
-  ScreenOrientationInternal mOrientation;
   float mDPI;
   int32_t mRounding;
   CSSToLayoutDeviceScale mDefaultScale;

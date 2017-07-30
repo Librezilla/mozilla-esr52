@@ -2416,8 +2416,6 @@ GeckoDriver.prototype.takeScreenshot = function (cmd, resp) {
  */
 GeckoDriver.prototype.getScreenOrientation = function (cmd, resp) {
   assert.fennec();
-
-  resp.body.value = this.getCurrentWindow().screen.mozOrientation;
 };
 
 /**
@@ -2445,11 +2443,6 @@ GeckoDriver.prototype.setScreenOrientation = function (cmd, resp) {
   let mozOr = or.toLowerCase();
   if (!ors.includes(mozOr)) {
     throw new InvalidArgumentError(`Unknown screen orientation: ${or}`);
-  }
-
-  let win = this.getCurrentWindow();
-  if (!win.screen.mozLockOrientation(mozOr)) {
-    throw new WebDriverError(`Unable to set screen orientation: ${or}`);
   }
 };
 

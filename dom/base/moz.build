@@ -206,7 +206,6 @@ EXPORTS.mozilla.dom += [
     'ProcessGlobal.h',
     'ResponsiveImageSelector.h',
     'SameProcessMessageQueue.h',
-    'ScreenOrientation.h',
     'ScriptSettings.h',
     'ShadowRoot.h',
     'StructuredCloneHolder.h',
@@ -219,7 +218,6 @@ EXPORTS.mozilla.dom += [
     'TreeWalker.h',
     'WebKitCSSMatrix.h',
     'WebSocket.h',
-    'WindowOrientationObserver.h',
 ]
 
 UNIFIED_SOURCES += [
@@ -352,7 +350,6 @@ UNIFIED_SOURCES += [
     'ProcessGlobal.cpp',
     'ResponsiveImageSelector.cpp',
     'SameProcessMessageQueue.cpp',
-    'ScreenOrientation.cpp',
     'ScriptSettings.cpp',
     'ShadowRoot.cpp',
     'StructuredCloneHolder.cpp',
@@ -367,7 +364,6 @@ UNIFIED_SOURCES += [
     'WebKitCSSMatrix.cpp',
     'WebSocket.cpp',
     'WindowNamedPropertiesHandler.cpp',
-    'WindowOrientationObserver.cpp',
 ]
 
 if CONFIG['MOZ_WEBRTC']:

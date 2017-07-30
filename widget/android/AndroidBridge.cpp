@@ -32,7 +32,6 @@
 #include "nsPresContext.h"
 #include "nsIDocShell.h"
 #include "nsPIDOMWindow.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "nsIDOMWindowUtils.h"
 #include "nsIDOMClientRect.h"
 #include "mozilla/ClearOnShutdown.h"
@@ -787,25 +786,6 @@ nsAndroidBridge::RemoveObservers()
         obs->RemoveObserver(this, "media-playback");
     }
   }
-}
-
-uint32_t
-AndroidBridge::GetScreenOrientation()
-{
-    ALOG_BRIDGE("AndroidBridge::GetScreenOrientation");
-
-    int16_t orientation = GeckoAppShell::GetScreenOrientation();
-
-    if (!orientation)
-        return dom::eScreenOrientation_None;
-
-    return static_cast<dom::ScreenOrientationInternal>(orientation);
-}
-
-uint16_t
-AndroidBridge::GetScreenAngle()
-{
-    return GeckoAppShell::GetScreenAngle();
 }
 
 nsresult

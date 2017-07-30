@@ -127,14 +127,6 @@ auto GeckoAppShell::DisableNetworkNotifications() -> void
     return mozilla::jni::Method<DisableNetworkNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
-constexpr char GeckoAppShell::DisableScreenOrientationNotifications_t::name[];
-constexpr char GeckoAppShell::DisableScreenOrientationNotifications_t::signature[];
-
-auto GeckoAppShell::DisableScreenOrientationNotifications() -> void
-{
-    return mozilla::jni::Method<DisableScreenOrientationNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 constexpr char GeckoAppShell::DisableSensor_t::name[];
 constexpr char GeckoAppShell::DisableSensor_t::signature[];
 
@@ -165,14 +157,6 @@ constexpr char GeckoAppShell::EnableNetworkNotifications_t::signature[];
 auto GeckoAppShell::EnableNetworkNotifications() -> void
 {
     return mozilla::jni::Method<EnableNetworkNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::EnableScreenOrientationNotifications_t::name[];
-constexpr char GeckoAppShell::EnableScreenOrientationNotifications_t::signature[];
-
-auto GeckoAppShell::EnableScreenOrientationNotifications() -> void
-{
-    return mozilla::jni::Method<EnableScreenOrientationNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
 constexpr char GeckoAppShell::EnableSensor_t::name[];
@@ -319,28 +303,12 @@ auto GeckoAppShell::GetProxyForURI(mozilla::jni::String::Param a0, mozilla::jni:
     return mozilla::jni::Method<GetProxyForURI_t>::Call(GeckoAppShell::Context(), nullptr, a0, a1, a2, a3);
 }
 
-constexpr char GeckoAppShell::GetScreenAngle_t::name[];
-constexpr char GeckoAppShell::GetScreenAngle_t::signature[];
-
-auto GeckoAppShell::GetScreenAngle() -> int32_t
-{
-    return mozilla::jni::Method<GetScreenAngle_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 constexpr char GeckoAppShell::GetScreenDepth_t::name[];
 constexpr char GeckoAppShell::GetScreenDepth_t::signature[];
 
 auto GeckoAppShell::GetScreenDepth() -> int32_t
 {
     return mozilla::jni::Method<GetScreenDepth_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::GetScreenOrientation_t::name[];
-constexpr char GeckoAppShell::GetScreenOrientation_t::signature[];
-
-auto GeckoAppShell::GetScreenOrientation() -> int16_t
-{
-    return mozilla::jni::Method<GetScreenOrientation_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
 constexpr char GeckoAppShell::GetScreenSize_t::name[];
@@ -437,14 +405,6 @@ constexpr char GeckoAppShell::LoadPluginClass_t::signature[];
 auto GeckoAppShell::LoadPluginClass(mozilla::jni::String::Param a0, mozilla::jni::String::Param a1) -> mozilla::jni::Class::LocalRef
 {
     return mozilla::jni::Method<LoadPluginClass_t>::Call(GeckoAppShell::Context(), nullptr, a0, a1);
-}
-
-constexpr char GeckoAppShell::LockScreenOrientation_t::name[];
-constexpr char GeckoAppShell::LockScreenOrientation_t::signature[];
-
-auto GeckoAppShell::LockScreenOrientation(int32_t a0) -> void
-{
-    return mozilla::jni::Method<LockScreenOrientation_t>::Call(GeckoAppShell::Context(), nullptr, a0);
 }
 
 constexpr char GeckoAppShell::MarkURIVisited_t::name[];
@@ -591,14 +551,6 @@ auto GeckoAppShell::UnlockProfile() -> bool
     return mozilla::jni::Method<UnlockProfile_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
-constexpr char GeckoAppShell::UnlockScreenOrientation_t::name[];
-constexpr char GeckoAppShell::UnlockScreenOrientation_t::signature[];
-
-auto GeckoAppShell::UnlockScreenOrientation() -> void
-{
-    return mozilla::jni::Method<UnlockScreenOrientation_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 const char GeckoAppShell::CameraCallback::name[] =
         "org/mozilla/gecko/GeckoAppShell$CameraCallback";
 
@@ -704,12 +656,6 @@ constexpr char GeckoNetworkManager::OnConnectionChanged_t::signature[];
 
 constexpr char GeckoNetworkManager::OnStatusChanged_t::name[];
 constexpr char GeckoNetworkManager::OnStatusChanged_t::signature[];
-
-const char GeckoScreenOrientation::name[] =
-        "org/mozilla/gecko/GeckoScreenOrientation";
-
-constexpr char GeckoScreenOrientation::OnOrientationChange_t::name[];
-constexpr char GeckoScreenOrientation::OnOrientationChange_t::signature[];
 
 const char GeckoThread::name[] =
         "org/mozilla/gecko/GeckoThread";

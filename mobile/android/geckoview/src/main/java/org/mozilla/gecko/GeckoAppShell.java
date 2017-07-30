@@ -490,7 +490,6 @@ public class GeckoAppShell
             switch (sensor_type) {
             case Sensor.TYPE_ACCELEROMETER:
             case Sensor.TYPE_LINEAR_ACCELERATION:
-            case Sensor.TYPE_ORIENTATION:
                 if (sensor_type == Sensor.TYPE_ACCELEROMETER) {
                     hal_type = GeckoHalDefines.SENSOR_ACCELERATION;
                 } else if (sensor_type == Sensor.TYPE_LINEAR_ACCELERATION) {
@@ -655,18 +654,6 @@ public class GeckoAppShell
               break;
             }
             // Fallthrough
-
-        case GeckoHalDefines.SENSOR_ORIENTATION:
-            if (gOrientationSensor == null) {
-                gOrientationSensor = sm.getDefaultSensor(
-                    Sensor.TYPE_ORIENTATION);
-            }
-            if (gOrientationSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gOrientationSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            break;
 
         case GeckoHalDefines.SENSOR_ACCELERATION:
             if (gAccelerometerSensor == null) {

@@ -8,7 +8,6 @@
 #include "WindowIdentifier.h"
 #include "AndroidBridge.h"
 #include "mozilla/dom/network/Constants.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "nsIScreenManager.h"
 #include "nsServiceManagerUtils.h"
 
@@ -41,13 +40,11 @@ GetCurrentNetworkInformation(hal::NetworkInformation* aNetworkInfo)
 void
 EnableScreenConfigurationNotifications()
 {
-  java::GeckoAppShell::EnableScreenOrientationNotifications();
 }
 
 void
 DisableScreenConfigurationNotifications()
 {
-  java::GeckoAppShell::DisableScreenOrientationNotifications();
 }
 
 void
@@ -69,48 +66,16 @@ GetCurrentScreenConfiguration(ScreenConfiguration* aScreenConfiguration)
   nsIntRect rect;
   int32_t colorDepth, pixelDepth;
   int16_t angle;
-  ScreenOrientationInternal orientation;
   nsCOMPtr<nsIScreen> screen;
 
   screenMgr->GetPrimaryScreen(getter_AddRefs(screen));
   screen->GetRect(&rect.x, &rect.y, &rect.width, &rect.height);
   screen->GetColorDepth(&colorDepth);
   screen->GetPixelDepth(&pixelDepth);
-  orientation = static_cast<ScreenOrientationInternal>(bridge->GetScreenOrientation());
-  angle = bridge->GetScreenAngle();
+  angle = 0;
 
   *aScreenConfiguration =
-    hal::ScreenConfiguration(rect, orientation, angle, colorDepth, pixelDepth);
-}
-
-bool
-LockScreenOrientation(const ScreenOrientationInternal& aOrientation)
-{
-  // Force the default orientation to be portrait-primary.
-  ScreenOrientationInternal orientation =
-    aOrientation == eScreenOrientation_Default ? eScreenOrientation_PortraitPrimary
-                                               : aOrientation;
-
-  switch (orientation) {
-    // The Android backend only supports these orientations.
-    case eScreenOrientation_PortraitPrimary:
-    case eScreenOrientation_PortraitSecondary:
-    case eScreenOrientation_PortraitPrimary | eScreenOrientation_PortraitSecondary:
-    case eScreenOrientation_LandscapePrimary:
-    case eScreenOrientation_LandscapeSecondary:
-    case eScreenOrientation_LandscapePrimary | eScreenOrientation_LandscapeSecondary:
-    case eScreenOrientation_Default:
-      java::GeckoAppShell::LockScreenOrientation(orientation);
-      return true;
-    default:
-      return false;
-  }
-}
-
-void
-UnlockScreenOrientation()
-{
-  java::GeckoAppShell::UnlockScreenOrientation();
+    hal::ScreenConfiguration(rect, angle, colorDepth, pixelDepth);
 }
 
 } // hal_impl

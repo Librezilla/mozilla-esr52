@@ -51,7 +51,6 @@ using namespace mozilla::dom;
 #include "android_npapi.h"
 #include "mozilla/Mutex.h"
 #include "mozilla/CondVar.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/Hal.h"
 #include "GLContextProvider.h"
 #include "GLContext.h"
@@ -115,7 +114,6 @@ nsNPAPIPluginInstance::nsNPAPIPluginInstance()
   : mDrawingModel(kDefaultDrawingModel)
 #ifdef MOZ_WIDGET_ANDROID
   , mANPDrawingModel(0)
-  , mFullScreenOrientation(dom::eScreenOrientation_LandscapePrimary)
   , mWakeLocked(false)
   , mFullScreen(false)
   , mOriginPos(gl::OriginPos::TopLeft)
@@ -786,10 +784,6 @@ void nsNPAPIPluginInstance::NotifyFullScreen(bool aFullScreen)
 
   mFullScreen = aFullScreen;
   SendLifecycleEvent(this, mFullScreen ? kEnterFullScreen_ANPLifecycleAction : kExitFullScreen_ANPLifecycleAction);
-
-  if (mFullScreen && mFullScreenOrientation != dom::eScreenOrientation_None) {
-    java::GeckoAppShell::LockScreenOrientation(mFullScreenOrientation);
-  }
 }
 
 void nsNPAPIPluginInstance::NotifySize(nsIntSize size)
@@ -831,27 +825,6 @@ void nsNPAPIPluginInstance::PostEvent(void* event)
   mPostedEvents.AppendElement(RefPtr<PluginEventRunnable>(r));
 
   NS_DispatchToMainThread(r);
-}
-
-void nsNPAPIPluginInstance::SetFullScreenOrientation(uint32_t orientation)
-{
-  if (mFullScreenOrientation == orientation)
-    return;
-
-  uint32_t oldOrientation = mFullScreenOrientation;
-  mFullScreenOrientation = orientation;
-
-  if (mFullScreen) {
-    // We're already fullscreen so immediately apply the orientation change
-
-    if (mFullScreenOrientation != dom::eScreenOrientation_None) {
-      java::GeckoAppShell::LockScreenOrientation(mFullScreenOrientation);
-    } else if (oldOrientation != dom::eScreenOrientation_None) {
-      // We applied an orientation when we entered fullscreen, but
-      // we don't want it anymore
-      java::GeckoAppShell::UnlockScreenOrientation();
-    }
-  }
 }
 
 void nsNPAPIPluginInstance::PopPostedEvent(PluginEventRunnable* r)

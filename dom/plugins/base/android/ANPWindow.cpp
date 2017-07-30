@@ -10,7 +10,6 @@
 #include "nsNPAPIPluginInstance.h"
 #include "nsPluginInstanceOwner.h"
 #include "nsWindow.h"
-#include "mozilla/dom/ScreenOrientation.h"
 
 #undef LOG
 #define LOG(args...)  __android_log_print(ANDROID_LOG_INFO, "GeckoPlugins" , ## args)
@@ -100,35 +99,6 @@ anp_window_visibleRect(NPP instance)
   return rect;
 }
 
-void anp_window_requestFullScreenOrientation(NPP instance, ANPScreenOrientation orientation)
-{
-  short newOrientation;
-
-  // Convert to the ActivityInfo equivalent
-  switch (orientation) {
-    case kFixedLandscape_ANPScreenOrientation:
-      newOrientation = eScreenOrientation_LandscapePrimary;
-      break;
-    case kFixedPortrait_ANPScreenOrientation:
-      newOrientation = eScreenOrientation_PortraitPrimary;
-      break;
-    case kLandscape_ANPScreenOrientation:
-      newOrientation = eScreenOrientation_LandscapePrimary |
-                       eScreenOrientation_LandscapeSecondary;
-      break;
-    case kPortrait_ANPScreenOrientation:
-      newOrientation = eScreenOrientation_PortraitPrimary |
-                       eScreenOrientation_PortraitSecondary;
-      break;
-    default:
-      newOrientation = eScreenOrientation_None;
-      break;
-  }
-
-  nsNPAPIPluginInstance* pinst = static_cast<nsNPAPIPluginInstance*>(instance->ndata);
-  pinst->SetFullScreenOrientation(newOrientation);
-}
-
 void InitWindowInterface(ANPWindowInterfaceV0 *i) {
   _assert(i->inSize == sizeof(*i));
   ASSIGN(i, setVisibleRects);
@@ -148,5 +118,4 @@ void InitWindowInterfaceV2(ANPWindowInterfaceV2 *i) {
   ASSIGN(i, exitFullScreen);
   ASSIGN(i, requestCenterFitZoom);
   ASSIGN(i, visibleRect);
-  ASSIGN(i, requestFullScreenOrientation);
 }

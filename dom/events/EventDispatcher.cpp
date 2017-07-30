@@ -26,7 +26,6 @@
 #include "mozilla/ContentEvents.h"
 #include "mozilla/dom/CloseEvent.h"
 #include "mozilla/dom/CustomEvent.h"
-#include "mozilla/dom/DeviceOrientationEvent.h"
 #include "mozilla/dom/EventTarget.h"
 #include "mozilla/dom/FocusEvent.h"
 #include "mozilla/dom/HashChangeEvent.h"
@@ -912,14 +911,6 @@ EventDispatcher::CreateEvent(EventTarget* aOwner,
   if (aEventType.LowerCaseEqualsLiteral("mutationevents")) {
     LOG_EVENT_CREATION(MUTATIONEVENTS);
     return NS_NewDOMMutationEvent(aOwner, aPresContext, nullptr);
-  }
-  if (aEventType.LowerCaseEqualsLiteral("deviceorientationevent")) {
-    LOG_EVENT_CREATION(DEVICEORIENTATIONEVENT);
-    DeviceOrientationEventInit init;
-    RefPtr<Event> event =
-      DeviceOrientationEvent::Constructor(aOwner, EmptyString(), init);
-    event->MarkUninitialized();
-    return event.forget();
   }
   if (aEventType.LowerCaseEqualsLiteral("devicemotionevent")) {
     LOG_EVENT_CREATION(DEVICEMOTIONEVENT);

@@ -59,7 +59,6 @@ using class mozilla::WidgetSelectionEvent from "ipc/nsGUIEventIPC.h";
 using class mozilla::WidgetTouchEvent from "ipc/nsGUIEventIPC.h";
 using class mozilla::WidgetPluginEvent from "ipc/nsGUIEventIPC.h";
 using struct mozilla::dom::RemoteDOMEvent from "mozilla/dom/TabMessageUtils.h";
-using mozilla::dom::ScreenOrientationInternal from "mozilla/dom/ScreenOrientation.h";
 using struct mozilla::layers::TextureFactoryIdentifier from "mozilla/layers/CompositorTypes.h";
 using mozilla::CSSToScreenScale from "Units.h";
 using mozilla::CommandInt from "mozilla/EventForwards.h";
@@ -640,7 +639,6 @@ child:
     async LoadURL(nsCString uri, ShowInfo info);
 
     async UpdateDimensions(CSSRect rect, CSSSize size,
-                           ScreenOrientationInternal orientation,
                            LayoutDeviceIntPoint clientOffset,
                            LayoutDeviceIntPoint chromeDisp) compressall;
 

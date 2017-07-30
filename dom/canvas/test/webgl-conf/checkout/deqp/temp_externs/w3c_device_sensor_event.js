@@ -26,36 +26,6 @@
 
 /**
  * @constructor
- * @extends {Event}
- */
-function DeviceOrientationEvent() {}
-
-/** @type {?number} */
-DeviceOrientationEvent.prototype.alpha;
-
-/** @type {?number} */
-DeviceOrientationEvent.prototype.beta;
-
-/** @type {?number} */
-DeviceOrientationEvent.prototype.gamma;
-
-/** @type {boolean} */
-DeviceOrientationEvent.prototype.absolute;
-
-/**
- * @type {?number}
- * @see https://developer.apple.com/library/safari/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html#//apple_ref/javascript/instp/DeviceOrientationEvent/webkitCompassAccuracy
- */
-DeviceOrientationEvent.prototype.webkitCompassAccuracy;
-
-/**
- * @type {?number}
- * @see https://developer.apple.com/library/safari/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html#//apple_ref/javascript/instp/DeviceOrientationEvent/webkitCompassHeading
- */
-DeviceOrientationEvent.prototype.webkitCompassHeading;
-
-/**
- * @constructor
  */
 function DeviceAcceleration() {}
 

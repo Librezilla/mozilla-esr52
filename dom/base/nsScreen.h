@@ -119,10 +119,6 @@ public:
 
   IMPL_EVENT_HANDLER(mozorientationchange)
 
-  bool MozLockOrientation(const nsAString& aOrientation, ErrorResult& aRv);
-  bool MozLockOrientation(const mozilla::dom::Sequence<nsString>& aOrientations, ErrorResult& aRv);
-  void MozUnlockOrientation();
-
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
 
   mozilla::dom::ScreenOrientation* Orientation() const;

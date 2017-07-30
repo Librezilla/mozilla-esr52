@@ -595,14 +595,6 @@ WINDOW_ONLY_EVENT(devicemotion,
                   eDeviceMotion,
                   EventNameType_None,
                   eBasicEventClass)
-WINDOW_ONLY_EVENT(deviceorientation,
-                  eDeviceOrientation,
-                  EventNameType_None,
-                  eBasicEventClass)
-WINDOW_ONLY_EVENT(absolutedeviceorientation,
-                  eAbsoluteDeviceOrientation,
-                  EventNameType_None,
-                  eBasicEventClass)
 WINDOW_ONLY_EVENT(deviceproximity,
                   eDeviceProximity,
                   EventNameType_None,
