@@ -449,7 +449,6 @@ TabChild::TabChild(nsIContentChild* aManager,
   , mDidFakeShow(false)
   , mNotified(false)
   , mTriedBrowserInit(false)
-  , mOrientation(eScreenOrientation_PortraitPrimary)
   , mIgnoreKeyPressEvent(false)
   , mHasValidInnerSize(false)
   , mDestroyed(false)
@@ -1371,7 +1370,6 @@ TabChild::RecvShow(const ScreenIntSize& aSize,
 
 bool
 TabChild::RecvUpdateDimensions(const CSSRect& rect, const CSSSize& size,
-                               const ScreenOrientationInternal& orientation,
                                const LayoutDeviceIntPoint& clientOffset,
                                const LayoutDeviceIntPoint& chromeDisp)
 {

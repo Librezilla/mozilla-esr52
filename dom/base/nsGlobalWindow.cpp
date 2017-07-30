@@ -24,9 +24,6 @@
 #include "mozilla/dom/StorageEventBinding.h"
 #include "mozilla/dom/Timeout.h"
 #include "mozilla/IntegerPrintfMacros.h"
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-#include "mozilla/dom/WindowOrientationObserver.h"
-#endif
 #include "nsDOMOfflineResourceList.h"
 #include "nsError.h"
 #include "nsIIdleService.h"
@@ -13716,27 +13713,6 @@ nsGlobalWindow::RestoreWindowState(nsISupports *aState)
   return NS_OK;
 }
 
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-void
-nsGlobalWindow::EnableOrientationChangeListener()
-{
-  MOZ_ASSERT(IsInnerWindow());
-  if (!nsContentUtils::ShouldResistFingerprinting(mDocShell) &&
-      !mOrientationChangeObserver) {
-    mOrientationChangeObserver =
-      new WindowOrientationObserver(this);
-  }
-}
-
-void
-nsGlobalWindow::DisableOrientationChangeListener()
-{
-  MOZ_ASSERT(IsInnerWindow());
-
-  mOrientationChangeObserver = nullptr;
-}
-#endif
-
 void
 nsGlobalWindow::SetHasGamepadEventListener(bool aHasGamepad/* = true*/)
 {
@@ -14608,15 +14584,6 @@ nsGlobalWindow::IsModalContentWindow(JSContext* aCx, JSObject* aGlobal)
 {
   return xpc::WindowOrNull(aGlobal)->IsModalContentWindow();
 }
-
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-int16_t
-nsGlobalWindow::Orientation(CallerType aCallerType) const
-{
-  return nsContentUtils::ResistFingerprinting(aCallerType) ?
-           0 : WindowOrientationObserver::OrientationAngle();
-}
-#endif
 
 Console*
 nsGlobalWindow::GetConsole(ErrorResult& aRv)

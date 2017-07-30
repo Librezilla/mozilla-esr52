@@ -183,11 +183,6 @@ public:
 
   void PostEvent(void* event);
 
-  // These are really mozilla::dom::ScreenOrientation, but it's
-  // difficult to include that here
-  uint32_t FullScreenOrientation() { return mFullScreenOrientation; }
-  void SetFullScreenOrientation(uint32_t orientation);
-
   void SetWakeLock(bool aLock);
 
   mozilla::gl::GLContext* GLContext();
@@ -356,7 +351,6 @@ protected:
   void PopPostedEvent(PluginEventRunnable* r);
   void OnSurfaceTextureFrameAvailable();
 
-  uint32_t mFullScreenOrientation;
   bool mWakeLocked;
   bool mFullScreen;
   mozilla::gl::OriginPos mOriginPos;

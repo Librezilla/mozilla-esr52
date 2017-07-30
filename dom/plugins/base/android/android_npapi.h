@@ -573,43 +573,12 @@ struct ANPWindowInterfaceV0 : ANPInterface {
     void    (*requestCenterFitZoom)(NPP instance);
 };
 
-enum ANPScreenOrientations {
-    /** No preference specified: let the system decide the best orientation.
-     */
-    kDefault_ANPScreenOrientation        = 0,
-    /** Would like to have the screen in a landscape orientation, but it will
-        not allow for 180 degree rotations.
-     */
-    kFixedLandscape_ANPScreenOrientation = 1,
-    /** Would like to have the screen in a portrait orientation, but it will
-        not allow for 180 degree rotations.
-     */
-    kFixedPortrait_ANPScreenOrientation  = 2,
-    /** Would like to have the screen in landscape orientation, but can use the
-        sensor to change which direction the screen is facing.
-     */
-    kLandscape_ANPScreenOrientation      = 3,
-    /** Would like to have the screen in portrait orientation, but can use the
-        sensor to change which direction the screen is facing.
-     */
-    kPortrait_ANPScreenOrientation       = 4
-};
-
-typedef int32_t ANPScreenOrientation;
-
 struct ANPWindowInterfaceV2 : ANPWindowInterfaceV0 {
     /** Returns a rectangle representing the visible area of the plugin on
         screen. The coordinates are relative to the size of the plugin in the
         document and therefore will never be negative or exceed the plugin's size.
      */
     ANPRectI (*visibleRect)(NPP instance);
-
-    /** Called when the plugin wants to specify a particular screen orientation
-        when entering into full screen mode. The orientation must be set prior
-        to entering into full screen.  After entering full screen any subsequent
-        changes will be updated the next time the plugin goes full screen.
-     */
-    void (*requestFullScreenOrientation)(NPP instance, ANPScreenOrientation orientation);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

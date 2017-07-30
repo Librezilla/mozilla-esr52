@@ -350,7 +350,6 @@ public:
   virtual bool
   RecvUpdateDimensions(const CSSRect& aRect,
                        const CSSSize& aSize,
-                       const ScreenOrientationInternal& aOrientation,
                        const LayoutDeviceIntPoint& aClientOffset,
                        const LayoutDeviceIntPoint& aChromeDisp) override;
   virtual bool
@@ -505,8 +504,6 @@ public:
   bool IsTransparent() const { return mIsTransparent; }
 
   void GetMaxTouchPoints(uint32_t* aTouchPoints);
-
-  ScreenOrientationInternal GetOrientation() const { return mOrientation; }
 
   void SetBackgroundColor(const nscolor& aColor);
 
@@ -766,7 +763,6 @@ private:
   bool mDidFakeShow;
   bool mNotified;
   bool mTriedBrowserInit;
-  ScreenOrientationInternal mOrientation;
 
   bool mIgnoreKeyPressEvent;
   RefPtr<APZEventState> mAPZEventState;

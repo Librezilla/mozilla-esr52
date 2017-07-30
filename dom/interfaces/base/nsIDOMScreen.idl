@@ -18,12 +18,4 @@ interface nsIDOMScreen : nsIDOMEventTarget
   readonly attribute long             availHeight;
   readonly attribute long             availLeft;
   readonly attribute long             availTop;
-
-  /**
-   * Returns the current screen orientation.
-   * Can be: landscape-primary, landscape-secondary,
-   *         portrait-primary or portrait-secondary.
-   */
-  [binaryname(SlowMozOrientation)]
-  readonly attribute DOMString       mozOrientation;
 };

@@ -158,13 +158,6 @@ public:
 
     void GetCurrentNetworkInformation(hal::NetworkInformation* aNetworkInfo);
 
-    // These methods don't use a ScreenOrientation because it's an
-    // enum and that would require including the header which requires
-    // include IPC headers which requires including basictypes.h which
-    // requires a lot of changes...
-    uint32_t GetScreenOrientation();
-    uint16_t GetScreenAngle();
-
     int GetAPIVersion() { return mAPIVersion; }
 
     nsresult GetProxyForURI(const nsACString & aSpec,

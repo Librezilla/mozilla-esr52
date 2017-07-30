@@ -747,7 +747,6 @@ TabParent::UpdateDimensions(const nsIntRect& rect, const ScreenIntSize& size)
 
   hal::ScreenConfiguration config;
   hal::GetCurrentScreenConfiguration(&config);
-  ScreenOrientationInternal orientation = config.orientation();
   LayoutDeviceIntPoint clientOffset = widget->GetClientOffset();
   LayoutDeviceIntPoint chromeOffset = -GetChildProcessOffset();
 
