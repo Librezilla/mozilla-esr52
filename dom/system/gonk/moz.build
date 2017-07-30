@@ -23,10 +23,6 @@ XPIDL_SOURCES += [
     'nsINetworkWorker.idl',
     'nsISystemWorkerManager.idl',
     'nsITetheringService.idl',
-    'nsIVolume.idl',
-    'nsIVolumeMountLock.idl',
-    'nsIVolumeService.idl',
-    'nsIVolumeStat.idl',
     'nsIWorkerHolder.idl',
 ]
 
@@ -35,36 +31,20 @@ XPIDL_MODULE = 'dom_system_gonk'
 EXPORTS += [
     'GeolocationUtil.h',
     'GonkGPSGeolocationProvider.h',
-    'nsVolume.h',
-    'nsVolumeService.h',
     'SystemProperty.h',
 ]
 UNIFIED_SOURCES += [
     'AudioChannelManager.cpp',
     'AudioManager.cpp',
-    'AutoMounter.cpp',
-    'AutoMounterSetting.cpp',
     'GeolocationUtil.cpp',
     'GonkGPSGeolocationProvider.cpp',
-    'MozMtpDatabase.cpp',
-    'MozMtpServer.cpp',
-    'MozMtpStorage.cpp',
     'NetIdManager.cpp',
     'NetworkUtils.cpp',
     'NetworkWorker.cpp',
-    'nsVolume.cpp',
-    'nsVolumeMountLock.cpp',
-    'nsVolumeService.cpp',
-    'nsVolumeStat.cpp',
     'OpenFileFinder.cpp',
     'SystemProperty.cpp',
     'SystemWorkerManager.cpp',
     'TimeZoneSettingObserver.cpp',
-    'Volume.cpp',
-    'VolumeCommand.cpp',
-    'VolumeManager.cpp',
-    'VolumeServiceIOThread.cpp',
-    'VolumeServiceTest.cpp',
 ]
 
 if CONFIG['ANDROID_VERSION'] >= '17':

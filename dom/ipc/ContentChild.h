@@ -433,22 +433,6 @@ public:
 
   virtual bool RecvLastPrivateDocShellDestroyed() override;
 
-  virtual bool RecvVolumes(InfallibleTArray<VolumeInfo>&& aVolumes) override;
-
-  virtual bool RecvFileSystemUpdate(const nsString& aFsName,
-                                    const nsString& aVolumeName,
-                                    const int32_t& aState,
-                                    const int32_t& aMountGeneration,
-                                    const bool& aIsMediaPresent,
-                                    const bool& aIsSharing,
-                                    const bool& aIsFormatting,
-                                    const bool& aIsFake,
-                                    const bool& aIsUnmounting,
-                                    const bool& aIsRemovable,
-                                    const bool& aIsHotSwappable) override;
-
-  virtual bool RecvVolumeRemoved(const nsString& aFsName) override;
-
   virtual bool
   RecvNotifyProcessPriorityChanged(const hal::ProcessPriority& aPriority) override;
 

@@ -20,7 +20,7 @@
 /* jshint -W097 */
 /* jshint -W040 */
 /* global Services, Components, dump, LogCapture, LogParser,
-   OS, Promise, volumeService, XPCOMUtils, SystemAppProxy */
+   OS, Promise, XPCOMUtils, SystemAppProxy */
 
 "use strict";
 
@@ -45,10 +45,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "SystemAppProxy", "resource://gre/module
 XPCOMUtils.defineLazyServiceGetter(this, "powerManagerService",
                                    "@mozilla.org/power/powermanagerservice;1",
                                    "nsIPowerManagerService");
-
-XPCOMUtils.defineLazyServiceGetter(this, "volumeService",
-                                   "@mozilla.org/telephony/volume-service;1",
-                                   "nsIVolumeService");
 
 this.EXPORTED_SYMBOLS = ["LogShake"];
 
@@ -413,7 +409,7 @@ function getLogFilename(logLocation) {
 }
 
 function getSdcardPrefix() {
-  return volumeService.getVolumeByName("sdcard").mountPoint;
+  return "/sdcard";
 }
 
 function getLogDirectoryRoot() {
