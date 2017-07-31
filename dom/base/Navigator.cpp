@@ -1162,24 +1162,6 @@ Navigator::PublishServer(const nsAString& aName,
   return domPromise.forget();
 }
 
-PowerManager*
-Navigator::GetMozPower(ErrorResult& aRv)
-{
-  if (!mPowerManager) {
-    if (!mWindow) {
-      aRv.Throw(NS_ERROR_UNEXPECTED);
-      return nullptr;
-    }
-    mPowerManager = PowerManager::CreateInstance(mWindow);
-    if (!mPowerManager) {
-      // We failed to get the power manager service?
-      aRv.Throw(NS_ERROR_UNEXPECTED);
-    }
-  }
-
-  return mPowerManager;
-}
-
 already_AddRefed<WakeLock>
 Navigator::RequestWakeLock(const nsAString &aTopic, ErrorResult& aRv)
 {
