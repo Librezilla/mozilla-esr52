@@ -172,7 +172,6 @@ public:
   {
     aRv = GetBuildID(aBuildID);
   }
-  PowerManager* GetMozPower(ErrorResult& aRv);
   bool JavaEnabled(ErrorResult& aRv);
   uint64_t HardwareConcurrency();
   bool CpuHasSSE2();
