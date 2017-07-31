@@ -7239,16 +7239,6 @@ PresShell::HandleKeyboardEvent(nsINode* aTarget,
   DispatchAfterKeyboardEventInternal(chain, aEvent, aEvent.DefaultPrevented());
 }
 
-#ifdef MOZ_B2G
-bool
-PresShell::ForwardKeyToInputMethodApp(nsINode* aTarget,
-                                      WidgetKeyboardEvent& aEvent,
-                                      nsEventStatus* aStatus)
-{
-  return false;
-}
-#endif // MOZ_B2G
-
 bool
 PresShell::ForwardKeyToInputMethodAppOrDispatch(bool aIsTargetRemote,
                                                 nsINode* aTarget,
@@ -7256,41 +7246,10 @@ PresShell::ForwardKeyToInputMethodAppOrDispatch(bool aIsTargetRemote,
                                                 nsEventStatus* aStatus,
                                                 EventDispatchingCallback* aEventCB)
 {
-#ifndef MOZ_B2G
   // No need to forward to input-method-app if the platform isn't run on B2G.
   EventDispatcher::Dispatch(aTarget, mPresContext,
                             &aEvent, nullptr, aStatus, aEventCB);
   return false;
-#else
-  // In-process case: the event target is in the current process
-  if (!aIsTargetRemote) {
-    if(ForwardKeyToInputMethodApp(aTarget, aEvent, aStatus)) {
-      return true;
-    }
-
-    // If the keyboard event isn't forwarded to the input-method-app,
-    // then it should be dispatched to its event target directly.
-    EventDispatcher::Dispatch(aTarget, mPresContext,
-                              &aEvent, nullptr, aStatus, aEventCB);
-
-    return false;
-  }
-
-  // OOP case: the event target is in its child process.
-  // Dispatch the keyboard event to the iframe that embeds the remote
-  // event target first.
-  EventDispatcher::Dispatch(aTarget, mPresContext,
-                            &aEvent, nullptr, aStatus, aEventCB);
-
-  // If the event is defaultPrevented, then there is no need to forward it
-  // to the input-method-app.
-  if (aEvent.mFlags.mDefaultPrevented) {
-    return false;
-  }
-
-  // Try forwarding to the input-method-app.
-  return ForwardKeyToInputMethodApp(aTarget, aEvent, aStatus);
-#endif // MOZ_B2G
 }
 
 nsresult
