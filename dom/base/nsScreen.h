@@ -7,7 +7,6 @@
 #define nsScreen_h___
 
 #include "mozilla/Attributes.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/ErrorResult.h"
 #include "nsIDOMScreen.h"
@@ -121,8 +120,6 @@ public:
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
 
-  mozilla::dom::ScreenOrientation* Orientation() const;
-
 protected:
   nsDeviceContext* GetDeviceContext();
   nsresult GetRect(nsRect& aRect);
@@ -136,8 +133,6 @@ private:
   bool IsDeviceSizePageSize();
 
   bool ShouldResistFingerprinting() const;
-
-  RefPtr<mozilla::dom::ScreenOrientation> mScreenOrientation;
 };
 
 #endif /* nsScreen_h___ */

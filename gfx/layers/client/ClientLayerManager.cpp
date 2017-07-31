@@ -8,7 +8,6 @@
 #include "gfxPrefs.h"                   // for gfxPrefs::LayersTile...
 #include "mozilla/Assertions.h"         // for MOZ_ASSERT, etc
 #include "mozilla/Hal.h"
-#include "mozilla/dom/ScreenOrientation.h"  // for ScreenOrientation
 #include "mozilla/dom/TabChild.h"       // for TabChild
 #include "mozilla/hal_sandbox/PHal.h"   // for ScreenConfiguration
 #include "mozilla/layers/CompositableClient.h"
@@ -95,7 +94,6 @@ ClientLayerManager::ClientLayerManager(nsIWidget* aWidget)
   , mWidget(aWidget)
   , mLatestTransactionId(0)
   , mLastPaintTime(TimeDuration::Forever())
-  , mTargetRotation(ROTATION_0)
   , mRepeatTransaction(false)
   , mIsRepeatTransaction(false)
   , mTransactionIncomplete(false)
@@ -156,13 +154,6 @@ ClientLayerManager::GetMaxTextureSize() const
 {
   return mForwarder->GetMaxTextureSize();
 }
-
-void
-ClientLayerManager::SetDefaultTargetConfiguration(BufferMode aDoubleBuffering,
-                                                  ScreenRotation aRotation)
-{
-  mTargetRotation = aRotation;
- }
 
 void
 ClientLayerManager::SetRoot(Layer* aLayer)
@@ -229,18 +220,9 @@ ClientLayerManager::BeginTransactionWithTarget(gfxContext* aTarget)
   // If the last transaction was incomplete (a failed DoEmptyTransaction),
   // don't signal a new transaction to ShadowLayerForwarder. Carry on adding
   // to the previous transaction.
-  dom::ScreenOrientationInternal orientation;
-  if (dom::TabChild* window = mWidget->GetOwningTabChild()) {
-    orientation = window->GetOrientation();
-  } else {
-    hal::ScreenConfiguration currentConfig;
-    hal::GetCurrentScreenConfiguration(&currentConfig);
-    orientation = currentConfig.orientation();
-  }
   LayoutDeviceIntRect targetBounds = mWidget->GetNaturalBounds();
   targetBounds.x = targetBounds.y = 0;
-  mForwarder->BeginTransaction(targetBounds.ToUnknownRect(), mTargetRotation,
-                               orientation);
+  mForwarder->BeginTransaction(targetBounds.ToUnknownRect());
 
   // If we're drawing on behalf of a context with async pan/zoom
   // enabled, then the entire buffer of painted layers might be
@@ -557,10 +539,6 @@ ClientLayerManager::MakeSnapshotIfRequired()
       LayoutDeviceIntRect outerBounds = mWidget->GetBounds();
 
       IntRect bounds = ToOutsideIntRect(mShadowTarget->GetClipExtents());
-      if (mTargetRotation) {
-        bounds =
-          RotateRect(bounds, outerBounds.ToUnknownRect(), mTargetRotation);
-      }
 
       SurfaceDescriptor inSnapshot;
       if (!bounds.IsEmpty() &&
@@ -580,8 +558,7 @@ ClientLayerManager::MakeSnapshotIfRequired()
           Rect srcRect(0, 0, bounds.width, bounds.height);
 
           gfx::Matrix rotate =
-            ComputeTransformForUnRotation(outerBounds.ToUnknownRect(),
-                                          mTargetRotation);
+            ComputeTransformForUnRotation(outerBounds.ToUnknownRect(), 0);
 
           gfx::Matrix oldMatrix = dt->GetTransform();
           dt->SetTransform(rotate * oldMatrix);

@@ -11497,38 +11497,6 @@ nsDocument::FullscreenEnabled()
   return !GetFullscreenError(this, nsContentUtils::IsCallerChrome());
 }
 
-uint16_t
-nsDocument::CurrentOrientationAngle() const
-{
-  return mCurrentOrientationAngle;
-}
-
-OrientationType
-nsDocument::CurrentOrientationType() const
-{
-  return mCurrentOrientationType;
-}
-
-void
-nsDocument::SetCurrentOrientation(mozilla::dom::OrientationType aType,
-                                  uint16_t aAngle)
-{
-  mCurrentOrientationType = aType;
-  mCurrentOrientationAngle = aAngle;
-}
-
-Promise*
-nsDocument::GetOrientationPendingPromise() const
-{
-  return mOrientationPendingPromise;
-}
-
-void
-nsDocument::SetOrientationPendingPromise(Promise* aPromise)
-{
-  mOrientationPendingPromise = aPromise;
-}
-
 static void
 DispatchPointerLockChange(nsIDocument* aTarget)
 {

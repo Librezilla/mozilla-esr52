@@ -11,7 +11,6 @@
 #include "base/platform_thread.h"
 #include "nsTArray.h"
 #include "mozilla/dom/network/Types.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/hal_sandbox/PHal.h"
 #include "mozilla/HalScreenConfiguration.h"
 #include "mozilla/HalTypes.h"
@@ -228,17 +227,6 @@ void GetCurrentScreenConfiguration(hal::ScreenConfiguration* aScreenConfiguratio
  * @param aScreenConfiguration The new screen orientation.
  */
 void NotifyScreenConfigurationChange(const hal::ScreenConfiguration& aScreenConfiguration);
-
-/**
- * Lock the screen orientation to the specific orientation.
- * @return Whether the lock has been accepted.
- */
-MOZ_MUST_USE bool LockScreenOrientation(const dom::ScreenOrientationInternal& aOrientation);
-
-/**
- * Unlock the screen orientation.
- */
-void UnlockScreenOrientation();
 
 /**
  * Register an observer that is notified when a programmed alarm

@@ -66,20 +66,10 @@ public:
     , mRotationChanged(false)
   {}
 
-  void Begin(const gfx::IntRect& aTargetBounds, ScreenRotation aRotation,
-             dom::ScreenOrientationInternal aOrientation)
+  void Begin(const gfx::IntRect& aTargetBounds)
   {
     mOpen = true;
     mTargetBounds = aTargetBounds;
-    if (aRotation != mTargetRotation) {
-      // the first time this is called, mRotationChanged will be false if
-      // aRotation is 0, but we should be OK because for the first transaction
-      // we should only compose if it is non-empty. See the caller(s) of
-      // RotationChanged.
-      mRotationChanged = true;
-    }
-    mTargetRotation = aRotation;
-    mTargetOrientation = aOrientation;
   }
   void MarkSyncTransaction()
   {
@@ -148,7 +138,6 @@ public:
   ShadowableLayerSet mMutants;
   gfx::IntRect mTargetBounds;
   ScreenRotation mTargetRotation;
-  dom::ScreenOrientationInternal mTargetOrientation;
   bool mSwapRequired;
 
 private:
@@ -222,14 +211,12 @@ ShadowLayerForwarder::~ShadowLayerForwarder()
 }
 
 void
-ShadowLayerForwarder::BeginTransaction(const gfx::IntRect& aTargetBounds,
-                                       ScreenRotation aRotation,
-                                       dom::ScreenOrientationInternal aOrientation)
+ShadowLayerForwarder::BeginTransaction(const gfx::IntRect& aTargetBounds)
 {
   MOZ_ASSERT(IPCOpen(), "no manager to forward to");
   MOZ_ASSERT(mTxn->Finished(), "uncommitted txn?");
   UpdateFwdTransactionId();
-  mTxn->Begin(aTargetBounds, aRotation, aOrientation);
+  mTxn->Begin(aTargetBounds);
 }
 
 static PLayerChild*
@@ -709,8 +696,6 @@ ShadowLayerForwarder::EndTransaction(InfallibleTArray<EditReply>* aReplies,
   mWindowOverlayChanged = false;
 
   TargetConfig targetConfig(mTxn->mTargetBounds,
-                            mTxn->mTargetRotation,
-                            mTxn->mTargetOrientation,
                             aRegionToClear);
 
   if (!GetTextureForwarder()->IsSameProcess()) {

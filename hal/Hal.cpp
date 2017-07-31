@@ -25,7 +25,6 @@
 #include "mozilla/StaticPtr.h"
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/ContentParent.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "WindowIdentifier.h"
 
 #ifdef XP_WIN
@@ -458,20 +457,6 @@ NotifyScreenConfigurationChange(const ScreenConfiguration& aScreenConfiguration)
 {
   ScreenConfigurationObservers().CacheInformation(aScreenConfiguration);
   ScreenConfigurationObservers().BroadcastCachedInformation();
-}
-
-bool
-LockScreenOrientation(const dom::ScreenOrientationInternal& aOrientation)
-{
-  AssertMainThread();
-  RETURN_PROXY_IF_SANDBOXED(LockScreenOrientation(aOrientation), false);
-}
-
-void
-UnlockScreenOrientation()
-{
-  AssertMainThread();
-  PROXY_IF_SANDBOXED(UnlockScreenOrientation());
 }
 
 static AlarmObserver* sAlarmObserver;

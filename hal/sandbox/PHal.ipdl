@@ -9,7 +9,6 @@ include protocol PBrowser;
 
 include "mozilla/GfxMessageUtils.h";
 
-using mozilla::dom::ScreenOrientationInternal from "mozilla/dom/ScreenOrientation.h";
 using mozilla::hal::ProcessPriority from "mozilla/HalTypes.h";
 using nsIntRect from "nsRect.h";
 using PRTime from "prtime.h";
@@ -25,7 +24,6 @@ struct NetworkInformation {
 
 struct ScreenConfiguration {
   nsIntRect rect;
-  ScreenOrientationInternal orientation;
   uint16_t angle;
   uint32_t colorDepth;
   uint32_t pixelDepth;
@@ -73,9 +71,6 @@ parent:
     async DisableScreenConfigurationNotifications();
     nested(inside_cpow) sync GetCurrentScreenConfiguration()
       returns (ScreenConfiguration aScreenConfiguration);
-    sync LockScreenOrientation(ScreenOrientationInternal aOrientation)
-      returns (bool allowed);
-    async UnlockScreenOrientation();
 
 parent:
 
