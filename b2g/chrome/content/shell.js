@@ -449,50 +449,6 @@ var shell = {
     UserAgentOverrides.uninit();
   },
 
-  // If this key event represents a hardware button which needs to be send as
-  // a message, broadcasts it with the message set to 'xxx-button-press' or
-  // 'xxx-button-release'.
-  broadcastHardwareKeys: function shell_broadcastHardwareKeys(evt) {
-    let type;
-    let message;
-
-    let mediaKeys = {
-      'MediaTrackNext': 'media-next-track-button',
-      'MediaTrackPrevious': 'media-previous-track-button',
-      'MediaPause': 'media-pause-button',
-      'MediaPlay': 'media-play-button',
-      'MediaPlayPause': 'media-play-pause-button',
-      'MediaStop': 'media-stop-button',
-      'MediaRewind': 'media-rewind-button',
-      'MediaFastForward': 'media-fast-forward-button'
-    };
-
-    if (evt.keyCode == evt.DOM_VK_F1) {
-      type = 'headset-button';
-      message = 'headset-button';
-    } else if (mediaKeys[evt.key]) {
-      type = 'media-button';
-      message = mediaKeys[evt.key];
-    } else {
-      return;
-    }
-
-    switch (evt.type) {
-      case 'keydown':
-        message = message + '-press';
-        break;
-      case 'keyup':
-        message = message + '-release';
-        break;
-    }
-
-    // Let applications receive the headset button and media key press/release message.
-    if (message !== this.lastHardwareButtonMessage) {
-      this.lastHardwareButtonMessage = message;
-      gSystemMessenger.broadcastMessage(type, message);
-    }
-  },
-
   lastHardwareButtonMessage: null, // property for the hack above
   visibleNormalAudioActive: false,
 
@@ -522,8 +478,6 @@ var shell = {
       case 'keyup':
         if (checkReloadKey()) {
           clearCacheAndReload();
-        } else {
-          this.broadcastHardwareKeys(evt);
         }
         break;
       case 'sizemodechange':
