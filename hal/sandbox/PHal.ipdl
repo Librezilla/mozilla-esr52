@@ -9,7 +9,6 @@ include protocol PBrowser;
 
 include "mozilla/GfxMessageUtils.h";
 
-using mozilla::dom::ScreenOrientationInternal from "mozilla/dom/ScreenOrientation.h";
 using mozilla::hal::WakeLockControl from "mozilla/HalTypes.h";
 using mozilla::hal::ProcessPriority from "mozilla/HalTypes.h";
 using nsIntRect from "nsRect.h";
@@ -33,7 +32,6 @@ struct WakeLockInformation {
 
 struct ScreenConfiguration {
   nsIntRect rect;
-  ScreenOrientationInternal orientation;
   uint16_t angle;
   uint32_t colorDepth;
   uint32_t pixelDepth;
@@ -56,7 +54,6 @@ nested(upto inside_cpow) sync protocol PHal {
 child:
     async NotifyNetworkChange(NetworkInformation aNetworkInfo);
     async NotifyWakeLockChange(WakeLockInformation aWakeLockInfo);
-    async NotifyScreenConfigurationChange(ScreenConfiguration aScreenOrientation);
     async NotifySystemClockChange(int64_t aClockDeltaMS); 
     async NotifySystemTimezoneChange(SystemTimezoneChangeInformation aSystemTimezoneChangeInfo); 
 
@@ -91,9 +88,6 @@ parent:
     async DisableScreenConfigurationNotifications();
     nested(inside_cpow) sync GetCurrentScreenConfiguration()
       returns (ScreenConfiguration aScreenConfiguration);
-    sync LockScreenOrientation(ScreenOrientationInternal aOrientation)
-      returns (bool allowed);
-    async UnlockScreenOrientation();
 
 parent:
 

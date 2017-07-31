@@ -14,7 +14,6 @@
 #include "mozilla/Attributes.h"         // for override
 #include "mozilla/gfx/Rect.h"
 #include "mozilla/WidgetUtils.h"        // for ScreenRotation
-#include "mozilla/dom/ScreenOrientation.h"  // for ScreenOrientation
 #include "mozilla/ipc/SharedMemory.h"   // for SharedMemory, etc
 #include "mozilla/layers/CompositableForwarder.h"
 #include "mozilla/layers/TextureForwarder.h"
@@ -188,9 +187,7 @@ public:
    * Begin recording a transaction to be forwarded atomically to a
    * LayerManagerComposite.
    */
-  void BeginTransaction(const gfx::IntRect& aTargetBounds,
-                        ScreenRotation aRotation,
-                        mozilla::dom::ScreenOrientationInternal aOrientation);
+  void BeginTransaction(const gfx::IntRect& aTargetBounds);
 
   /**
    * The following methods may only be called after BeginTransaction()

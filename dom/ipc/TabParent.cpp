@@ -141,7 +141,6 @@ TabParent::TabParent(nsIContentParent* aManager,
   , mFrameElement(nullptr)
   , mRect(0, 0, 0, 0)
   , mDimensions(0, 0)
-  , mOrientation(0)
   , mDPI(0)
   , mRounding(0)
   , mDefaultScale(0)
@@ -750,7 +749,7 @@ TabParent::UpdateDimensions(const nsIntRect& rect, const ScreenIntSize& size)
   LayoutDeviceIntPoint clientOffset = widget->GetClientOffset();
   LayoutDeviceIntPoint chromeOffset = -GetChildProcessOffset();
 
-  if (!mUpdatedDimensions || mOrientation != orientation ||
+  if (!mUpdatedDimensions ||
       mDimensions != size || !mRect.IsEqualEdges(rect) ||
       clientOffset != mClientOffset ||
       chromeOffset != mChromeOffset) {
@@ -758,7 +757,6 @@ TabParent::UpdateDimensions(const nsIntRect& rect, const ScreenIntSize& size)
     mUpdatedDimensions = true;
     mRect = rect;
     mDimensions = size;
-    mOrientation = orientation;
     mClientOffset = clientOffset;
     mChromeOffset = chromeOffset;
 
@@ -774,7 +772,7 @@ TabParent::UpdateDimensions(const nsIntRect& rect, const ScreenIntSize& size)
     CSSRect unscaledRect = devicePixelRect / widgetScale;
     CSSSize unscaledSize = devicePixelSize / widgetScale;
     Unused << SendUpdateDimensions(unscaledRect, unscaledSize,
-                                   orientation, clientOffset, chromeOffset);
+                                   clientOffset, chromeOffset);
   }
 }
 

@@ -3,7 +3,6 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Hal.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "nsIScreenManager.h"
 #include "nsServiceManagerUtils.h"
 
@@ -33,30 +32,15 @@ GetCurrentScreenConfiguration(hal::ScreenConfiguration* aScreenConfiguration)
 
   nsIntRect rect;
   int32_t colorDepth, pixelDepth;
-  dom::ScreenOrientationInternal orientation;
   nsCOMPtr<nsIScreen> screen;
 
   screenMgr->GetPrimaryScreen(getter_AddRefs(screen));
   screen->GetRect(&rect.x, &rect.y, &rect.width, &rect.height);
   screen->GetColorDepth(&colorDepth);
   screen->GetPixelDepth(&pixelDepth);
-  orientation = rect.width >= rect.height
-                ? dom::eScreenOrientation_LandscapePrimary
-                : dom::eScreenOrientation_PortraitPrimary;
 
   *aScreenConfiguration =
-      hal::ScreenConfiguration(rect, orientation, 0, colorDepth, pixelDepth);
-}
-
-bool
-LockScreenOrientation(const dom::ScreenOrientationInternal& aOrientation)
-{
-  return false;
-}
-
-void
-UnlockScreenOrientation()
-{
+      hal::ScreenConfiguration(rect, 0, colorDepth, pixelDepth);
 }
 
 } // namespace hal_impl

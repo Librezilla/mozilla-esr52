@@ -1381,7 +1381,6 @@ TabChild::RecvUpdateDimensions(const CSSRect& rect, const CSSSize& size,
     mClientOffset = clientOffset;
     mChromeDisp = chromeDisp;
 
-    mOrientation = orientation;
     SetUnscaledInnerSize(size);
     if (!mHasValidInnerSize && size.width != 0 && size.height != 0) {
       mHasValidInnerSize = true;

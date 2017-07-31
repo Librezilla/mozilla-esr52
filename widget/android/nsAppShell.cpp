@@ -63,7 +63,6 @@
 #include "AndroidAlerts.h"
 #include "ANRReporter.h"
 #include "GeckoNetworkManager.h"
-#include "GeckoScreenOrientation.h"
 #include "PrefsHelper.h"
 #include "fennec/MemoryMonitor.h"
 #include "fennec/Telemetry.h"
@@ -335,7 +334,6 @@ nsAppShell::nsAppShell()
         GeckoAppShellSupport::Init();
         GeckoThreadSupport::Init();
         mozilla::GeckoNetworkManager::Init();
-        mozilla::GeckoScreenOrientation::Init();
         mozilla::PrefsHelper::Init();
         nsWindow::InitNatives();
 

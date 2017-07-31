@@ -1435,13 +1435,6 @@ public:
 
   friend class nsCallRequestFullScreen;
 
-  // ScreenOrientation "pending promise" as described by
-  // http://www.w3.org/TR/screen-orientation/
-  RefPtr<mozilla::dom::Promise> mOrientationPendingPromise;
-
-  uint16_t mCurrentOrientationAngle;
-  mozilla::dom::OrientationType mCurrentOrientationType;
-
   // Keeps track of whether we have a pending
   // 'style-sheet-applicable-state-changed' notification.
   bool mSSApplicableStateNotificationPending:1;
