@@ -276,9 +276,6 @@
 @RESPATH@/components/necko_strconv.xpt
 @RESPATH@/components/necko_viewsource.xpt
 @RESPATH@/components/necko_websocket.xpt
-#ifdef NECKO_WIFI
-@RESPATH@/components/necko_wifi.xpt
-#endif
 @RESPATH@/components/necko_wyciwyg.xpt
 @RESPATH@/components/necko.xpt
 @RESPATH@/components/loginmgr.xpt

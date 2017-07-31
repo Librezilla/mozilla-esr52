@@ -84,10 +84,6 @@ ifneq (,$(filter WINNT Darwin Android,$(OS_TARGET)))
 DEFINES += -DMOZ_SHARED_MOZGLUE=1
 endif
 
-ifdef NECKO_WIFI
-DEFINES += -DNECKO_WIFI
-endif
-
 ifdef MAKENSISU
 DEFINES += -DHAVE_MAKENSISU=1
 endif
