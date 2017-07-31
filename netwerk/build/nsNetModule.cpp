@@ -208,16 +208,6 @@ NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(nsICookieService,
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef NECKO_WIFI
-
-#include "nsWifiMonitor.h"
-#undef LOG
-#undef LOG_ENABLED
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsWifiMonitor)
-
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 // protocols
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -826,9 +816,6 @@ NS_DEFINE_NAMED_CID(NS_APPLICATIONCACHE_CID);
 NS_DEFINE_NAMED_CID(NS_COOKIEMANAGER_CID);
 NS_DEFINE_NAMED_CID(NS_COOKIESERVICE_CID);
 #endif
-#ifdef NECKO_WIFI
-NS_DEFINE_NAMED_CID(NS_WIFI_MONITOR_COMPONENT_CID);
-#endif
 #ifdef NECKO_PROTOCOL_data
 NS_DEFINE_NAMED_CID(NS_DATAPROTOCOLHANDLER_CID);
 #endif
@@ -974,9 +961,6 @@ static const mozilla::Module::CIDEntry kNeckoCIDs[] = {
 #ifdef NECKO_COOKIES
     { &kNS_COOKIEMANAGER_CID, false, nullptr, nsICookieServiceConstructor },
     { &kNS_COOKIESERVICE_CID, false, nullptr, nsICookieServiceConstructor },
-#endif
-#ifdef NECKO_WIFI
-    { &kNS_WIFI_MONITOR_COMPONENT_CID, false, nullptr, nsWifiMonitorConstructor },
 #endif
 #ifdef NECKO_PROTOCOL_data
     { &kNS_DATAPROTOCOLHANDLER_CID, false, nullptr, nsDataHandler::Create },
@@ -1131,9 +1115,6 @@ static const mozilla::Module::ContractIDEntry kNeckoContracts[] = {
 #ifdef NECKO_COOKIES
     { NS_COOKIEMANAGER_CONTRACTID, &kNS_COOKIEMANAGER_CID },
     { NS_COOKIESERVICE_CONTRACTID, &kNS_COOKIESERVICE_CID },
-#endif
-#ifdef NECKO_WIFI
-    { NS_WIFI_MONITOR_CONTRACTID, &kNS_WIFI_MONITOR_COMPONENT_CID },
 #endif
 #ifdef NECKO_PROTOCOL_data
     { NS_NETWORK_PROTOCOL_CONTRACTID_PREFIX "data", &kNS_DATAPROTOCOLHANDLER_CID },
