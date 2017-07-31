@@ -39,7 +39,6 @@ media/libvpx/
 media/libyuv/
 media/mtransport/
 media/openmax_dl/
-media/pocketsphinx/
 media/sphinxbase/
 media/webrtc/trunk/
 memory/jemalloc/src/
