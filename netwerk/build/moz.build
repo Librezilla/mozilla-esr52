@@ -57,11 +57,6 @@ if CONFIG['NECKO_COOKIES']:
         '/netwerk/cookie',
     ]
 
-if CONFIG['NECKO_WIFI']:
-    LOCAL_INCLUDES += [
-        '/netwerk/wifi',
-    ]
-
 if CONFIG['MOZ_RTSP']:
     LOCAL_INCLUDES += [
         '/netwerk/protocol/rtsp',
