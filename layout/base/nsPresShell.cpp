@@ -201,10 +201,6 @@
 #include "nsIDocShellTreeOwner.h"
 #endif
 
-#ifdef MOZ_B2G
-#include "nsIHardwareKeyHandler.h"
-#endif
-
 #ifdef MOZ_TASK_TRACER
 #include "GeckoTaskTracer.h"
 using namespace mozilla::tasktracer;
@@ -7249,28 +7245,6 @@ PresShell::ForwardKeyToInputMethodApp(nsINode* aTarget,
                                       WidgetKeyboardEvent& aEvent,
                                       nsEventStatus* aStatus)
 {
-  if (!XRE_IsParentProcess() || aEvent.mIsSynthesizedByTIP ||
-      aEvent.IsKeyEventOnPlugin()) {
-    return false;
-  }
-
-  if (!mHardwareKeyHandler) {
-    nsresult rv;
-    mHardwareKeyHandler =
-      do_GetService("@mozilla.org/HardwareKeyHandler;1", &rv);
-    if (!NS_SUCCEEDED(rv) || !mHardwareKeyHandler) {
-      return false;
-    }
-  }
-
-  if (mHardwareKeyHandler->ForwardKeyToInputMethodApp(aTarget,
-                                                      aEvent.AsKeyboardEvent(),
-                                                      aStatus)) {
-    // No need to dispatch the forwarded keyboard event to it's child process
-    aEvent.mFlags.mNoCrossProcessBoundaryForwarding = true;
-    return true;
-  }
-
   return false;
 }
 #endif // MOZ_B2G

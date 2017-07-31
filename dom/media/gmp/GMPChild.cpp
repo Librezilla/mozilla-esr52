@@ -10,7 +10,9 @@
 #include "GMPVideoDecoderChild.h"
 #include "GMPVideoEncoderChild.h"
 #include "GMPAudioDecoderChild.h"
+#ifdef MOZ_EME_MODULES
 #include "GMPDecryptorChild.h"
+#endif
 #include "GMPVideoHost.h"
 #include "nsDebugImpl.h"
 #include "nsIFile.h"
