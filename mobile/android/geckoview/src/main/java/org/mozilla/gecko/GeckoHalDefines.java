@@ -15,7 +15,6 @@ public class GeckoHalDefines
     public static final int SENSOR_PROXIMITY = 2;
     public static final int SENSOR_LINEAR_ACCELERATION = 3;
     public static final int SENSOR_GYROSCOPE = 4;
-    public static final int SENSOR_LIGHT = 5;
     public static final int SENSOR_ROTATION_VECTOR = 6;
     public static final int SENSOR_GAME_ROTATION_VECTOR = 7;
 

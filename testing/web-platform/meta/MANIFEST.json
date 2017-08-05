@@ -98,10 +98,6 @@
         "url": "/XMLHttpRequest/send-authentication-prompt-manual.htm"
       },
       {
-        "path": "ambient-light/AmbientLightSensor_onchange-manual.html",
-        "url": "/ambient-light/AmbientLightSensor_onchange-manual.html"
-      },
-      {
         "path": "annotation-model/annotations/annotationMusts-manual.html",
         "url": "/annotation-model/annotations/annotationMusts-manual.html"
       },
@@ -14034,26 +14030,6 @@
       {
         "path": "XMLHttpRequest/xmlhttprequest-unsent.htm",
         "url": "/XMLHttpRequest/xmlhttprequest-unsent.htm"
-      },
-      {
-        "path": "ambient-light/AmbientLightSensor_browsing_context.html",
-        "url": "/ambient-light/AmbientLightSensor_browsing_context.html"
-      },
-      {
-        "path": "ambient-light/AmbientLightSensor_onstatechange.html",
-        "url": "/ambient-light/AmbientLightSensor_onstatechange.html"
-      },
-      {
-        "path": "ambient-light/AmbientLightSensor_start.html",
-        "url": "/ambient-light/AmbientLightSensor_start.html"
-      },
-      {
-        "path": "ambient-light/AmbientLightSensor_stop.html",
-        "url": "/ambient-light/AmbientLightSensor_stop.html"
-      },
-      {
-        "path": "ambient-light/idlharness.html",
-        "url": "/ambient-light/idlharness.html"
       },
       {
         "path": "app-uri/appURI_test.html",
@@ -36788,11 +36764,6 @@
         "path": "XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html",
         "timeout": "long",
         "url": "/XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html"
-      },
-      {
-        "path": "ambient-light/AmbientLightSensor_tests.html",
-        "timeout": "long",
-        "url": "/ambient-light/AmbientLightSensor_tests.html"
       },
       {
         "path": "content-security-policy/media-src/media-src-7_1_2.html",

@@ -100,10 +100,6 @@ const kEventConstructors = {
                                                          return e;
                                                        },
                                              },
-  DeviceLightEvent:                          { create: function (aName, aProps) {
-                                                         return new DeviceLightEvent(aName, aProps);
-                                                       },
-                                             },
   DeviceMotionEvent:                         { create: function (aName, aProps) {
                                                          var e = document.createEvent("devicemotionevent");
                                                          e.initDeviceMotionEvent(aName, aProps.bubbles, aProps.cancelable, aProps.acceleration,

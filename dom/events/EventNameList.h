@@ -611,10 +611,6 @@ WINDOW_ONLY_EVENT(userproximity,
                   eUserProximity,
                   EventNameType_None,
                   eBasicEventClass)
-WINDOW_ONLY_EVENT(devicelight,
-                  eDeviceLight,
-                  EventNameType_None,
-                  eBasicEventClass)
 WINDOW_ONLY_EVENT(vrdisplayconnect,
                   eVRDisplayConnect,
                   EventNameType_None,
