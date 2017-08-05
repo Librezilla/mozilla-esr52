@@ -351,8 +351,6 @@ EventListenerManager::AddEventListenerInternal(
     EnableDevice(eAbsoluteDeviceOrientation);
   } else if (aTypeAtom == nsGkAtoms::ondeviceproximity || aTypeAtom == nsGkAtoms::onuserproximity) {
     EnableDevice(eDeviceProximity);
-  } else if (aTypeAtom == nsGkAtoms::ondevicelight) {
-    EnableDevice(eDeviceLight);
   } else if (aTypeAtom == nsGkAtoms::ondevicemotion) {
     EnableDevice(eDeviceMotion);
 #if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
@@ -489,7 +487,6 @@ EventListenerManager::IsDeviceType(EventMessage aEventMessage)
     case eDeviceOrientation:
     case eAbsoluteDeviceOrientation:
     case eDeviceMotion:
-    case eDeviceLight:
     case eDeviceProximity:
     case eUserProximity:
 #if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
@@ -536,9 +533,6 @@ EventListenerManager::EnableDevice(EventMessage aEventMessage)
     case eDeviceProximity:
     case eUserProximity:
       window->EnableDeviceSensor(SENSOR_PROXIMITY);
-      break;
-    case eDeviceLight:
-      window->EnableDeviceSensor(SENSOR_LIGHT);
       break;
     case eDeviceMotion:
       window->EnableDeviceSensor(SENSOR_ACCELERATION);
@@ -596,9 +590,6 @@ EventListenerManager::DisableDevice(EventMessage aEventMessage)
     case eDeviceProximity:
     case eUserProximity:
       window->DisableDeviceSensor(SENSOR_PROXIMITY);
-      break;
-    case eDeviceLight:
-      window->DisableDeviceSensor(SENSOR_LIGHT);
       break;
 #if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
     case eOrientationChange:

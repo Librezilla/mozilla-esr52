@@ -53,22 +53,6 @@ UpdateHandler(nsITimer *aTimer, void *aClosure)
       values.AppendElement(accel.x * MEAN_GRAVITY);
       values.AppendElement(accel.y * MEAN_GRAVITY);
       values.AppendElement(accel.z * MEAN_GRAVITY);
-    } else if (sensor == SENSOR_LIGHT && sDataPort != IO_OBJECT_NULL) {
-      kern_return_t kr;
-      uint32_t outputs = 2;
-      uint64_t lightLMU[outputs];
-
-      kr = IOConnectCallMethod(sDataPort, 0, nil, 0, nil, 0, lightLMU, &outputs, nil, 0);
-      if (kr == KERN_SUCCESS) {
-        uint64_t mean = (lightLMU[0] + lightLMU[1]) / 2;
-        if (mean == sLastMean) {
-          continue;
-        }
-        sLastMean = mean;
-        values.AppendElement(LMUvalueToLux(mean));
-      } else if (kr == kIOReturnBusy) {
-        continue;
-      }
     }
 
     hal::SensorData sdata(sensor,
@@ -91,19 +75,6 @@ EnableSensorNotifications(SensorType aSensor)
     if (!smsLoadCalibration()) {
       return;
     }
-  } else if (aSensor == SENSOR_LIGHT) {
-    io_service_t serviceObject;
-    serviceObject = IOServiceGetMatchingService(kIOMasterPortDefault,
-                                                IOServiceMatching("AppleLMUController"));
-    if (!serviceObject) {
-      return;
-    }
-    kern_return_t kr;
-    kr = IOServiceOpen(serviceObject, mach_task_self(), 0, &sDataPort);
-    IOObjectRelease(serviceObject);
-    if (kr != KERN_SUCCESS) {
-      return;
-    }
   } else {
     NS_WARNING("EnableSensorNotifications called on an unknown sensor type");
     return;
@@ -123,7 +94,7 @@ EnableSensorNotifications(SensorType aSensor)
 void
 DisableSensorNotifications(SensorType aSensor)
 {
-  if (!sActiveSensors[aSensor] || (aSensor != SENSOR_ACCELERATION && aSensor != SENSOR_LIGHT)) {
+  if (!sActiveSensors[aSensor] || (aSensor != SENSOR_ACCELERATION)) {
     return;
   }
 
@@ -131,8 +102,6 @@ DisableSensorNotifications(SensorType aSensor)
 
   if (aSensor == SENSOR_ACCELERATION) {
     smsShutdown();
-  } else if (aSensor == SENSOR_LIGHT) {
-    IOServiceClose(sDataPort);
   }
   // If all sensors are disabled, cancel the update timer.
   if (sUpdateTimer) {

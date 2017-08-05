@@ -516,11 +516,6 @@ public class GeckoAppShell
                 z = s.sensor.getMaximumRange();
                 break;
 
-            case Sensor.TYPE_LIGHT:
-                hal_type = GeckoHalDefines.SENSOR_LIGHT;
-                x = s.values[0];
-                break;
-
             case Sensor.TYPE_ROTATION_VECTOR:
             case Sensor.TYPE_GAME_ROTATION_VECTOR: // API >= 18
                 hal_type = (sensor_type == Sensor.TYPE_ROTATION_VECTOR ?
@@ -696,17 +691,6 @@ public class GeckoAppShell
             }
             break;
 
-        case GeckoHalDefines.SENSOR_LIGHT:
-            if (gLightSensor == null) {
-                gLightSensor = sm.getDefaultSensor(Sensor.TYPE_LIGHT);
-            }
-            if (gLightSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gLightSensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-            }
-            break;
-
         case GeckoHalDefines.SENSOR_LINEAR_ACCELERATION:
             if (gLinearAccelerometerSensor == null) {
                 gLinearAccelerometerSensor = sm.getDefaultSensor(
@@ -775,12 +759,6 @@ public class GeckoAppShell
         case GeckoHalDefines.SENSOR_PROXIMITY:
             if (gProximitySensor != null) {
                 sm.unregisterListener(getSensorListener(), gProximitySensor);
-            }
-            break;
-
-        case GeckoHalDefines.SENSOR_LIGHT:
-            if (gLightSensor != null) {
-                sm.unregisterListener(getSensorListener(), gLightSensor);
             }
             break;
 

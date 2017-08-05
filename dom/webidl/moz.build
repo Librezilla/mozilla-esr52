@@ -697,7 +697,6 @@ GENERATED_EVENTS_WEBIDL_FILES = [
     'BlobEvent.webidl',
     'CaretStateChangedEvent.webidl',
     'CloseEvent.webidl',
-    'DeviceLightEvent.webidl',
     'DeviceOrientationEvent.webidl',
     'DeviceProximityEvent.webidl',
     'DownloadEvent.webidl',
