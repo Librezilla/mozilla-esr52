@@ -1952,9 +1952,6 @@ GK_ATOM(ondeviceproximity, "ondeviceproximity")
 GK_ATOM(onmozorientationchange, "onmozorientationchange")
 GK_ATOM(onuserproximity, "onuserproximity")
 
-// light sensor support
-GK_ATOM(ondevicelight, "ondevicelight")
-
 // Audio channel events
 GK_ATOM(onmozinterruptbegin, "onmozinterruptbegin")
 GK_ATOM(onmozinterruptend, "onmozinterruptend")
