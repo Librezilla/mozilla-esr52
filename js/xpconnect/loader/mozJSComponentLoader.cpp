@@ -30,6 +30,7 @@
 #include "nsIScriptSecurityManager.h"
 #include "nsIFileURL.h"
 #include "nsIJARURI.h"
+#include "nsIInputStream.h"
 #include "nsNetUtil.h"
 #include "jsprf.h"
 #include "nsJSPrincipals.h"
