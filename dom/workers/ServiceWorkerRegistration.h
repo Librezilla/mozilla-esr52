@@ -13,8 +13,10 @@
 #include "mozilla/dom/workers/bindings/WorkerHolder.h"
 #include "nsContentUtils.h" // Required for nsContentUtils::PushEnabled
 
+#ifdef MOZ_NOTIFICATION
 // Support for Notification API extension.
 #include "mozilla/dom/NotificationBinding.h"
+#endif
 
 class nsPIDOMWindowInner;
 
@@ -61,9 +63,10 @@ public:
   static bool
   Visible(JSContext* aCx, JSObject* aObj);
 
+#ifdef MOZ_NOTIFICATION
   static bool
   NotificationAPIVisible(JSContext* aCx, JSObject* aObj);
-
+#endif
 
   static already_AddRefed<ServiceWorkerRegistration>
   CreateForMainThread(nsPIDOMWindowInner* aWindow,
@@ -97,6 +100,7 @@ public:
   virtual already_AddRefed<PushManager>
   GetPushManager(JSContext* aCx, ErrorResult& aRv) = 0;
 
+#ifdef MOZ_NOTIFICATION
   virtual already_AddRefed<Promise>
   ShowNotification(JSContext* aCx,
                    const nsAString& aTitle,
@@ -106,6 +110,7 @@ public:
   virtual already_AddRefed<Promise>
   GetNotifications(const GetNotificationOptions& aOptions,
                    ErrorResult& aRv) = 0;
+#endif
 
 protected:
   ServiceWorkerRegistration(nsPIDOMWindowInner* aWindow,

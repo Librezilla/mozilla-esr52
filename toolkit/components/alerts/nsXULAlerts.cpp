@@ -10,7 +10,9 @@
 #include "nsCOMPtr.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/LookAndFeel.h"
+#ifdef MOZ_NOTIFICATION
 #include "mozilla/dom/Notification.h"
+#endif
 #include "mozilla/Unused.h"
 #include "nsIServiceManager.h"
 #include "nsISupportsPrimitives.h"
@@ -18,7 +20,9 @@
 #include "nsIWindowWatcher.h"
 
 using namespace mozilla;
+#ifdef MOZ_NOTIFICATION
 using mozilla::dom::NotificationTelemetryService;
+#endif
 
 #define ALERT_CHROME_URL "chrome://global/content/alerts/alert.xul"
 
@@ -185,6 +189,7 @@ nsXULAlerts::ShowAlertWithIconURI(nsIAlertNotification* aAlert,
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (mDoNotDisturb) {
+#ifdef MOZ_NOTIFICATIONS
     if (!inPrivateBrowsing) {
       RefPtr<NotificationTelemetryService> telemetry =
         NotificationTelemetryService::GetInstance();
@@ -199,6 +204,7 @@ nsXULAlerts::ShowAlertWithIconURI(nsIAlertNotification* aAlert,
         }
       }
     }
+#endif /* MOZ_NOTIFICATIONS */
     if (aAlertListener)
       aAlertListener->Observe(nullptr, "alertfinished", cookie.get());
     return NS_OK;
@@ -283,9 +289,11 @@ nsXULAlerts::ShowAlertWithIconURI(nsIAlertNotification* aAlert,
   nsCOMPtr<nsISupportsPRInt32> scriptableOrigin (do_CreateInstance(NS_SUPPORTS_PRINT32_CONTRACTID));
   NS_ENSURE_TRUE(scriptableOrigin, NS_ERROR_FAILURE);
 
+#ifdef MOZ_NOTIFICATION
   int32_t origin =
     LookAndFeel::GetInt(LookAndFeel::eIntID_AlertNotificationOrigin);
   scriptableOrigin->SetData(origin);
+#endif
 
   rv = argsArray->AppendElement(scriptableOrigin, /*weak =*/ false);
   NS_ENSURE_SUCCESS(rv, rv);

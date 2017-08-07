@@ -41,7 +41,9 @@
 #include "mozilla/dom/Headers.h"
 #include "mozilla/dom/InternalHeaders.h"
 #include "mozilla/dom/Navigator.h"
+#ifdef MOZ_NOTIFICATION
 #include "mozilla/dom/NotificationEvent.h"
+#endif
 #include "mozilla/dom/PromiseNativeHandler.h"
 #include "mozilla/dom/Request.h"
 #include "mozilla/dom/RootedDictionary.h"
@@ -667,7 +669,9 @@ ServiceWorkerManager::Register(mozIDOMWindow* aWindow,
   // This allows checks for interfaces like nsILoadContext to yield the values used by the
   // the document, yet will not cancel the update job if the document's load group is cancelled.
   nsCOMPtr<nsILoadGroup> loadGroup = do_CreateInstance(NS_LOADGROUP_CONTRACTID);
+#ifdef MOZ_NOTIFICATION
   MOZ_ALWAYS_SUCCEEDS(loadGroup->SetNotificationCallbacks(ir));
+#endif
 
   RefPtr<ServiceWorkerRegisterJob> job =
     new ServiceWorkerRegisterJob(documentPrincipal, cleanedScope, spec,

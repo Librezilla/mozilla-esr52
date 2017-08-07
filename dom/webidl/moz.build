@@ -29,7 +29,6 @@ WEBIDL_FILES = [
     'AnimationTimeline.webidl',
     'AnonymousContent.webidl',
     'AppInfo.webidl',
-    'AppNotificationServiceOptions.webidl',
     'APZTestData.webidl',
     'ArchiveReader.webidl',
     'ArchiveRequest.webidl',
@@ -105,7 +104,6 @@ WEBIDL_FILES = [
     'DecoderDoctorNotification.webidl',
     'DedicatedWorkerGlobalScope.webidl',
     'DelayNode.webidl',
-    'DesktopNotification.webidl',
     'DeviceMotionEvent.webidl',
     'Directory.webidl',
     'Document.webidl',
@@ -312,8 +310,6 @@ WEBIDL_FILES = [
     'NodeFilter.webidl',
     'NodeIterator.webidl',
     'NodeList.webidl',
-    'Notification.webidl',
-    'NotificationEvent.webidl',
     'NotifyPaintEvent.webidl',
     'OfflineAudioCompletionEvent.webidl',
     'OfflineAudioContext.webidl',
@@ -662,6 +658,14 @@ if CONFIG['MOZ_GAMEPAD']:
         'Gamepad.webidl',
         'GamepadPose.webidl',
         'GamepadServiceTest.webidl'
+    ]
+
+if CONFIG['MOZ_NOTIFICATIONS']:
+    WEBIDL_FILES += [
+        'AppNotificationServiceOptions.webidl',
+        'DesktopNotification.webidl',
+        'Notification.webidl',
+        'NotificationEvent.webidl'
     ]
 
 WEBIDL_FILES += [

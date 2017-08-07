@@ -192,11 +192,13 @@ partial interface Navigator {
   readonly attribute boolean cpuHasSSE2;
 };
 
+#ifdef MOZ_NOTIFICATION
 // nsIDOMNavigatorDesktopNotification
 partial interface Navigator {
   [Throws, Pref="notification.feature.enabled", UnsafeInPrerendering]
   readonly attribute DesktopNotificationCenter mozNotification;
 };
+#endif
 
 // NetworkInformation
 partial interface Navigator {

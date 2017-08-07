@@ -48,7 +48,9 @@
 #include "nsIDOMGeoGeolocation.h"
 #include "nsIDOMGeoPositionError.h"
 #endif
+#ifdef MOZ_NOTIFICATION
 #include "mozilla/dom/Notification.h"
+#endif
 #include "mozilla/dom/PContentBridgeParent.h"
 #include "mozilla/dom/PContentPermissionRequestParent.h"
 #include "mozilla/dom/PCycleCollectWithLogsParent.h"
@@ -3664,6 +3666,7 @@ ContentParent::RecvExtProtocolChannelConnectParent(const uint32_t& registrarId)
   return true;
 }
 
+#ifdef MOZ_NOTIFICATION
 bool
 ContentParent::HasNotificationPermission(const IPC::Principal& aPrincipal)
 {
@@ -3726,6 +3729,7 @@ ContentParent::RecvOpenNotificationSettings(const IPC::Principal& aPrincipal)
   }
   return true;
 }
+#endif /* MOZ_NOTIFICATION */
 
 bool
 ContentParent::RecvSyncMessage(const nsString& aMsg,

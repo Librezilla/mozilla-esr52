@@ -12,7 +12,9 @@
 #include "nsPluginArray.h"
 #include "nsMimeTypeArray.h"
 #include "mozilla/MemoryReporting.h"
+#ifdef MOZ_NOTIFICATION
 #include "mozilla/dom/DesktopNotification.h"
+#endif
 #include "mozilla/dom/File.h"
 #ifdef MOZ_GEOLOCATION
 #include "nsGeolocation.h"
@@ -204,7 +206,9 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(Navigator)
 #ifdef MOZ_GEOLOCATION
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mGeolocation)
 #endif
+#ifdef MOZ_NOTIFICATION
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mNotification)
+#endif
 #ifdef MOZ_POWER
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPowerManager)
 #endif /* MOZ_POWER */
@@ -256,10 +260,12 @@ Navigator::Invalidate()
   }
 #endif
 
+#ifdef MOZ_NOTIFICATION
   if (mNotification) {
     mNotification->Shutdown();
     mNotification = nullptr;
   }
+#endif
 
 #if MOZ_POWER
   if (mPowerManager) {
@@ -1139,6 +1145,7 @@ Navigator::MozGetUserMediaDevices(const MediaStreamConstraints& aConstraints,
                                      aInnerWindowID, aCallID);
 }
 
+#ifdef MOZ_NOTIFICATION
 DesktopNotificationCenter*
 Navigator::GetMozNotification(ErrorResult& aRv)
 {
@@ -1154,6 +1161,7 @@ Navigator::GetMozNotification(ErrorResult& aRv)
   mNotification = new DesktopNotificationCenter(mWindow);
   return mNotification;
 }
+#endif
 
 #ifdef MOZ_FLYWEB
 already_AddRefed<Promise>

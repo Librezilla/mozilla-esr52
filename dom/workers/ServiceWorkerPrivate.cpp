@@ -25,7 +25,9 @@
 #include "mozilla/dom/FetchUtil.h"
 #include "mozilla/dom/IndexedDatabaseManager.h"
 #include "mozilla/dom/InternalHeaders.h"
+#ifdef MOZ_NOTIFICATION
 #include "mozilla/dom/NotificationEvent.h"
+#endif
 #include "mozilla/dom/PromiseNativeHandler.h"
 #include "mozilla/dom/PushEventBinding.h"
 #include "mozilla/dom/RequestBinding.h"
@@ -1109,6 +1111,7 @@ ClearWindowAllowedRunnable::WorkerRun(JSContext* aCx, WorkerPrivate* aWorkerPriv
   return true;
 }
 
+#ifdef MOZ_NOTIFICATION
 class SendNotificationEventRunnable final : public ExtendableEventWorkerRunnable
 {
   const nsString mEventName;
@@ -1196,9 +1199,11 @@ public:
     return true;
   }
 };
+#endif /* MOZ_NOTIFICATION */
 
 } // namespace anonymous
 
+#ifdef MOZ_NOTIFICATION
 nsresult
 ServiceWorkerPrivate::SendNotificationEvent(const nsAString& aEventName,
                                             const nsAString& aID,
@@ -1239,6 +1244,7 @@ ServiceWorkerPrivate::SendNotificationEvent(const nsAString& aEventName,
 
   return NS_OK;
 }
+#endif /* MOZ_NOTIFICATION */
 
 namespace {
 

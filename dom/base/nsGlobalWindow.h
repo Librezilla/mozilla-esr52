@@ -1993,7 +1993,9 @@ protected:
   friend class nsDOMScriptableHelper;
   friend class nsDOMWindowUtils;
   friend class mozilla::dom::PostMessageEvent;
+#ifdef MOZ_NOTIFICATION
   friend class DesktopNotification;
+#endif
 
   static WindowByIdTable* sWindowsById;
   static bool sWarnedAboutWindowInternal;

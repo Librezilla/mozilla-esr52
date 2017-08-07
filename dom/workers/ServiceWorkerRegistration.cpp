@@ -7,7 +7,9 @@
 #include "ServiceWorkerRegistration.h"
 
 #include "ipc/ErrorIPCUtils.h"
+#ifdef MOZ_NOTIFICATION
 #include "mozilla/dom/Notification.h"
+#endif
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/PromiseWorkerProxy.h"
 #include "mozilla/dom/PushManagerBinding.h"
@@ -53,6 +55,7 @@ ServiceWorkerRegistration::Visible(JSContext* aCx, JSObject* aObj)
   return workerPrivate->ServiceWorkersEnabled();
 }
 
+#ifdef MOZ_NOTIFICATION
 /* static */ bool
 ServiceWorkerRegistration::NotificationAPIVisible(JSContext* aCx, JSObject* aObj)
 {
@@ -68,6 +71,7 @@ ServiceWorkerRegistration::NotificationAPIVisible(JSContext* aCx, JSObject* aObj
 
   return workerPrivate->DOMServiceWorkerNotificationEnabled();
 }
+#endif
 
 ////////////////////////////////////////////////////
 // Main Thread implementation
@@ -90,6 +94,7 @@ public:
   already_AddRefed<Promise>
   Unregister(ErrorResult& aRv) override;
 
+#ifdef MOZ_NOTIFICATION
   // Partial interface from Notification API.
   already_AddRefed<Promise>
   ShowNotification(JSContext* aCx,
@@ -100,6 +105,7 @@ public:
   already_AddRefed<Promise>
   GetNotifications(const GetNotificationOptions& aOptions,
                    ErrorResult& aRv) override;
+#endif
 
   already_AddRefed<ServiceWorker>
   GetInstalling() override;
@@ -775,6 +781,7 @@ ServiceWorkerRegistrationMainThread::Unregister(ErrorResult& aRv)
   return promise.forget();
 }
 
+#ifdef MOZ_NOTIFICATION
 // Notification API extension.
 already_AddRefed<Promise>
 ServiceWorkerRegistrationMainThread::ShowNotification(JSContext* aCx,
@@ -823,6 +830,7 @@ ServiceWorkerRegistrationMainThread::GetNotifications(const GetNotificationOptio
   }
   return Notification::Get(window, aOptions, mScope, aRv);
 }
+#endif /* MOZ_NOTIFICATION */
 
 already_AddRefed<PushManager>
 ServiceWorkerRegistrationMainThread::GetPushManager(JSContext* aCx,
@@ -869,6 +877,7 @@ public:
   already_AddRefed<Promise>
   Unregister(ErrorResult& aRv) override;
 
+#ifdef MOZ_NOTIFICATION
   // Partial interface from Notification API.
   already_AddRefed<Promise>
   ShowNotification(JSContext* aCx,
@@ -879,6 +888,7 @@ public:
   already_AddRefed<Promise>
   GetNotifications(const GetNotificationOptions& aOptions,
                    ErrorResult& aRv) override;
+#endif /* MOZ_NOTIFICATION */
 
   already_AddRefed<ServiceWorker>
   GetInstalling() override;
@@ -1236,6 +1246,7 @@ WorkerListener::UpdateFound()
   }
 }
 
+#ifdef MOZ_NOTIFICATION
 // Notification API extension.
 already_AddRefed<Promise>
 ServiceWorkerRegistrationWorkerThread::ShowNotification(JSContext* aCx,
@@ -1263,6 +1274,7 @@ ServiceWorkerRegistrationWorkerThread::GetNotifications(const GetNotificationOpt
 {
   return Notification::WorkerGet(mWorkerPrivate, aOptions, mScope, aRv);
 }
+#endif /* MOZ_NOTIFICATION */
 
 already_AddRefed<PushManager>
 ServiceWorkerRegistrationWorkerThread::GetPushManager(JSContext* aCx, ErrorResult& aRv)

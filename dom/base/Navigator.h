@@ -57,7 +57,9 @@ class Permissions;
 
 class Promise;
 
+#ifdef MOZ_NOTIFICATION
 class DesktopNotificationCenter;
+#endif
 class MozIdleObserver;
 #ifdef MOZ_GAMEPAD
 class Gamepad;
@@ -192,7 +194,9 @@ public:
   already_AddRefed<WakeLock> RequestWakeLock(const nsAString &aTopic,
                                              ErrorResult& aRv);
 
+#ifdef MOZ_NOTIFICATION
   DesktopNotificationCenter* GetMozNotification(ErrorResult& aRv);
+#endif
   already_AddRefed<LegacyMozTCPSocket> MozTCPSocket();
   network::Connection* GetConnection(ErrorResult& aRv);
   MediaDevices* GetMediaDevices(ErrorResult& aRv);
@@ -281,7 +285,9 @@ private:
 #ifdef MOZ_GEOLOCATION
   RefPtr<Geolocation> mGeolocation;
 #endif
+#ifdef MOZ_NOTIFICATION
   RefPtr<DesktopNotificationCenter> mNotification;
+#endif
 #ifdef MOZ_POWER
   RefPtr<PowerManager> mPowerManager;
 #endif
