@@ -616,7 +616,6 @@
     "dom/manifest/test/browser_ManifestObtainer_obtain.js": 18836, 
     "dom/media/webaudio/test/browser_bug1181073.js": 4083, 
     "dom/notification/test/browser/browser_permission_dismiss.js": 2250, 
-    "dom/power/test/browser_wakelocks.js": 4354, 
     "dom/security/test/contentverifier/browser_verify_content_about_newtab.js": 12181, 
     "dom/security/test/contentverifier/browser_verify_content_about_newtab2.js": 10284, 
     "dom/security/test/csp/browser_manifest-src-override-default-src.js": 1939, 
