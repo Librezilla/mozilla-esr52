@@ -48,9 +48,6 @@ MutationRecord implements LegacyQueryInterface;
 Navigator implements LegacyQueryInterface;
 NodeIterator implements LegacyQueryInterface;
 NodeList implements LegacyQueryInterface;
-#ifdef MOZ_NOTIFICATIONS
-Notification implements LegacyQueryInterface;
-#endif
 OfflineResourceList implements LegacyQueryInterface;
 PaintRequest implements LegacyQueryInterface;
 PaintRequestList implements LegacyQueryInterface;
