@@ -159,9 +159,9 @@ public:
     MOZ_RELEASE_ASSERT(false, "Skia is not enabled");
   }
 
-  const nsIntSize& OriginalSize() const { return nsIntSize(); }
-  const nsIntSize& TargetSize() const { return nsIntSize(); }
-  const gfxSize& Scale() const { return gfxSize(1.0, 1.0); }
+  const nsIntSize OriginalSize() const { return nsIntSize(); }
+  const nsIntSize TargetSize() const { return nsIntSize(); }
+  const gfxSize Scale() const { return gfxSize(1.0, 1.0); }
 
   nsresult BeginFrame(const nsIntSize&, const Maybe<nsIntRect>&, uint8_t*, bool, bool = false)
   {
