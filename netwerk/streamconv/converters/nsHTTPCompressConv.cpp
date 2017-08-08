@@ -18,6 +18,8 @@
 #include "nsIForcePendingChannel.h"
 #include "nsIRequest.h"
 
+#include "mozilla/UniquePtrExtensions.h"
+
 // brotli headers
 #include "state.h"
 #include "decode.h"

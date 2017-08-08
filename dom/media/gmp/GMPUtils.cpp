@@ -12,6 +12,7 @@
 #include "nsCRTGlue.h"
 #include "mozilla/Base64.h"
 #include "nsISimpleEnumerator.h"
+#include "prio.h"
 
 namespace mozilla {
 
