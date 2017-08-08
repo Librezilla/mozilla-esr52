@@ -7579,6 +7579,7 @@ class CGPerSignatureCall(CGThing):
 
         self.cgRoot = CGList(cgThings)
 
+    # argument within a function call
     def getArguments(self):
         return [(a, "arg" + str(i)) for i, a in enumerate(self.arguments)]
 
