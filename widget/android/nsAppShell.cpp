@@ -264,22 +264,6 @@ public:
                                  aData ? aData->ToString().get() : nullptr);
     }
 
-    static void OnSensorChanged(int32_t aType, float aX, float aY, float aZ,
-                                float aW, int32_t aAccuracy, int64_t aTime)
-    {
-        AutoTArray<float, 4> values;
-
-        switch (aType) {
-        default:
-            __android_log_print(ANDROID_LOG_ERROR, "Gecko",
-                                "Unknown sensor type %d", aType);
-        }
-
-        hal::SensorData sdata(hal::SensorType(aType), aTime, values,
-                              hal::SensorAccuracyType(aAccuracy));
-        hal::NotifySensorChange(sdata);
-    }
-
     static void OnLocationChanged(double aLatitude, double aLongitude,
                                   double aAltitude, float aAccuracy,
                                   float aBearing, float aSpeed, int64_t aTime)

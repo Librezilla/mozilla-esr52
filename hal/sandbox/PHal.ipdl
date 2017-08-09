@@ -105,13 +105,7 @@ parent:
       returns (bool allowed);
     async UnlockScreenOrientation();
 
-child:
-    async NotifySensorChange(SensorData aSensorData);
-
 parent:
-    async EnableSensorNotifications(SensorType aSensor);
-    async DisableSensorNotifications(SensorType aSensor);
-
     async __delete__();
 };
 
