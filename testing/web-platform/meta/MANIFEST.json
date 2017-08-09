@@ -24596,18 +24596,6 @@
         "url": "/progress-events/tests/submissions/Samsung/firing-events-http-no-content-length.html"
       },
       {
-        "path": "proximity/DeviceProximityEvent_tests.html",
-        "url": "/proximity/DeviceProximityEvent_tests.html"
-      },
-      {
-        "path": "proximity/UserProximityEvent_tests.html",
-        "url": "/proximity/UserProximityEvent_tests.html"
-      },
-      {
-        "path": "proximity/idlharness.html",
-        "url": "/proximity/idlharness.html"
-      },
-      {
         "path": "quirks-mode/blocks-ignore-line-height.html",
         "url": "/quirks-mode/blocks-ignore-line-height.html"
       },

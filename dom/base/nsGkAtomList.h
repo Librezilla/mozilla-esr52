@@ -1948,9 +1948,7 @@ GK_ATOM(onlostpointercapture, "onlostpointercapture")
 GK_ATOM(ondevicemotion, "ondevicemotion")
 GK_ATOM(ondeviceorientation, "ondeviceorientation")
 GK_ATOM(onabsolutedeviceorientation, "onabsolutedeviceorientation")
-GK_ATOM(ondeviceproximity, "ondeviceproximity")
 GK_ATOM(onmozorientationchange, "onmozorientationchange")
-GK_ATOM(onuserproximity, "onuserproximity")
 
 // Audio channel events
 GK_ATOM(onmozinterruptbegin, "onmozinterruptbegin")

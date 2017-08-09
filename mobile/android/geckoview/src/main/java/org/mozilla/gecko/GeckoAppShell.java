@@ -190,7 +190,6 @@ public class GeckoAppShell
     private static Sensor gLinearAccelerometerSensor;
     private static Sensor gGyroscopeSensor;
     private static Sensor gOrientationSensor;
-    private static Sensor gProximitySensor;
     private static Sensor gLightSensor;
     private static Sensor gRotationVectorSensor;
     private static Sensor gGameRotationVectorSensor;
@@ -510,12 +509,6 @@ public class GeckoAppShell
                 z = (float) Math.toDegrees(s.values[2]);
                 break;
 
-            case Sensor.TYPE_PROXIMITY:
-                hal_type = GeckoHalDefines.SENSOR_PROXIMITY;
-                x = s.values[0];
-                z = s.sensor.getMaximumRange();
-                break;
-
             case Sensor.TYPE_ROTATION_VECTOR:
             case Sensor.TYPE_GAME_ROTATION_VECTOR: // API >= 18
                 hal_type = (sensor_type == Sensor.TYPE_ROTATION_VECTOR ?
@@ -680,17 +673,6 @@ public class GeckoAppShell
             }
             break;
 
-        case GeckoHalDefines.SENSOR_PROXIMITY:
-            if (gProximitySensor == null) {
-                gProximitySensor = sm.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            }
-            if (gProximitySensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gProximitySensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-            }
-            break;
-
         case GeckoHalDefines.SENSOR_LINEAR_ACCELERATION:
             if (gLinearAccelerometerSensor == null) {
                 gLinearAccelerometerSensor = sm.getDefaultSensor(
@@ -753,12 +735,6 @@ public class GeckoAppShell
         case GeckoHalDefines.SENSOR_ACCELERATION:
             if (gAccelerometerSensor != null) {
                 sm.unregisterListener(getSensorListener(), gAccelerometerSensor);
-            }
-            break;
-
-        case GeckoHalDefines.SENSOR_PROXIMITY:
-            if (gProximitySensor != null) {
-                sm.unregisterListener(getSensorListener(), gProximitySensor);
             }
             break;
 

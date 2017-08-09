@@ -343,8 +343,6 @@ partial interface Window {
            attribute EventHandler ondevicemotion;
            attribute EventHandler ondeviceorientation;
            attribute EventHandler onabsolutedeviceorientation;
-           attribute EventHandler ondeviceproximity;
-           attribute EventHandler onuserproximity;
 
 #ifdef MOZ_B2G
            attribute EventHandler onmoztimechange;

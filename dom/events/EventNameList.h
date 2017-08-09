@@ -603,14 +603,6 @@ WINDOW_ONLY_EVENT(absolutedeviceorientation,
                   eAbsoluteDeviceOrientation,
                   EventNameType_None,
                   eBasicEventClass)
-WINDOW_ONLY_EVENT(deviceproximity,
-                  eDeviceProximity,
-                  EventNameType_None,
-                  eBasicEventClass)
-WINDOW_ONLY_EVENT(userproximity,
-                  eUserProximity,
-                  EventNameType_None,
-                  eBasicEventClass)
 WINDOW_ONLY_EVENT(vrdisplayconnect,
                   eVRDisplayConnect,
                   EventNameType_None,

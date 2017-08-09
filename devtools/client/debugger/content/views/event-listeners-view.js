@@ -147,8 +147,6 @@ EventListenersView.prototype = Heritage.extend(WidgetMethods, {
       group = L10N.getStr("navigationEvents");
     } else if (is("pointerlockchange", "pointerlockerror")) {
       group = L10N.getStr("pointerLockEvents");
-    } else if (is("compassneedscalibration", "userproximity")) {
-      group = L10N.getStr("sensorEvents");
     } else if (starts("storage")) {
       group = L10N.getStr("storageEvents");
     } else if (is("beginEvent", "endEvent", "repeatEvent")) {
