@@ -1307,30 +1307,6 @@ public:
                 mozilla::jni::DispatchTarget::GECKO;
     };
 
-    struct OnSensorChanged_t {
-        typedef GeckoAppShell Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int32_t,
-                float,
-                float,
-                float,
-                float,
-                int32_t,
-                int64_t> Args;
-        static constexpr char name[] = "onSensorChanged";
-        static constexpr char signature[] =
-                "(IFFFFIJ)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::UI;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::GECKO;
-    };
-
     struct OpenUriExternal_t {
         typedef GeckoAppShell Owner;
         typedef bool ReturnType;
