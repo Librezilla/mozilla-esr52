@@ -559,12 +559,6 @@ WINDOW_EVENT(online,
              eOnline,
              EventNameType_XUL | EventNameType_HTMLBodyOrFramesetOnly,
              eBasicEventClass)
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-WINDOW_EVENT(orientationchange,
-             eOrientationChange,
-             EventNameType_HTMLBodyOrFramesetOnly,
-             eBasicEventClass)
-#endif
 WINDOW_EVENT(pagehide,
              ePageHide,
              EventNameType_HTMLBodyOrFramesetOnly,
@@ -591,14 +585,6 @@ WINDOW_EVENT(unload,
               EventNameType_HTMLBodyOrFramesetOnly),
              eBasicEventClass)
 
-WINDOW_ONLY_EVENT(deviceorientation,
-                  eDeviceOrientation,
-                  EventNameType_None,
-                  eBasicEventClass)
-WINDOW_ONLY_EVENT(absolutedeviceorientation,
-                  eAbsoluteDeviceOrientation,
-                  EventNameType_None,
-                  eBasicEventClass)
 WINDOW_ONLY_EVENT(vrdisplayconnect,
                   eVRDisplayConnect,
                   EventNameType_None,

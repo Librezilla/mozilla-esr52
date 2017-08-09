@@ -869,7 +869,6 @@ GK_ATOM(onobsolete, "onobsolete")
 GK_ATOM(ononline, "ononline")
 GK_ATOM(onoffline, "onoffline")
 GK_ATOM(onopen, "onopen")
-GK_ATOM(onorientationchange, "onorientationchange")
 GK_ATOM(onotastatuschange, "onotastatuschange")
 GK_ATOM(onoverflow, "onoverflow")
 GK_ATOM(onoverflowchanged, "onoverflowchanged")
@@ -1943,11 +1942,6 @@ GK_ATOM(onpointerenter, "onpointerenter")
 GK_ATOM(onpointerleave, "onpointerleave")
 GK_ATOM(ongotpointercapture, "ongotpointercapture")
 GK_ATOM(onlostpointercapture, "onlostpointercapture")
-
-// orientation support
-GK_ATOM(ondeviceorientation, "ondeviceorientation")
-GK_ATOM(onabsolutedeviceorientation, "onabsolutedeviceorientation")
-GK_ATOM(onmozorientationchange, "onmozorientationchange")
 
 // Audio channel events
 GK_ATOM(onmozinterruptbegin, "onmozinterruptbegin")

@@ -187,7 +187,6 @@ public class GeckoAppShell
     static private int sScreenDepth;
 
     private static Sensor gAccelerometerSensor;
-    private static Sensor gOrientationSensor;
     private static Sensor gLightSensor;
     private static Sensor gRotationVectorSensor;
     private static Sensor gGameRotationVectorSensor;
@@ -484,37 +483,6 @@ public class GeckoAppShell
             // SensorEvent timestamp is in nanoseconds, Gecko expects microseconds.
             final long time = s.timestamp / 1000;
 
-            switch (sensor_type) {
-            case Sensor.TYPE_ACCELEROMETER:
-            case Sensor.TYPE_LINEAR_ACCELERATION:
-            case Sensor.TYPE_ORIENTATION:
-                    hal_type = GeckoHalDefines.SENSOR_ORIENTATION;
-                x = s.values[0];
-                y = s.values[1];
-                z = s.values[2];
-                break;
-
-            case Sensor.TYPE_ROTATION_VECTOR:
-            case Sensor.TYPE_GAME_ROTATION_VECTOR: // API >= 18
-                hal_type = (sensor_type == Sensor.TYPE_ROTATION_VECTOR ?
-                        GeckoHalDefines.SENSOR_ROTATION_VECTOR :
-                        GeckoHalDefines.SENSOR_GAME_ROTATION_VECTOR);
-                x = s.values[0];
-                y = s.values[1];
-                z = s.values[2];
-                if (s.values.length >= 4) {
-                    w = s.values[3];
-                } else {
-                    // s.values[3] was optional in API <= 18, so we need to compute it
-                    // The values form a unit quaternion, so we can compute the angle of
-                    // rotation purely based on the given 3 values.
-                    w = 1.0f - s.values[0] * s.values[0] -
-                            s.values[1] * s.values[1] - s.values[2] * s.values[2];
-                    w = (w > 0.0f) ? (float) Math.sqrt(w) : 0.0f;
-                }
-                break;
-            }
-
             GeckoAppShell.onSensorChanged(hal_type, x, y, z, w, accuracy, time);
         }
 
@@ -603,48 +571,6 @@ public class GeckoAppShell
             getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         switch (aSensortype) {
-        case GeckoHalDefines.SENSOR_GAME_ROTATION_VECTOR:
-            if (gGameRotationVectorSensor == null) {
-                gGameRotationVectorSensor = sm.getDefaultSensor(15);
-                    // sm.getDefaultSensor(
-                    //     Sensor.TYPE_GAME_ROTATION_VECTOR); // API >= 18
-            }
-            if (gGameRotationVectorSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gGameRotationVectorSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            if (gGameRotationVectorSensor != null) {
-              break;
-            }
-            // Fallthrough
-
-        case GeckoHalDefines.SENSOR_ROTATION_VECTOR:
-            if (gRotationVectorSensor == null) {
-                gRotationVectorSensor = sm.getDefaultSensor(
-                    Sensor.TYPE_ROTATION_VECTOR);
-            }
-            if (gRotationVectorSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gRotationVectorSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            if (gRotationVectorSensor != null) {
-              break;
-            }
-            // Fallthrough
-
-        case GeckoHalDefines.SENSOR_ORIENTATION:
-            if (gOrientationSensor == null) {
-                gOrientationSensor = sm.getDefaultSensor(
-                    Sensor.TYPE_ORIENTATION);
-            }
-            if (gOrientationSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gOrientationSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            break;
 
         default:
             Log.w(LOGTAG, "Error! Can't enable unknown SENSOR type " +
@@ -662,25 +588,6 @@ public class GeckoAppShell
             getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         switch (aSensortype) {
-        case GeckoHalDefines.SENSOR_GAME_ROTATION_VECTOR:
-            if (gGameRotationVectorSensor != null) {
-                sm.unregisterListener(getSensorListener(), gGameRotationVectorSensor);
-              break;
-            }
-            // Fallthrough
-
-        case GeckoHalDefines.SENSOR_ROTATION_VECTOR:
-            if (gRotationVectorSensor != null) {
-                sm.unregisterListener(getSensorListener(), gRotationVectorSensor);
-              break;
-            }
-            // Fallthrough
-
-        case GeckoHalDefines.SENSOR_ORIENTATION:
-            if (gOrientationSensor != null) {
-                sm.unregisterListener(getSensorListener(), gOrientationSensor);
-            }
-            break;
 
         default:
             Log.w(LOGTAG, "Error! Can't disable unknown SENSOR type " + aSensortype);

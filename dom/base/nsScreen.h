@@ -117,8 +117,6 @@ public:
   // Deprecated
   void GetMozOrientation(nsString& aOrientation) const;
 
-  IMPL_EVENT_HANDLER(mozorientationchange)
-
   bool MozLockOrientation(const nsAString& aOrientation, ErrorResult& aRv);
   bool MozLockOrientation(const mozilla::dom::Sequence<nsString>& aOrientations, ErrorResult& aRv);
   void MozUnlockOrientation();

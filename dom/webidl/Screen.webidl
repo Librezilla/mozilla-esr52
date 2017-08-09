@@ -36,8 +36,6 @@ interface Screen : EventTarget {
    */
   readonly attribute DOMString mozOrientation;
 
-  attribute EventHandler onmozorientationchange;
-
   /**
    * DEPRECATED, use ScreenOrientation API instead.
    * Lock screen orientation to the specified type.

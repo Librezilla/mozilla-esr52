@@ -369,13 +369,6 @@ NS_EVENT_MESSAGE(eMessage)
 // Menu open event
 NS_EVENT_MESSAGE(eOpen)
 
-// Device motion and orientation
-NS_EVENT_MESSAGE(eDeviceOrientation)
-NS_EVENT_MESSAGE(eAbsoluteDeviceOrientation)
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-NS_EVENT_MESSAGE(eOrientationChange)
-#endif
-
 // WebVR events
 NS_EVENT_MESSAGE(eVRDisplayConnect)
 NS_EVENT_MESSAGE(eVRDisplayDisconnect)

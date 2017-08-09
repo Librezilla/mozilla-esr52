@@ -10,10 +10,6 @@ public class GeckoHalDefines
     /*
      * Keep these values consistent with |SensorType| in HalSensor.h
      */
-    public static final int SENSOR_ORIENTATION = 0;
-    public static final int SENSOR_ROTATION_VECTOR = 6;
-    public static final int SENSOR_GAME_ROTATION_VECTOR = 7;
-
     public static final int SENSOR_ACCURACY_UNKNOWN = -1;
     public static final int SENSOR_ACCURACY_UNRELIABLE = 0;
     public static final int SENSOR_ACCURACY_LOW = 1;

@@ -340,9 +340,6 @@ partial interface Window {
   [Pure]
            attribute EventHandler onwheel;
 
-           attribute EventHandler ondeviceorientation;
-           attribute EventHandler onabsolutedeviceorientation;
-
 #ifdef MOZ_B2G
            attribute EventHandler onmoztimechange;
            attribute EventHandler onmoznetworkupload;
@@ -390,7 +387,6 @@ Window implements OnErrorEventHandlerForWindow;
 partial interface Window {
   [NeedsCallerType]
   readonly attribute short orientation;
-           attribute EventHandler onorientationchange;
 };
 #endif
 

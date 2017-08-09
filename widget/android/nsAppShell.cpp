@@ -270,23 +270,6 @@ public:
         AutoTArray<float, 4> values;
 
         switch (aType) {
-        // Bug 938035, transfer HAL data for orientation sensor to meet w3c
-        // spec, ex: HAL report alpha=90 means East but alpha=90 means West
-        // in w3c spec
-        case hal::SENSOR_ORIENTATION:
-            values.AppendElement(360.0f - aX);
-            values.AppendElement(-aY);
-            values.AppendElement(-aZ);
-            break;
-
-        case hal::SENSOR_ROTATION_VECTOR:
-        case hal::SENSOR_GAME_ROTATION_VECTOR:
-            values.AppendElement(aX);
-            values.AppendElement(aY);
-            values.AppendElement(aZ);
-            values.AppendElement(aW);
-            break;
-
         default:
             __android_log_print(ANDROID_LOG_ERROR, "Gecko",
                                 "Unknown sensor type %d", aType);

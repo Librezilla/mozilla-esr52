@@ -135,9 +135,6 @@ class U2F;
 class VRDisplay;
 class VREventObserver;
 class WakeLock;
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-class WindowOrientationObserver;
-#endif
 class Worklet;
 namespace cache {
 class CacheStorage;
@@ -627,11 +624,6 @@ public:
   // Inner windows only.
   virtual void EnableDeviceSensor(uint32_t aType) override;
   virtual void DisableDeviceSensor(uint32_t aType) override;
-
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-  virtual void EnableOrientationChangeListener() override;
-  virtual void DisableOrientationChangeListener() override;
-#endif
 
   virtual void EnableTimeChangeNotifications() override;
   virtual void DisableTimeChangeNotifications() override;
@@ -1972,10 +1964,6 @@ protected:
   bool                          mAreDialogsEnabled;
 
   nsTHashtable<nsPtrHashKey<mozilla::DOMEventTargetHelper> > mEventTargetObjects;
-
-#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
-  nsAutoPtr<mozilla::dom::WindowOrientationObserver> mOrientationChangeObserver;
-#endif
 
 #ifdef MOZ_WEBSPEECH
   // mSpeechSynthesis is only used on inner windows.
