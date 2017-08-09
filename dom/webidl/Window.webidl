@@ -340,7 +340,6 @@ partial interface Window {
   [Pure]
            attribute EventHandler onwheel;
 
-           attribute EventHandler ondevicemotion;
            attribute EventHandler ondeviceorientation;
            attribute EventHandler onabsolutedeviceorientation;
 

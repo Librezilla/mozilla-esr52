@@ -1945,7 +1945,6 @@ GK_ATOM(ongotpointercapture, "ongotpointercapture")
 GK_ATOM(onlostpointercapture, "onlostpointercapture")
 
 // orientation support
-GK_ATOM(ondevicemotion, "ondevicemotion")
 GK_ATOM(ondeviceorientation, "ondeviceorientation")
 GK_ATOM(onabsolutedeviceorientation, "onabsolutedeviceorientation")
 GK_ATOM(onmozorientationchange, "onmozorientationchange")

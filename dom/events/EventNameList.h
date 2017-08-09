@@ -591,10 +591,6 @@ WINDOW_EVENT(unload,
               EventNameType_HTMLBodyOrFramesetOnly),
              eBasicEventClass)
 
-WINDOW_ONLY_EVENT(devicemotion,
-                  eDeviceMotion,
-                  EventNameType_None,
-                  eBasicEventClass)
 WINDOW_ONLY_EVENT(deviceorientation,
                   eDeviceOrientation,
                   EventNameType_None,

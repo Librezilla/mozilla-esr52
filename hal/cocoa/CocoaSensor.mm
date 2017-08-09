@@ -46,14 +46,6 @@ UpdateHandler(nsITimer *aTimer, void *aClosure)
     }
     SensorType sensor = static_cast<SensorType>(i);
     InfallibleTArray<float> values;
-    if (sensor == SENSOR_ACCELERATION) {
-      sms_acceleration accel;
-      smsGetData(&accel);
-
-      values.AppendElement(accel.x * MEAN_GRAVITY);
-      values.AppendElement(accel.y * MEAN_GRAVITY);
-      values.AppendElement(accel.z * MEAN_GRAVITY);
-    }
 
     hal::SensorData sdata(sensor,
                           PR_Now(),
@@ -65,54 +57,13 @@ UpdateHandler(nsITimer *aTimer, void *aClosure)
 void
 EnableSensorNotifications(SensorType aSensor)
 {
-  if (aSensor == SENSOR_ACCELERATION) {
-    int result = smsStartup(nil, nil);
-
-    if (result != SMS_SUCCESS) {
-      return;
-    }
-
-    if (!smsLoadCalibration()) {
-      return;
-    }
-  } else {
     NS_WARNING("EnableSensorNotifications called on an unknown sensor type");
     return;
-  }
-  sActiveSensors[aSensor] = true;
-
-  if (!sUpdateTimer) {
-    CallCreateInstance("@mozilla.org/timer;1", &sUpdateTimer);
-    if (sUpdateTimer) {
-        sUpdateTimer->InitWithFuncCallback(UpdateHandler,
-                                           nullptr,
-                                           DEFAULT_SENSOR_POLL,
-                                           nsITimer::TYPE_REPEATING_SLACK);
-    }
-  }
 }
 void
 DisableSensorNotifications(SensorType aSensor)
 {
-  if (!sActiveSensors[aSensor] || (aSensor != SENSOR_ACCELERATION)) {
     return;
-  }
-
-  sActiveSensors[aSensor] = false;
-
-  if (aSensor == SENSOR_ACCELERATION) {
-    smsShutdown();
-  }
-  // If all sensors are disabled, cancel the update timer.
-  if (sUpdateTimer) {
-    for (int i = 0; i < NUM_SENSOR_TYPE; i++) {
-      if (sActiveSensors[i]) {
-        return;
-      }
-    }
-    sUpdateTimer->Cancel();
-    NS_RELEASE(sUpdateTimer);
-  }
 }
 } // namespace hal_impl
 } // namespace mozilla

@@ -187,8 +187,6 @@ public class GeckoAppShell
     static private int sScreenDepth;
 
     private static Sensor gAccelerometerSensor;
-    private static Sensor gLinearAccelerometerSensor;
-    private static Sensor gGyroscopeSensor;
     private static Sensor gOrientationSensor;
     private static Sensor gLightSensor;
     private static Sensor gRotationVectorSensor;
@@ -490,23 +488,10 @@ public class GeckoAppShell
             case Sensor.TYPE_ACCELEROMETER:
             case Sensor.TYPE_LINEAR_ACCELERATION:
             case Sensor.TYPE_ORIENTATION:
-                if (sensor_type == Sensor.TYPE_ACCELEROMETER) {
-                    hal_type = GeckoHalDefines.SENSOR_ACCELERATION;
-                } else if (sensor_type == Sensor.TYPE_LINEAR_ACCELERATION) {
-                    hal_type = GeckoHalDefines.SENSOR_LINEAR_ACCELERATION;
-                } else {
                     hal_type = GeckoHalDefines.SENSOR_ORIENTATION;
-                }
                 x = s.values[0];
                 y = s.values[1];
                 z = s.values[2];
-                break;
-
-            case Sensor.TYPE_GYROSCOPE:
-                hal_type = GeckoHalDefines.SENSOR_GYROSCOPE;
-                x = (float) Math.toDegrees(s.values[0]);
-                y = (float) Math.toDegrees(s.values[1]);
-                z = (float) Math.toDegrees(s.values[2]);
                 break;
 
             case Sensor.TYPE_ROTATION_VECTOR:
@@ -661,41 +646,6 @@ public class GeckoAppShell
             }
             break;
 
-        case GeckoHalDefines.SENSOR_ACCELERATION:
-            if (gAccelerometerSensor == null) {
-                gAccelerometerSensor = sm.getDefaultSensor(
-                    Sensor.TYPE_ACCELEROMETER);
-            }
-            if (gAccelerometerSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gAccelerometerSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            break;
-
-        case GeckoHalDefines.SENSOR_LINEAR_ACCELERATION:
-            if (gLinearAccelerometerSensor == null) {
-                gLinearAccelerometerSensor = sm.getDefaultSensor(
-                    Sensor.TYPE_LINEAR_ACCELERATION);
-            }
-            if (gLinearAccelerometerSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gLinearAccelerometerSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            break;
-
-        case GeckoHalDefines.SENSOR_GYROSCOPE:
-            if (gGyroscopeSensor == null) {
-                gGyroscopeSensor = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-            }
-            if (gGyroscopeSensor != null) {
-                sm.registerListener(getSensorListener(),
-                                    gGyroscopeSensor,
-                                    SensorManager.SENSOR_DELAY_FASTEST);
-            }
-            break;
-
         default:
             Log.w(LOGTAG, "Error! Can't enable unknown SENSOR type " +
                   aSensortype);
@@ -732,23 +682,6 @@ public class GeckoAppShell
             }
             break;
 
-        case GeckoHalDefines.SENSOR_ACCELERATION:
-            if (gAccelerometerSensor != null) {
-                sm.unregisterListener(getSensorListener(), gAccelerometerSensor);
-            }
-            break;
-
-        case GeckoHalDefines.SENSOR_LINEAR_ACCELERATION:
-            if (gLinearAccelerometerSensor != null) {
-                sm.unregisterListener(getSensorListener(), gLinearAccelerometerSensor);
-            }
-            break;
-
-        case GeckoHalDefines.SENSOR_GYROSCOPE:
-            if (gGyroscopeSensor != null) {
-                sm.unregisterListener(getSensorListener(), gGyroscopeSensor);
-            }
-            break;
         default:
             Log.w(LOGTAG, "Error! Can't disable unknown SENSOR type " + aSensortype);
         }

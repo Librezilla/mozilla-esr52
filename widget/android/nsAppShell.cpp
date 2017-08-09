@@ -279,14 +279,6 @@ public:
             values.AppendElement(-aZ);
             break;
 
-        case hal::SENSOR_LINEAR_ACCELERATION:
-        case hal::SENSOR_ACCELERATION:
-        case hal::SENSOR_GYROSCOPE:
-            values.AppendElement(aX);
-            values.AppendElement(aY);
-            values.AppendElement(aZ);
-            break;
-
         case hal::SENSOR_ROTATION_VECTOR:
         case hal::SENSOR_GAME_ROTATION_VECTOR:
             values.AppendElement(aX);
