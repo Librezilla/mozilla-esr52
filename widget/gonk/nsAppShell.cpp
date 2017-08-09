@@ -55,7 +55,6 @@
 #include "nsScreenManagerGonk.h"
 #include "nsThreadUtils.h"
 #include "nsWindow.h"
-#include "OrientationObserver.h"
 #include "GonkMemoryPressureMonitoring.h"
 
 #include "android/log.h"
@@ -967,7 +966,6 @@ nsAppShell::Observe(nsISupports* aSubject,
 NS_IMETHODIMP
 nsAppShell::Exit()
 {
-    OrientationObserver::ShutDown();
     nsCOMPtr<nsIObserverService> obsServ = GetObserverService();
     if (obsServ) {
         obsServ->RemoveObserver(this, "browser-ui-startup-complete");
@@ -1071,9 +1069,6 @@ nsAppShell::NotifyNativeEvent()
 nsAppShell::NotifyScreenInitialized()
 {
     gAppShell->InitInputDevices();
-
-    // Getting the instance of OrientationObserver to initialize it.
-    OrientationObserver::GetInstance();
 }
 
 /* static */ void

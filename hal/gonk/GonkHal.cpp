@@ -69,7 +69,6 @@
 #include "nsThreadUtils.h"
 #include "nsIThread.h"
 #include "nsXULAppAPI.h"
-#include "OrientationObserver.h"
 #include "UeventPoller.h"
 #include "nsIWritablePropertyBag2.h"
 #include <algorithm>
@@ -545,13 +544,12 @@ GetCurrentScreenConfiguration(hal::ScreenConfiguration* aScreenConfiguration)
 bool
 LockScreenOrientation(const dom::ScreenOrientationInternal& aOrientation)
 {
-  return OrientationObserver::GetInstance()->LockScreenOrientation(aOrientation);
+  return false;
 }
 
 void
 UnlockScreenOrientation()
 {
-  OrientationObserver::GetInstance()->UnlockScreenOrientation();
 }
 
 // This thread will wait for the alarm firing by a blocking IO.
