@@ -428,22 +428,6 @@ public:
    */
   virtual nsresult DispatchSyncPopState() = 0;
 
-  /**
-   * Tell this window that it should listen for sensor changes of the given
-   * type.
-   *
-   * Inner windows only.
-   */
-  virtual void EnableDeviceSensor(uint32_t aType) = 0;
-
-  /**
-   * Tell this window that it should remove itself from sensor change
-   * notifications.
-   *
-   * Inner windows only.
-   */
-  virtual void DisableDeviceSensor(uint32_t aType) = 0;
-
   virtual void EnableTimeChangeNotifications() = 0;
   virtual void DisableTimeChangeNotifications() = 0;
 

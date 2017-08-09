@@ -621,10 +621,6 @@ public:
   virtual nsresult DispatchAsyncHashchange(nsIURI *aOldURI, nsIURI *aNewURI) override;
   virtual nsresult DispatchSyncPopState() override;
 
-  // Inner windows only.
-  virtual void EnableDeviceSensor(uint32_t aType) override;
-  virtual void DisableDeviceSensor(uint32_t aType) override;
-
   virtual void EnableTimeChangeNotifications() override;
   virtual void DisableTimeChangeNotifications() override;
 
