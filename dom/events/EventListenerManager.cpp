@@ -16,7 +16,6 @@
 #ifdef MOZ_B2G
 #include "mozilla/Hal.h"
 #endif // #ifdef MOZ_B2G
-#include "mozilla/HalSensor.h"
 #include "mozilla/InternalMutationEvent.h"
 #include "mozilla/JSEventHandler.h"
 #include "mozilla/Maybe.h"
@@ -56,7 +55,6 @@
 namespace mozilla {
 
 using namespace dom;
-using namespace hal;
 
 #define EVENT_TYPE_EQUALS(ls, message, userType, typeString, allEvents) \
   ((ls->mEventMessage == message &&                                     \
