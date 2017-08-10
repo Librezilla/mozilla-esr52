@@ -379,11 +379,6 @@ AudioContext::CreateMediaElementSource(HTMLMediaElement& aMediaElement,
     return nullptr;
   }
 
-  if (aMediaElement.ContainsRestrictedContent()) {
-    aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
-    return nullptr;
-  }
-
   if (CheckClosed(aRv)) {
     return nullptr;
   }

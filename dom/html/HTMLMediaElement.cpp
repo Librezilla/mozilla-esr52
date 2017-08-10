@@ -2694,9 +2694,6 @@ HTMLMediaElement::CaptureStreamInternal(bool aFinishWhenEnded,
   if (!window) {
     return nullptr;
   }
-  if (ContainsRestrictedContent()) {
-    return nullptr;
-  }
 
   if (!mOutputStreams.IsEmpty() &&
       aGraph != mOutputStreams[0].mStream->GetInputStream()->Graph()) {
@@ -6311,12 +6308,6 @@ MediaKeys*
 HTMLMediaElement::GetMediaKeys() const
 {
   return mMediaKeys;
-}
-
-bool
-HTMLMediaElement::ContainsRestrictedContent()
-{
-  return GetMediaKeys() != nullptr;
 }
 
 already_AddRefed<Promise>
