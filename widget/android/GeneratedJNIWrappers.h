@@ -753,25 +753,6 @@ public:
 
     static auto GetMimeTypeFromExtensions(mozilla::jni::String::Param) -> mozilla::jni::String::LocalRef;
 
-    struct GetNetworkLinkType_t {
-        typedef GeckoAppShell Owner;
-        typedef int32_t ReturnType;
-        typedef int32_t SetterType;
-        typedef mozilla::jni::Args<> Args;
-        static constexpr char name[] = "getNetworkLinkType";
-        static constexpr char signature[] =
-                "()I";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::GECKO;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::CURRENT;
-    };
-
-    static auto GetNetworkLinkType() -> int32_t;
-
     struct GetProxyForURI_t {
         typedef GeckoAppShell Owner;
         typedef mozilla::jni::String::LocalRef ReturnType;
@@ -1960,58 +1941,6 @@ public:
     static const mozilla::jni::CallingThread callingThread =
             mozilla::jni::CallingThread::ANY;
 
-};
-
-class GeckoNetworkManager : public mozilla::jni::ObjectBase<GeckoNetworkManager>
-{
-public:
-    static const char name[];
-
-    explicit GeckoNetworkManager(const Context& ctx) : ObjectBase<GeckoNetworkManager>(ctx) {}
-
-    struct OnConnectionChanged_t {
-        typedef GeckoNetworkManager Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                int32_t,
-                mozilla::jni::String::Param,
-                bool,
-                int32_t> Args;
-        static constexpr char name[] = "onConnectionChanged";
-        static constexpr char signature[] =
-                "(ILjava/lang/String;ZI)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::ANY;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::GECKO;
-    };
-
-    struct OnStatusChanged_t {
-        typedef GeckoNetworkManager Owner;
-        typedef void ReturnType;
-        typedef void SetterType;
-        typedef mozilla::jni::Args<
-                mozilla::jni::String::Param> Args;
-        static constexpr char name[] = "onStatusChanged";
-        static constexpr char signature[] =
-                "(Ljava/lang/String;)V";
-        static const bool isStatic = true;
-        static const mozilla::jni::ExceptionMode exceptionMode =
-                mozilla::jni::ExceptionMode::ABORT;
-        static const mozilla::jni::CallingThread callingThread =
-                mozilla::jni::CallingThread::ANY;
-        static const mozilla::jni::DispatchTarget dispatchTarget =
-                mozilla::jni::DispatchTarget::GECKO;
-    };
-
-    static const mozilla::jni::CallingThread callingThread =
-            mozilla::jni::CallingThread::ANY;
-
-    template<class Impl> class Natives;
 };
 
 class GeckoScreenOrientation : public mozilla::jni::ObjectBase<GeckoScreenOrientation>

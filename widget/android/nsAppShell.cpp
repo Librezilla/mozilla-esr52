@@ -60,7 +60,6 @@
 
 #include "AndroidAlerts.h"
 #include "ANRReporter.h"
-#include "GeckoNetworkManager.h"
 #include "GeckoScreenOrientation.h"
 #include "PrefsHelper.h"
 #include "fennec/MemoryMonitor.h"
@@ -329,7 +328,6 @@ nsAppShell::nsAppShell()
         AndroidBridge::ConstructBridge();
         GeckoAppShellSupport::Init();
         GeckoThreadSupport::Init();
-        mozilla::GeckoNetworkManager::Init();
         mozilla::GeckoScreenOrientation::Init();
         mozilla::PrefsHelper::Init();
         nsWindow::InitNatives();

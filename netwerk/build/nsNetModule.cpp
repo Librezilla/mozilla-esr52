@@ -402,21 +402,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsSimpleNestedURI)
 NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIDNService, Init)
 
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(XP_WIN)
-#include "nsNotifyAddrListener.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsNotifyAddrListener, Init)
-#elif defined(MOZ_WIDGET_COCOA)
-#include "nsNetworkLinkService.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsNetworkLinkService, Init)
-#elif defined(MOZ_WIDGET_ANDROID)
-#include "nsAndroidNetworkLinkService.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsAndroidNetworkLinkService)
-#elif defined(XP_LINUX)
-#include "nsNotifyAddrListener_Linux.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsNotifyAddrListener, Init)
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 
 #ifdef NECKO_PROTOCOL_ftp
 #include "nsFTPDirListingConv.h"
@@ -982,15 +967,6 @@ static const mozilla::Module::CIDEntry kNeckoCIDs[] = {
 #endif
 #ifdef NECKO_PROTOCOL_rtsp
     { &kNS_RTSPPROTOCOLHANDLER_CID, false, nullptr, mozilla::net::RtspHandlerConstructor },
-#endif
-#if defined(XP_WIN)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsNotifyAddrListenerConstructor },
-#elif defined(MOZ_WIDGET_COCOA)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsNetworkLinkServiceConstructor },
-#elif defined(MOZ_WIDGET_ANDROID)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsAndroidNetworkLinkServiceConstructor },
-#elif defined(XP_LINUX)
-    { &kNS_NETWORK_LINK_SERVICE_CID, false, nullptr, nsNotifyAddrListenerConstructor },
 #endif
     { &kNS_SERIALIZATION_HELPER_CID, false, nullptr, nsSerializationHelperConstructor },
     { &kNS_REDIRECTCHANNELREGISTRAR_CID, false, nullptr, RedirectChannelRegistrarConstructor },

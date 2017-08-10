@@ -287,14 +287,6 @@ auto GeckoAppShell::GetMimeTypeFromExtensions(mozilla::jni::String::Param a0) ->
     return mozilla::jni::Method<GetMimeTypeFromExtensions_t>::Call(GeckoAppShell::Context(), nullptr, a0);
 }
 
-constexpr char GeckoAppShell::GetNetworkLinkType_t::name[];
-constexpr char GeckoAppShell::GetNetworkLinkType_t::signature[];
-
-auto GeckoAppShell::GetNetworkLinkType() -> int32_t
-{
-    return mozilla::jni::Method<GetNetworkLinkType_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
 constexpr char GeckoAppShell::GetProxyForURI_t::name[];
 constexpr char GeckoAppShell::GetProxyForURI_t::signature[];
 
@@ -679,15 +671,6 @@ auto GeckoEditable::UpdateCompositionRects(mozilla::jni::ObjectArray::Param a0) 
 
 const char GeckoEditableListener::name[] =
         "org/mozilla/gecko/GeckoEditableListener";
-
-const char GeckoNetworkManager::name[] =
-        "org/mozilla/gecko/GeckoNetworkManager";
-
-constexpr char GeckoNetworkManager::OnConnectionChanged_t::name[];
-constexpr char GeckoNetworkManager::OnConnectionChanged_t::signature[];
-
-constexpr char GeckoNetworkManager::OnStatusChanged_t::name[];
-constexpr char GeckoNetworkManager::OnStatusChanged_t::signature[];
 
 const char GeckoScreenOrientation::name[] =
         "org/mozilla/gecko/GeckoScreenOrientation";
