@@ -133,8 +133,7 @@ private:
  * can call StaticInit, but it won't do anything, and GetSingleton() will
  * return null.)
  *
- * ProcessPriorityManager::CurrentProcessIsForeground() and
- * ProcessPriorityManager::AnyProcessHasHighPriority() which can be called in
+ * ProcessPriorityManager::CurrentProcessIsForeground() which can be called in
  * any process, are handled separately, by the ProcessPriorityManagerChild
  * class.
  */
@@ -1435,20 +1434,6 @@ ProcessPriorityManager::CurrentProcessIsForeground()
 {
   return ProcessPriorityManagerChild::Singleton()->
     CurrentProcessIsForeground();
-}
-
-/* static */ bool
-ProcessPriorityManager::AnyProcessHasHighPriority()
-{
-  ProcessPriorityManagerImpl* singleton =
-    ProcessPriorityManagerImpl::GetSingleton();
-
-  if (singleton) {
-    return singleton->ChildProcessHasHighPriority();
-  } else {
-    return ProcessPriorityManagerChild::Singleton()->
-      CurrentProcessIsHighPriority();
-  }
 }
 
 } // namespace mozilla
