@@ -135,14 +135,6 @@ auto GeckoAppShell::DisableScreenOrientationNotifications() -> void
     return mozilla::jni::Method<DisableScreenOrientationNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
 }
 
-constexpr char GeckoAppShell::DisableSensor_t::name[];
-constexpr char GeckoAppShell::DisableSensor_t::signature[];
-
-auto GeckoAppShell::DisableSensor(int32_t a0) -> void
-{
-    return mozilla::jni::Method<DisableSensor_t>::Call(GeckoAppShell::Context(), nullptr, a0);
-}
-
 constexpr char GeckoAppShell::EnableLocation_t::name[];
 constexpr char GeckoAppShell::EnableLocation_t::signature[];
 
@@ -173,14 +165,6 @@ constexpr char GeckoAppShell::EnableScreenOrientationNotifications_t::signature[
 auto GeckoAppShell::EnableScreenOrientationNotifications() -> void
 {
     return mozilla::jni::Method<EnableScreenOrientationNotifications_t>::Call(GeckoAppShell::Context(), nullptr);
-}
-
-constexpr char GeckoAppShell::EnableSensor_t::name[];
-constexpr char GeckoAppShell::EnableSensor_t::signature[];
-
-auto GeckoAppShell::EnableSensor(int32_t a0) -> void
-{
-    return mozilla::jni::Method<EnableSensor_t>::Call(GeckoAppShell::Context(), nullptr, a0);
 }
 
 constexpr char GeckoAppShell::GetApplicationContext_t::name[];
