@@ -403,8 +403,6 @@ enum EVREventType
 	VREvent_ImageLoaded				= 508, // Sent to overlays when a SetOverlayRaw or SetOverlayFromFile call finishes loading
 	VREvent_ShowKeyboard = 509, // Sent to keyboard renderer in the dashboard to invoke it
 	VREvent_HideKeyboard = 510, // Sent to keyboard renderer in the dashboard to hide it
-	VREvent_OverlayGamepadFocusGained		= 511, // Sent to an overlay when IVROverlay::SetFocusOverlay is called on it
-	VREvent_OverlayGamepadFocusLost = 512, // Send to an overlay when it previously had focus and IVROverlay::SetFocusOverlay is called on something else
 	VREvent_OverlaySharedTextureChanged = 513,
 	VREvent_DashboardGuideButtonDown = 514,
 	VREvent_DashboardGuideButtonUp = 515,
@@ -2259,12 +2257,6 @@ namespace vr
 		// Set this flag on a dashboard overlay to prevent a tab from showing up for that overlay
 		VROverlayFlags_NoDashboardTab = 3,
 
-		// Set this flag on a dashboard that is able to deal with gamepad focus events
-		VROverlayFlags_AcceptsGamepadEvents = 4,
-
-		// Indicates that the overlay should dim/brighten to show gamepad focus
-		VROverlayFlags_ShowGamepadFocus = 5,
-
 		// When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll_t 
 		VROverlayFlags_SendVRScrollEvents = 6,
 		VROverlayFlags_SendVRTouchpadEvents = 7,
@@ -2302,21 +2294,6 @@ namespace vr
 		HmdVector3_t vNormal;
 		HmdVector2_t vUVs;
 		float fDistance;
-	};
-
-	// Input modes for the Big Picture gamepad text entry
-	enum EGamepadTextInputMode
-	{
-		k_EGamepadTextInputModeNormal = 0,
-		k_EGamepadTextInputModePassword = 1,
-		k_EGamepadTextInputModeSubmit = 2,
-	};
-
-	// Controls number of allowed lines for the Big Picture gamepad text entry
-	enum EGamepadTextInputLineMode
-	{
-		k_EGamepadTextInputLineModeSingleLine = 0,
-		k_EGamepadTextInputLineModeMultipleLines = 1
 	};
 
 	/** Directions for changing focus between overlays with the gamepad */
@@ -2523,20 +2500,10 @@ namespace vr
 		* by the virtual mouse pointer */
 		virtual bool IsHoverTargetOverlay( VROverlayHandle_t ulOverlayHandle ) = 0;
 
-		/** Returns the current Gamepad focus overlay */
-		virtual vr::VROverlayHandle_t GetGamepadFocusOverlay() = 0;
-
-		/** Sets the current Gamepad focus overlay */
-		virtual EVROverlayError SetGamepadFocusOverlay( VROverlayHandle_t ulNewFocusOverlay ) = 0;
-
 		/** Sets an overlay's neighbor. This will also set the neighbor of the "to" overlay
 		* to point back to the "from" overlay. If an overlay's neighbor is set to invalid both
 		* ends will be cleared */
 		virtual EVROverlayError SetOverlayNeighbor( EOverlayDirection eDirection, VROverlayHandle_t ulFrom, VROverlayHandle_t ulTo ) = 0;
-
-		/** Changes the Gamepad focus from one overlay to one of its neighbors. Returns VROverlayError_NoNeighbor if there is no
-		* neighbor in that direction */
-		virtual EVROverlayError MoveGamepadFocusToNeighbor( EOverlayDirection eDirection, VROverlayHandle_t ulFrom ) = 0;
 
 		// ---------------------------------------------
 		// Overlay texture methods
@@ -2610,9 +2577,9 @@ namespace vr
 		// ---------------------------------------------
 		
 		/** Show the virtual keyboard to accept input **/
-		virtual EVROverlayError ShowKeyboard( EGamepadTextInputMode eInputMode, EGamepadTextInputLineMode eLineInputMode, const char *pchDescription, uint32_t unCharMax, const char *pchExistingText, bool bUseMinimalMode, uint64_t uUserValue ) = 0;
+		virtual EVROverlayError ShowKeyboard( const char *pchDescription, uint32_t unCharMax, const char *pchExistingText, bool bUseMinimalMode, uint64_t uUserValue ) = 0;
 
-		virtual EVROverlayError ShowKeyboardForOverlay( VROverlayHandle_t ulOverlayHandle, EGamepadTextInputMode eInputMode, EGamepadTextInputLineMode eLineInputMode, const char *pchDescription, uint32_t unCharMax, const char *pchExistingText, bool bUseMinimalMode, uint64_t uUserValue ) = 0;
+		virtual EVROverlayError ShowKeyboardForOverlay( VROverlayHandle_t ulOverlayHandle, const char *pchDescription, uint32_t unCharMax, const char *pchExistingText, bool bUseMinimalMode, uint64_t uUserValue ) = 0;
 
 		/** Get the text that was entered into the text input **/
 		virtual uint32_t GetKeyboardText( VR_OUT_STRING() char *pchText, uint32_t cchText ) = 0;

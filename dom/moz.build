@@ -54,7 +54,6 @@ DIRS += [
     'fetch',
     'filehandle',
     'filesystem',
-    'gamepad',
     'grid',
     'html',
     'json',

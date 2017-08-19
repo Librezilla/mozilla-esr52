@@ -40,11 +40,6 @@ MOCHITEST_CHROME_MANIFESTS += [
     'mochitest/whatwg/chrome.ini',
 ]
 
-if CONFIG['MOZ_GAMEPAD']:
-    MOCHITEST_MANIFESTS += [
-        'mochitest/gamepad/mochitest.ini',
-    ]
-
 XPCSHELL_TESTS_MANIFESTS += ['unit/xpcshell.ini']
 BROWSER_CHROME_MANIFESTS += ['browser/browser.ini']
 

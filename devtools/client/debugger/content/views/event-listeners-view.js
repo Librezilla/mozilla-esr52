@@ -123,8 +123,6 @@ EventListenersView.prototype = Heritage.extend(WidgetMethods, {
       group = L10N.getStr("displayEvents");
     } else if (starts("drag") || starts("drop")) {
       group = L10N.getStr("dragAndDropEvents");
-    } else if (starts("gamepad")) {
-      group = L10N.getStr("gamepadEvents");
     } else if (is("canplay", "canplaythrough", "durationchange", "emptied",
       "ended", "loadeddata", "loadedmetadata", "pause", "play", "playing",
       "ratechange", "seeked", "seeking", "stalled", "suspend", "timeupdate",

@@ -851,29 +851,6 @@ NON_IDL_EVENT(MozScrolledAreaChanged,
               EventNameType_None,
               eScrollAreaEventClass)
 
-#ifdef MOZ_GAMEPAD
-NON_IDL_EVENT(gamepadbuttondown,
-              eGamepadButtonDown,
-              EventNameType_None,
-              eBasicEventClass)
-NON_IDL_EVENT(gamepadbuttonup,
-              eGamepadButtonUp,
-              EventNameType_None,
-              eBasicEventClass)
-NON_IDL_EVENT(gamepadaxismove,
-              eGamepadAxisMove,
-              EventNameType_None,
-              eBasicEventClass)
-NON_IDL_EVENT(gamepadconnected,
-              eGamepadConnected,
-              EventNameType_None,
-              eBasicEventClass)
-NON_IDL_EVENT(gamepaddisconnected,
-              eGamepadDisconnected,
-              EventNameType_None,
-              eBasicEventClass)
-#endif
-
 // Simple gesture events
 NON_IDL_EVENT(MozSwipeGestureMayStart,
               eSwipeGestureMayStart,

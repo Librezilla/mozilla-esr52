@@ -32,9 +32,6 @@
 #include "nsUnicharUtils.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Telemetry.h"
-#ifdef MOZ_GAMEPAD
-#include "mozilla/dom/GamepadServiceTest.h"
-#endif
 
 #ifdef MOZ_POWER
 #include "mozilla/dom/PowerManager.h"
@@ -214,9 +211,6 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(Navigator)
 
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mWindow)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPresentation)
-#ifdef MOZ_GAMEPAD
-  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mGamepadServiceTest)
-#endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mVRGetDisplaysPromises)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE_SCRIPT_OBJECTS
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
@@ -282,13 +276,6 @@ Navigator::Invalidate()
   }
 
   mServiceWorkerContainer = nullptr;
-
-#ifdef MOZ_GAMEPAD
-  if (mGamepadServiceTest) {
-    mGamepadServiceTest->Shutdown();
-    mGamepadServiceTest = nullptr;
-  }
-#endif
 
   mVRGetDisplaysPromises.Clear();
 }
@@ -1205,31 +1192,6 @@ Navigator::MozTCPSocket()
   RefPtr<LegacyMozTCPSocket> socket = new LegacyMozTCPSocket(GetWindow());
   return socket.forget();
 }
-
-#ifdef MOZ_GAMEPAD
-void
-Navigator::GetGamepads(nsTArray<RefPtr<Gamepad> >& aGamepads,
-                       ErrorResult& aRv)
-{
-  if (!mWindow) {
-    aRv.Throw(NS_ERROR_UNEXPECTED);
-    return;
-  }
-  NS_ENSURE_TRUE_VOID(mWindow->GetDocShell());
-  nsGlobalWindow* win = nsGlobalWindow::Cast(mWindow);
-  win->SetHasGamepadEventListener(true);
-  win->GetGamepads(aGamepads);
-}
-
-GamepadServiceTest*
-Navigator::RequestGamepadServiceTest()
-{
-  if (!mGamepadServiceTest) {
-    mGamepadServiceTest = GamepadServiceTest::CreateTestService(mWindow);
-  }
-  return mGamepadServiceTest;
-}
-#endif
 
 already_AddRefed<Promise>
 Navigator::GetVRDisplays(ErrorResult& aRv)

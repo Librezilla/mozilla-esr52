@@ -16,7 +16,6 @@
 #include "mozilla/EnumeratedArray.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/TypedEnumBits.h"
-#include "mozilla/dom/GamepadPoseState.h"
 
 namespace mozilla {
 namespace layers {
@@ -93,8 +92,6 @@ public:
   uint32_t GetIndex();
   void SetButtonPressed(uint64_t aBit);
   uint64_t GetButtonPressed();
-  void SetPose(const dom::GamepadPoseState& aPose);
-  const dom::GamepadPoseState& GetPose();
 
 protected:
   explicit VRControllerHost(VRDeviceType aType);
@@ -105,7 +102,6 @@ protected:
   uint32_t mIndex;
   // The current button pressed bit of button mask.
   uint64_t mButtonPressed;
-  dom::GamepadPoseState mPose;
 };
 
 } // namespace gfx

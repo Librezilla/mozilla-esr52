@@ -54,7 +54,6 @@ public:
 
   virtual void NotifyNotUsed(PTextureParent* aTexture, uint64_t aTransactionId) override;
   virtual void SendAsyncMessage(const InfallibleTArray<AsyncParentMessageData>& aMessage) override;
-  bool SendGamepadUpdate(const GamepadChangeEvent& aGamepadEvent);
 
 protected:
   ~VRManagerParent();

@@ -101,7 +101,6 @@ import org.mozilla.gecko.util.Clipboard;
 import org.mozilla.gecko.util.ContextUtils;
 import org.mozilla.gecko.util.EventCallback;
 import org.mozilla.gecko.util.FloatUtils;
-import org.mozilla.gecko.util.GamepadUtils;
 import org.mozilla.gecko.util.GeckoEventListener;
 import org.mozilla.gecko.util.HardwareUtils;
 import org.mozilla.gecko.util.IntentUtils;
@@ -471,45 +470,10 @@ public class BrowserApp extends GeckoApp
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (AndroidGamepadManager.handleKeyEvent(event)) {
-            return true;
-        }
-
         // Global onKey handler. This is called if the focused UI doesn't
         // handle the key event, and before Gecko swallows the events.
         if (event.getAction() != KeyEvent.ACTION_DOWN) {
             return false;
-        }
-
-        if ((event.getSource() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BUTTON_Y:
-                    // Toggle/focus the address bar on gamepad-y button.
-                    if (mBrowserChrome.getVisibility() == View.VISIBLE) {
-                        if (mDynamicToolbar.isEnabled() && !isHomePagerVisible()) {
-                            mDynamicToolbar.setVisible(false, VisibilityTransition.ANIMATE);
-                            if (mLayerView != null) {
-                                mLayerView.requestFocus();
-                            }
-                        } else {
-                            // Just focus the address bar when about:home is visible
-                            // or when the dynamic toolbar isn't enabled.
-                            mBrowserToolbar.requestFocusFromTouch();
-                        }
-                    } else {
-                        mDynamicToolbar.setVisible(true, VisibilityTransition.ANIMATE);
-                        mBrowserToolbar.requestFocusFromTouch();
-                    }
-                    return true;
-                case KeyEvent.KEYCODE_BUTTON_L1:
-                    // Go back on L1
-                    Tabs.getInstance().getSelectedTab().doBack();
-                    return true;
-                case KeyEvent.KEYCODE_BUTTON_R1:
-                    // Go forward on R1
-                    Tabs.getInstance().getSelectedTab().doForward();
-                    return true;
-            }
         }
 
         // Check if this was a shortcut. Meta keys exists only on 11+.
@@ -588,9 +552,6 @@ public class BrowserApp extends GeckoApp
             ThreadUtils.getUiHandler().removeCallbacks(mCheckLongPress);
         }
 
-        if (AndroidGamepadManager.handleKeyEvent(event)) {
-            return true;
-        }
         return super.onKeyUp(keyCode, event);
     }
 
@@ -700,19 +661,6 @@ public class BrowserApp extends GeckoApp
         ((GeckoApp.MainLayout) mMainLayout).setMotionEventInterceptor(new MotionEventInterceptor() {
             @Override
             public boolean onInterceptMotionEvent(View view, MotionEvent event) {
-                // If we get a gamepad panning MotionEvent while the focus is not on the layerview,
-                // put the focus on the layerview and carry on
-                if (mLayerView != null && !mLayerView.hasFocus() && GamepadUtils.isPanningControl(event)) {
-                    if (mHomeScreen == null) {
-                        return false;
-                    }
-
-                    if (isHomePagerVisible()) {
-                        mLayerView.requestFocus();
-                    } else {
-                        mHomeScreen.requestFocus();
-                    }
-                }
                 return false;
             }
         });

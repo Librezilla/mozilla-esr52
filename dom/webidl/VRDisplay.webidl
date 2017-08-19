@@ -193,8 +193,7 @@ interface VRDisplay : EventTarget {
   VREyeParameters getEyeParameters(VREye whichEye);
 
   /**
-   * An identifier for this distinct VRDisplay. Used as an
-   * association point in the Gamepad API.
+   * An identifier for this distinct VRDisplay. 
    */
   [Constant] readonly attribute unsigned long displayId;
 

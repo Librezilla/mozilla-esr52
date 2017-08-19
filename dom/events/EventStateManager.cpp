@@ -498,18 +498,6 @@ IsMessageMouseUserActivity(EventMessage aMessage)
          aMessage == eMouseLongTap;
 }
 
-static bool
-IsMessageGamepadUserActivity(EventMessage aMessage)
-{
-#ifndef MOZ_GAMEPAD
-  return false;
-#else
-  return aMessage == eGamepadButtonDown ||
-         aMessage == eGamepadButtonUp ||
-         aMessage == eGamepadAxisMove;
-#endif
-}
-
 nsresult
 EventStateManager::PreHandleEvent(nsPresContext* aPresContext,
                                   WidgetEvent* aEvent,
@@ -551,8 +539,7 @@ EventStateManager::PreHandleEvent(nsPresContext* aPresContext,
        aEvent->mClass == eWheelEventClass ||
        aEvent->mClass == ePointerEventClass ||
        aEvent->mClass == eTouchEventClass ||
-       aEvent->mClass == eKeyboardEventClass ||
-       IsMessageGamepadUserActivity(aEvent->mMessage))) {
+       aEvent->mClass == eKeyboardEventClass)) {
     if (gMouseOrKeyboardEventCounter == 0) {
       nsCOMPtr<nsIObserverService> obs =
         mozilla::services::GetObserverService();

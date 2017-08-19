@@ -10,7 +10,6 @@
 #include "gfxVROpenVR.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/dom/VRDisplay.h"
-#include "mozilla/dom/GamepadEventTypes.h"
 #include "mozilla/layers/TextureHost.h"
 #include "mozilla/Unused.h"
 
@@ -94,10 +93,6 @@ VRManager::VRManager()
       mManagers.AppendElement(mgr);
   }
 #endif
-  // Enable gamepad extensions while VR is enabled.
-  if (gfxPrefs::VREnabled()) {
-    Preferences::SetBool("dom.gamepad.extensions.enabled", true);
-  }
 }
 
 VRManager::~VRManager()
@@ -375,17 +370,6 @@ VRManager::ScanForDevices()
 {
   for (uint32_t i = 0; i < mControllerManagers.Length(); ++i) {
     mControllerManagers[i]->ScanForDevices();
-  }
-}
-
-template<class T>
-void
-VRManager::NotifyGamepadChange(const T& aInfo)
-{
-  dom::GamepadChangeEvent e(aInfo);
-
-  for (auto iter = mVRManagerParents.Iter(); !iter.Done(); iter.Next()) {
-    Unused << iter.Get()->GetKey()->SendGamepadUpdate(e);
   }
 }
 

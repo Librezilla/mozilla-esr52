@@ -165,19 +165,6 @@ protected:
 
   virtual bool
   DeallocPFileSystemRequestChild(PFileSystemRequestChild*) override;
-
-  // Gamepad API Background IPC
-  virtual PGamepadEventChannelChild*
-  AllocPGamepadEventChannelChild() override;
-
-  virtual bool
-  DeallocPGamepadEventChannelChild(PGamepadEventChannelChild* aActor) override;
-
-  virtual PGamepadTestChannelChild*
-  AllocPGamepadTestChannelChild() override;
-
-  virtual bool
-  DeallocPGamepadTestChannelChild(PGamepadTestChannelChild* aActor) override;
 };
 
 class BackgroundChildImpl::ThreadLocal final

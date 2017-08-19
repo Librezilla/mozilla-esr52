@@ -10,7 +10,6 @@ include protocol PLayer;
 include protocol PTexture;
 include protocol PVRLayer;
 include LayersMessages;
-include GamepadEventTypes;
 
 include "VRMessageUtils.h";
 
@@ -76,7 +75,6 @@ child:
 
   async NotifyVSync();
   async NotifyVRVSync(uint32_t aDisplayID);
-  async GamepadUpdate(GamepadChangeEvent aGamepadEvent);
 
   async __delete__();
 

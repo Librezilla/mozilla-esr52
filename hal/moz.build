@@ -90,11 +90,6 @@ include('/ipc/chromium/chromium-config.mozbuild')
 
 FINAL_LIBRARY = 'xul'
 
-if CONFIG['MOZ_GAMEPAD']:
-    LOCAL_INCLUDES += [
-        '/dom/base',
-    ]
-
 CFLAGS += CONFIG['GLIB_CFLAGS']
 CFLAGS += CONFIG['MOZ_DBUS_GLIB_CFLAGS']
 CXXFLAGS += CONFIG['GLIB_CFLAGS']

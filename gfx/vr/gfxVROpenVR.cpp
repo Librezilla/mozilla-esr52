@@ -25,11 +25,6 @@
 #include "nsIScreenManager.h"
 #include "openvr/openvr.h"
 
-#ifdef MOZ_GAMEPAD
-#include "mozilla/dom/GamepadEventTypes.h"
-#include "mozilla/dom/GamepadBinding.h"
-#endif
-
 #ifndef M_PI
 # define M_PI 3.14159265358979323846
 #endif
@@ -489,11 +484,7 @@ VRControllerOpenVR::VRControllerOpenVR()
 {
   MOZ_COUNT_CTOR_INHERITED(VRControllerOpenVR, VRControllerHost);
   mControllerInfo.mControllerName.AssignLiteral("OpenVR HMD");
-#ifdef MOZ_GAMEPAD
-  mControllerInfo.mMappingType = static_cast<uint32_t>(GamepadMappingType::_empty);
-#else
   mControllerInfo.mMappingType = 0;
-#endif
   mControllerInfo.mNumButtons = gNumOpenVRButtonMask;
   mControllerInfo.mNumAxes = gNumOpenVRAxis;
 }
@@ -626,25 +617,6 @@ VRControllerManagerOpenVR::HandleInput()
       gfx::Quaternion rot;
       rot.SetFromRotationMatrix(m);
       rot.Invert();
-
-      GamepadPoseState poseState;
-      poseState.flags |= GamepadCapabilityFlags::Cap_Orientation;
-      poseState.orientation[0] = rot.x;
-      poseState.orientation[1] = rot.y;
-      poseState.orientation[2] = rot.z;
-      poseState.orientation[3] = rot.w;
-      poseState.angularVelocity[0] = pose.vAngularVelocity.v[0];
-      poseState.angularVelocity[1] = pose.vAngularVelocity.v[1];
-      poseState.angularVelocity[2] = pose.vAngularVelocity.v[2];
-
-      poseState.flags |= GamepadCapabilityFlags::Cap_Position;
-      poseState.position[0] = m._41;
-      poseState.position[1] = m._42;
-      poseState.position[2] = m._43;
-      poseState.linearVelocity[0] = pose.vVelocity.v[0];
-      poseState.linearVelocity[1] = pose.vVelocity.v[1];
-      poseState.linearVelocity[2] = pose.vVelocity.v[2];
-      HandlePoseTracking(controller->GetIndex(), poseState, controller);
     }
   }
 }
@@ -686,17 +658,6 @@ VRControllerManagerOpenVR::HandleAxisMove(uint32_t aControllerIdx, uint32_t aAxi
 }
 
 void
-VRControllerManagerOpenVR::HandlePoseTracking(uint32_t aControllerIdx,
-                                              const GamepadPoseState& aPose,
-                                              VRControllerHost* aController)
-{
-  if (aPose != aController->GetPose()) {
-    aController->SetPose(aPose);
-    NewPoseState(aControllerIdx, aPose);
-  }
-}
-
-void
 VRControllerManagerOpenVR::GetControllers(nsTArray<RefPtr<VRControllerHost>>& aControllerResult)
 {
   if (!mOpenVRInstalled) {
@@ -712,10 +673,6 @@ VRControllerManagerOpenVR::GetControllers(nsTArray<RefPtr<VRControllerHost>>& aC
 void
 VRControllerManagerOpenVR::ScanForDevices()
 {
-  // Remove the existing gamepads
-  for (uint32_t i = 0; i < mOpenVRController.Length(); ++i) {
-    RemoveGamepad(mOpenVRController[i]->GetIndex());
-  }
   mControllerCount = 0;
   mOpenVRController.Clear();
 
@@ -737,13 +694,5 @@ VRControllerManagerOpenVR::ScanForDevices()
     openVRController->SetIndex(mControllerCount);
     openVRController->SetTrackedIndex(trackedDevice);
     mOpenVRController.AppendElement(openVRController);
-
-// Only in MOZ_GAMEPAD platform, We add gamepads.
-#ifdef MOZ_GAMEPAD
-    // Not already present, add it.
-    AddGamepad("OpenVR Gamepad", static_cast<uint32_t>(GamepadMappingType::_empty),
-               gNumOpenVRButtonMask, gNumOpenVRAxis);
-    ++mControllerCount;
-#endif
   }
 }

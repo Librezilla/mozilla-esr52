@@ -296,7 +296,6 @@ bool
 VRManagerParent::RecvControllerListenerAdded()
 {
   VRManager* vm = VRManager::Get();
-  // Ask the connected gamepads to be added to GamepadManager
   vm->ScanForDevices();
 
   return true;
@@ -314,18 +313,6 @@ VRManagerParent::RecvGetControllers(nsTArray<VRControllerInfo> *aControllers)
   VRManager* vm = VRManager::Get();
   vm->GetVRControllerInfo(*aControllers);
   return true;
-}
-
-bool
-VRManagerParent::SendGamepadUpdate(const GamepadChangeEvent& aGamepadEvent)
-{
-  // GamepadManager only exists at the content process
-  // or the same process in non-e10s mode.
-  if (mIsContentChild || IsSameProcess()) {
-    return PVRManagerParent::SendGamepadUpdate(aGamepadEvent);
-  } else {
-    return true;
-  }
 }
 
 } // namespace gfx

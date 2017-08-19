@@ -16,42 +16,6 @@ const char AlarmReceiver::name[] =
 constexpr char AlarmReceiver::NotifyAlarmFired_t::name[];
 constexpr char AlarmReceiver::NotifyAlarmFired_t::signature[];
 
-const char AndroidGamepadManager::name[] =
-        "org/mozilla/gecko/AndroidGamepadManager";
-
-constexpr char AndroidGamepadManager::OnAxisChange_t::name[];
-constexpr char AndroidGamepadManager::OnAxisChange_t::signature[];
-
-constexpr char AndroidGamepadManager::OnButtonChange_t::name[];
-constexpr char AndroidGamepadManager::OnButtonChange_t::signature[];
-
-constexpr char AndroidGamepadManager::OnGamepadAdded_t::name[];
-constexpr char AndroidGamepadManager::OnGamepadAdded_t::signature[];
-
-auto AndroidGamepadManager::OnGamepadAdded(int32_t a0, int32_t a1) -> void
-{
-    return mozilla::jni::Method<OnGamepadAdded_t>::Call(AndroidGamepadManager::Context(), nullptr, a0, a1);
-}
-
-constexpr char AndroidGamepadManager::OnGamepadChange_t::name[];
-constexpr char AndroidGamepadManager::OnGamepadChange_t::signature[];
-
-constexpr char AndroidGamepadManager::Start_t::name[];
-constexpr char AndroidGamepadManager::Start_t::signature[];
-
-auto AndroidGamepadManager::Start() -> void
-{
-    return mozilla::jni::Method<Start_t>::Call(AndroidGamepadManager::Context(), nullptr);
-}
-
-constexpr char AndroidGamepadManager::Stop_t::name[];
-constexpr char AndroidGamepadManager::Stop_t::signature[];
-
-auto AndroidGamepadManager::Stop() -> void
-{
-    return mozilla::jni::Method<Stop_t>::Call(AndroidGamepadManager::Context(), nullptr);
-}
-
 const char GeckoAppShell::name[] =
         "org/mozilla/gecko/GeckoAppShell";
 

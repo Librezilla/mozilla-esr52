@@ -114,7 +114,6 @@ class CustomElementRegistry;
 class DocGroup;
 class External;
 class Function;
-class Gamepad;
 enum class ImageBitmapFormat : uint32_t;
 class IdleRequest;
 class IdleRequestCallback;
@@ -443,7 +442,6 @@ public:
   bool FullScreen() const;
 
   // Inner windows only.
-  virtual void SetHasGamepadEventListener(bool aHasGamepad = true) override;
   void NotifyVREventListenerAdded();
   virtual void EventListenerAdded(nsIAtom* aType) override;
 
@@ -715,22 +713,6 @@ public:
     KillSlowScript
   };
   SlowScriptResponse ShowSlowScriptDialog();
-
-#ifdef MOZ_GAMEPAD
-  // Inner windows only.
-  void AddGamepad(uint32_t aIndex, mozilla::dom::Gamepad* aGamepad);
-  void RemoveGamepad(uint32_t aIndex);
-  void GetGamepads(nsTArray<RefPtr<mozilla::dom::Gamepad> >& aGamepads);
-  already_AddRefed<mozilla::dom::Gamepad> GetGamepad(uint32_t aIndex);
-  void SetHasSeenGamepadInput(bool aHasSeen);
-  bool HasSeenGamepadInput();
-  void SyncGamepadState();
-#endif
-
-  // Inner windows only.
-  // Enable/disable updates for gamepad input.
-  void EnableGamepadUpdates();
-  void DisableGamepadUpdates();
 
   // Inner windows only.
   // Enable/disable updates for VR
@@ -1804,17 +1786,8 @@ protected:
   bool                   mFocusByKeyOccurred : 1;
 
   // Inner windows only.
-  // Indicates whether this window wants gamepad input events
-  bool                   mHasGamepad : 1;
-
-  // Inner windows only.
   // Indicates whether this window wants VR events
   bool                   mHasVREvents : 1;
-#ifdef MOZ_GAMEPAD
-  nsCheapSet<nsUint32HashKey> mGamepadIndexSet;
-  nsRefPtrHashtable<nsUint32HashKey, mozilla::dom::Gamepad> mGamepads;
-  bool mHasSeenGamepadInput;
-#endif
 
   // whether we've sent the destroy notification for our window id
   bool                   mNotifiedIDDestroyed : 1;
