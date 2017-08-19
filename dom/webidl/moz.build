@@ -271,7 +271,6 @@ WEBIDL_FILES = [
     'KeyEvent.webidl',
     'KeyframeAnimationOptions.webidl',
     'KeyframeEffect.webidl',
-    'KeyIdsInitData.webidl',
     'LegacyQueryInterface.webidl',
     'LinkStyle.webidl',
     'ListBoxObject.webidl',
@@ -567,19 +566,6 @@ WEBIDL_FILES = [
     'XULDocument.webidl',
     'XULElement.webidl',
 ]
-
-if CONFIG['MOZ_EME_MODULES']:
-    WEBIDL_FILES = [
-        'MediaEncryptedEvent.webidl',
-        'MediaKeyError.webidl',
-        'MediaKeyMessageEvent.webidl',
-        'MediaKeys.webidl',
-        'MediaKeySession.webidl',
-        'MediaKeysRequestStatus.webidl',
-        'MediaKeyStatusMap.webidl',
-        'MediaKeySystemAccess.webidl',
-        'WidevineCDMManifest.webidl',
-    ]
 
 if CONFIG['NECKO_PROTOCOL_websocket']:
     WEBIDL_FILES = [

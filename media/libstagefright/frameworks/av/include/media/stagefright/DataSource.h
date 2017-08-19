@@ -59,32 +59,6 @@ public:
         return ERROR_UNSUPPORTED;
     }
 
-#if 0
-    ////////////////////////////////////////////////////////////////////////////
-
-    bool sniff(String8 *mimeType, float *confidence, sp<AMessage> *meta);
-
-    // The sniffer can optionally fill in "meta" with an AMessage containing
-    // a dictionary of values that helps the corresponding extractor initialize
-    // its state without duplicating effort already exerted by the sniffer.
-    typedef bool (*SnifferFunc)(
-            const sp<DataSource> &source, String8 *mimeType,
-            float *confidence, sp<AMessage> *meta);
-
-    static void RegisterSniffer(SnifferFunc func);
-    static void RegisterDefaultSniffers();
-
-    // for DRM
-    virtual sp<DecryptHandle> DrmInitialization(const char *mime = NULL) {
-        return NULL;
-    }
-    virtual void getDrmInfo(sp<DecryptHandle> &handle, DrmManagerClient **client) {};
-
-    virtual String8 getUri() {
-        return String8();
-    }
-#endif
-
     virtual String8 getMIMEType() const;
 
 protected:

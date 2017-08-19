@@ -4,7 +4,6 @@
 
 include $(MOZILLA_DIR)/toolkit/mozapps/installer/package-name.mk
 include $(MOZILLA_DIR)/toolkit/mozapps/installer/upload-files.mk
-include $(MOZILLA_DIR)/toolkit/mozapps/installer/make-eme.mk
 
 # This is how we create the binary packages we release to the public.
 

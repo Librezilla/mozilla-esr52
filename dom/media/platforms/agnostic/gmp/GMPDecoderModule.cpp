@@ -119,24 +119,6 @@ const Maybe<nsCString>
 GMPDecoderModule::PreferredGMP(const nsACString& aMimeType)
 {
   Maybe<nsCString> rv;
-  if (aMimeType.EqualsLiteral("audio/mp4a-latm")) {
-    switch (MediaPrefs::GMPAACPreferred()) {
-      case 1: rv.emplace(kEMEKeySystemClearkey); break;
-      case 2: rv.emplace(kEMEKeySystemPrimetime); break;
-      default: break;
-    }
-  }
-
-#ifdef MOZ_FMP4
-  if (MP4Decoder::IsH264(aMimeType)) {
-    switch (MediaPrefs::GMPH264Preferred()) {
-      case 1: rv.emplace(kEMEKeySystemClearkey); break;
-      case 2: rv.emplace(kEMEKeySystemPrimetime); break;
-      default: break;
-    }
-  }
-#endif
-
   return rv;
 }
 

@@ -26,7 +26,6 @@
 #include <utils/List.h>
 #include <utils/RefBase.h>
 #include <utils/threads.h>
-#include <drm/DrmManagerClient.h>
 
 #if !defined(STAGEFRIGHT_EXPORT)
 #define STAGEFRIGHT_EXPORT
@@ -83,12 +82,6 @@ public:
 
     static void RegisterSniffer(SnifferFunc func);
     static void RegisterDefaultSniffers();
-
-    // for DRM
-    virtual sp<DecryptHandle> DrmInitialization() {
-        return NULL;
-    }
-    virtual void getDrmInfo(sp<DecryptHandle> &handle, DrmManagerClient **client) {};
 
     virtual String8 getUri() {
         return String8();

@@ -20,7 +20,7 @@ Cu.import("resource://gre/modules/osfile.jsm");
 Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/GMPUtils.jsm");
-/* globals EME_ADOBE_ID, GMP_PLUGIN_IDS, GMPPrefs, GMPUtils, OPEN_H264_ID, WIDEVINE_ID */
+/* globals GMP_PLUGIN_IDS, GMPPrefs, GMPUtils, OPEN_H264_ID */
 Cu.import("resource://gre/modules/AppConstants.jsm");
 Cu.import("resource://gre/modules/UpdateUtils.jsm");
 
@@ -33,12 +33,9 @@ const URI_EXTENSION_STRINGS  = "chrome://mozapps/locale/extensions/extensions.pr
 const STRING_TYPE_NAME       = "type.%ID%.name";
 
 const SEC_IN_A_DAY           = 24 * 60 * 60;
-// How long to wait after a user enabled EME before attempting to download CDMs.
 const GMP_CHECK_DELAY        = 10 * 1000; // milliseconds
 
 const NS_GRE_DIR             = "GreD";
-const CLEARKEY_PLUGIN_ID     = "gmp-clearkey";
-const CLEARKEY_VERSION       = "0.1";
 
 const GMP_LICENSE_INFO       = "gmp_license_info";
 const GMP_PRIVACY_INFO       = "gmp_privacy_info";
@@ -56,30 +53,7 @@ const GMP_PLUGINS = [
     homepageURL:     "http://www.openh264.org/",
     optionsURL:      "chrome://mozapps/content/extensions/gmpPrefs.xul",
   },
-  {
-    id:              EME_ADOBE_ID,
-    name:            "eme-adobe_name",
-    description:     "eme-adobe_description",
-    // The following learnMoreURL is another hack to be able to support a SUMO page for this
-    // feature.
-    get learnMoreURL() {
-      return Services.urlFormatter.formatURLPref("app.support.baseURL") + "drm-content";
-    },
-    licenseURL:      "http://help.adobe.com/en_US/primetime/drm/HTML5_CDM_EULA/index.html",
-    homepageURL:     "http://help.adobe.com/en_US/primetime/drm/HTML5_CDM",
-    optionsURL:      "chrome://mozapps/content/extensions/gmpPrefs.xul",
-    isEME:           true,
-  },
-  {
-    id:              WIDEVINE_ID,
-    name:            "widevine_description",
-    // Describe the purpose of both CDMs in the same way.
-    description:     "eme-adobe_description",
-    licenseURL:      "https://www.google.com/policies/privacy/",
-    homepageURL:     "https://www.widevine.com/",
-    optionsURL:      "chrome://mozapps/content/extensions/gmpPrefs.xul",
-    isEME:           true
-  }];
+];
 XPCOMUtils.defineConstant(this, "GMP_PLUGINS", GMP_PLUGINS);
 
 XPCOMUtils.defineLazyGetter(this, "pluginsBundle",
@@ -130,11 +104,6 @@ function GMPWrapper(aPluginInfo) {
   Preferences.observe(GMPPrefs.getPrefKey(GMPPrefs.KEY_PLUGIN_VERSION,
                                           this._plugin.id),
                       this.onPrefVersionChanged, this);
-  if (this._plugin.isEME) {
-    Preferences.observe(GMPPrefs.KEY_EME_ENABLED,
-                        this.onPrefEMEGlobalEnabledChanged, this);
-    messageManager.addMessageListener("EMEVideo:ContentMediaKeysRequest", this);
-  }
 }
 
 GMPWrapper.prototype = {
@@ -176,10 +145,6 @@ GMPWrapper.prototype = {
            !GMPUtils.isPluginHidden(this._plugin);
   },
   get appDisabled() {
-    if (this._plugin.isEME && !GMPPrefs.get(GMPPrefs.KEY_EME_ENABLED, true)) {
-      // If "media.eme.enabled" is false, all EME plugins are disabled.
-      return true;
-    }
     return false;
   },
 
@@ -418,9 +383,7 @@ GMPWrapper.prototype = {
   },
 
   onPrefEnabledChanged: function() {
-    if (!this._plugin.isEME || !this.appDisabled) {
       this._handleEnabledChanged();
-    }
   },
 
   onPrefVersionChanged: function() {
@@ -470,11 +433,6 @@ GMPWrapper.prototype = {
     Preferences.ignore(GMPPrefs.getPrefKey(GMPPrefs.KEY_PLUGIN_VERSION,
                                            this._plugin.id),
                        this.onPrefVersionChanged, this);
-    if (this._plugin.isEME) {
-      Preferences.ignore(GMPPrefs.KEY_EME_ENABLED,
-                         this.onPrefEMEGlobalEnabledChanged, this);
-      messageManager.removeMessageListener("EMEVideo:ContentMediaKeysRequest", this);
-    }
     return this._updateTask;
   },
 
@@ -489,15 +447,10 @@ GMPWrapper.prototype = {
     let id = this._plugin.id.substring(4);
     let libName = AppConstants.DLL_PREFIX + id + AppConstants.DLL_SUFFIX;
     let infoName;
-    if (this._plugin.id == WIDEVINE_ID) {
-      infoName = "manifest.json";
-    } else {
-      infoName = id + ".info";
-    }
+    infoName = id + ".info";
 
     return fileExists(this.gmpPath, libName) &&
-           fileExists(this.gmpPath, infoName) &&
-           (this._plugin.id != EME_ADOBE_ID || fileExists(this.gmpPath, id + ".voucher"));
+           fileExists(this.gmpPath, infoName);
   },
 
   validate: function() {
@@ -539,7 +492,6 @@ var GMPProvider = {
     this._log = Log.repository.getLoggerWithMessagePrefix("Toolkit.GMP",
                                                           "GMPProvider.");
     this.buildPluginList();
-    this.ensureProperCDMInstallState();
 
     Preferences.observe(GMPPrefs.KEY_LOG_BASE, configureLogging);
 
@@ -574,19 +526,6 @@ var GMPProvider = {
                          e.name + " - sandboxing not available?", e);
         }
       }
-    }
-
-    try {
-      let greDir = Services.dirsvc.get(NS_GRE_DIR,
-                                       Ci.nsILocalFile);
-      let clearkeyPath = OS.Path.join(greDir.path,
-                                      CLEARKEY_PLUGIN_ID,
-                                      CLEARKEY_VERSION);
-      this._log.info("startup - adding clearkey CDM directory " +
-                     clearkeyPath);
-      gmpService.addPluginDirectory(clearkeyPath);
-    } catch (e) {
-      this._log.warn("startup - adding clearkey CDM failed", e);
     }
   },
 
@@ -651,8 +590,7 @@ var GMPProvider = {
   generateFullDescription: function(aPlugin) {
     let rv = [];
     for (let [urlProp, labelId] of [["learnMoreURL", GMP_LEARN_MORE],
-                                    ["licenseURL", aPlugin.id == WIDEVINE_ID ?
-                                     GMP_PRIVACY_INFO : GMP_LICENSE_INFO]]) {
+                                    ["licenseURL", GMP_LICENSE_INFO]]) {
       if (aPlugin[urlProp]) {
         let label = pluginsBundle.GetStringFromName(labelId);
         rv.push(`<xhtml:a href="${aPlugin[urlProp]}" target="_blank">${label}</xhtml:a>.`);
@@ -671,22 +609,10 @@ var GMPProvider = {
         homepageURL: aPlugin.homepageURL,
         optionsURL: aPlugin.optionsURL,
         wrapper: null,
-        isEME: aPlugin.isEME,
       };
       plugin.fullDescription = this.generateFullDescription(aPlugin);
       plugin.wrapper = new GMPWrapper(plugin);
       this._plugins.set(plugin.id, plugin);
-    }
-  },
-
-  ensureProperCDMInstallState: function() {
-    if (!GMPPrefs.get(GMPPrefs.KEY_EME_ENABLED, true)) {
-      for (let [id, plugin] of this._plugins) {
-        if (plugin.isEME && plugin.wrapper.isInstalled) {
-          gmpService.addPluginDirectory(plugin.wrapper.gmpPath);
-          plugin.wrapper.uninstallPlugin();
-        }
-      }
     }
   },
 };

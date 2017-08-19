@@ -50,12 +50,6 @@
 #include "gmp-video-frame-i420.h"
 #include "gmp-video-frame-encoded.h"
 
-#if defined(GMP_FAKE_SUPPORT_DECRYPT)
-#include "gmp-decryption.h"
-#include "gmp-test-decryptor.h"
-#include "gmp-test-storage.h"
-#endif
-
 #if defined(_MSC_VER)
 #define PUBLIC_FUNC __declspec(dllexport)
 #else
@@ -409,14 +403,6 @@ extern "C" {
     } else if (!strcmp (aApiName, GMP_API_VIDEO_ENCODER)) {
       *aPluginApi = new FakeVideoEncoder (static_cast<GMPVideoHost*> (aHostAPI));
       return GMPNoErr;
-#if defined(GMP_FAKE_SUPPORT_DECRYPT)
-    } else if (!strcmp (aApiName, GMP_API_DECRYPTOR)) {
-      *aPluginApi = new FakeDecryptor(static_cast<GMPDecryptorHost*> (aHostAPI));
-      return GMPNoErr;
-    } else if (!strcmp (aApiName, GMP_API_ASYNC_SHUTDOWN)) {
-      *aPluginApi = new TestAsyncShutdown(static_cast<GMPAsyncShutdownHost*> (aHostAPI));
-      return GMPNoErr;
-#endif
     }
     return GMPGenericErr;
   }

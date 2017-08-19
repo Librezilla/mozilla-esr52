@@ -68,7 +68,6 @@ enum {
     kKeyMaxInputSize      = 'inpS',
     kKeyThumbnailTime     = 'thbT',  // int64_t (usecs)
     kKeyTrackID           = 'trID',
-    kKeyIsDRM             = 'idrm',  // int32_t (bool)
 
     kKeyAlbum             = 'albu',  // cstring
     kKeyArtist            = 'arti',  // cstring

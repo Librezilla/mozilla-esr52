@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include "gmp-errors.h"
-#include "gmp-decryption.h"
 
 enum GMPAudioFormat
 {
@@ -48,10 +47,6 @@ public:
   virtual uint64_t TimeStamp() = 0;
   virtual const uint8_t* Buffer() const = 0;
   virtual uint8_t*       Buffer() = 0;
-
-  // Get metadata describing how this frame is encrypted, or nullptr if the
-  // buffer is not encrypted.
-  virtual const GMPEncryptedBufferMetadata* GetDecryptionData() const = 0;
 
   virtual uint32_t Channels() const = 0;
   virtual void SetChannels(uint32_t aChannels) = 0;

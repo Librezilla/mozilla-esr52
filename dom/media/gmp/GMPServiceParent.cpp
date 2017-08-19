@@ -22,9 +22,6 @@
 #include "nsNativeCharsetUtils.h"
 #include "nsIConsoleService.h"
 #include "mozilla/Unused.h"
-#ifdef MOZ_EME_MODULES
-#include "GMPDecryptorParent.h"
-#endif
 #include "GMPAudioDecoderParent.h"
 #include "nsComponentManagerUtils.h"
 #include "runnable_utils.h"
@@ -223,21 +220,6 @@ MigratePreGecko42StorageDir(nsIFile* aOldStorageDir,
   MoveAndOverwrite(aOldStorageDir, aNewStorageDir, NS_LITERAL_STRING("storage"));
 }
 
-static void
-MigratePreGecko45StorageDir(nsIFile* aStorageDirBase)
-{
-  nsCOMPtr<nsIFile> adobeStorageDir(CloneAndAppend(aStorageDirBase, NS_LITERAL_STRING("gmp-eme-adobe")));
-  if (NS_WARN_IF(!adobeStorageDir)) {
-    return;
-  }
-
-  // The base storage dir in pre-45 contained "id" and "storage" subdirs.
-  // We assume all storage in the base storage dir that aren't known to GMP
-  // storage are records for the Adobe GMP.
-  MoveAndOverwrite(aStorageDirBase, adobeStorageDir, NS_LITERAL_STRING("id"));
-  MoveAndOverwrite(aStorageDirBase, adobeStorageDir, NS_LITERAL_STRING("storage"));
-}
-
 static nsresult
 GMPPlatformString(nsAString& aOutPlatform)
 {
@@ -324,14 +306,6 @@ GeckoMediaPluginServiceParent::InitStorage()
   // stored in $profileDir/gmp/$platform/. So we must migrate any old records
   // from the old location to the new location, for forwards compatibility.
   MigratePreGecko42StorageDir(gmpDirWithoutPlatform, mStorageBaseDir);
-
-  // Prior to 45, GMP storage was not separated by plugin. In 45 and after,
-  // it's stored in $profile/gmp/$platform/$gmpName. So we must migrate old
-  // records from the old location to the new location, for forwards
-  // compatibility. We assume all directories in the base storage dir that
-  // aren't known to GMP storage are records for the Adobe GMP, since it
-  // was first.
-  MigratePreGecko45StorageDir(mStorageBaseDir);
 
   return GeckoMediaPluginService::Init();
 }
@@ -883,8 +857,6 @@ GeckoMediaPluginServiceParent::UpdateContentProcessGMPCapabilities()
     Unused << cp->SendGMPsChanged(caps);
   }
 
-  // For non-e10s, we must fire a notification so that any MediaKeySystemAccess
-  // requests waiting on a CDM to download will retry.
   nsCOMPtr<nsIObserverService> obsService = mozilla::services::GetObserverService();
   MOZ_ASSERT(obsService);
   if (obsService) {

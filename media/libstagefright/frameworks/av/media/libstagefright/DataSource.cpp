@@ -154,29 +154,20 @@ void DataSource::RegisterDefaultSniffers() {
 // static
 sp<DataSource> DataSource::CreateFromURI(
         const char *uri, const KeyedVector<String8, String8> *headers) {
-    bool isWidevine = !strncasecmp("widevine://", uri, 11);
 
     sp<DataSource> source;
     if (!strncasecmp("file://", uri, 7)) {
         source = new FileSource(uri + 7);
     } else if (!strncasecmp("http://", uri, 7)
-            || !strncasecmp("https://", uri, 8)
-            || isWidevine) {
+            || !strncasecmp("https://", uri, 8)) {
         sp<HTTPBase> httpSource = HTTPBase::Create();
 
         String8 tmp;
-        if (isWidevine) {
-            tmp = String8("http://");
-            tmp.append(uri + 11);
-
-            uri = tmp.string();
-        }
 
         if (httpSource->connect(uri, headers) != OK) {
             return NULL;
         }
 
-        if (!isWidevine) {
             String8 cacheConfig;
             bool disconnectAtHighwatermark;
             if (headers != NULL) {
@@ -188,11 +179,6 @@ sp<DataSource> DataSource::CreateFromURI(
             source = new NuCachedSource2(
                     httpSource,
                     cacheConfig.isEmpty() ? NULL : cacheConfig.string());
-        } else {
-            // We do not want that prefetching, caching, datasource wrapper
-            // in the widevine:// case.
-            source = httpSource;
-        }
 
 # if CHROMIUM_AVAILABLE
     } else if (!strncasecmp("data:", uri, 5)) {

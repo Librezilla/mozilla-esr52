@@ -18,9 +18,6 @@
 #include "nsString.h"
 #include "nsTArray.h"
 #include "nsWeakPtr.h"
-#ifdef MOZ_EME_MODULES
-#include "mozilla/dom/MediaKeySystemAccessManager.h"
-#endif
 
 class nsPluginArray;
 class nsMimeTypeArray;
@@ -254,16 +251,6 @@ public:
   // GetWindowFromGlobal returns the inner window for this global, if
   // any, else null.
   static already_AddRefed<nsPIDOMWindowInner> GetWindowFromGlobal(JSObject* aGlobal);
-
-#ifdef MOZ_EME_MODULES
-  already_AddRefed<Promise>
-  RequestMediaKeySystemAccess(const nsAString& aKeySystem,
-                              const Sequence<MediaKeySystemConfiguration>& aConfig,
-                              ErrorResult& aRv);
-
-private:
-  RefPtr<MediaKeySystemAccessManager> mMediaKeySystemAccessManager;
-#endif
 
 public:
   void NotifyVRDisplaysUpdated();

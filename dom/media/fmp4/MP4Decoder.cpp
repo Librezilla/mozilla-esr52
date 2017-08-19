@@ -10,7 +10,6 @@
 #include "MP4Demuxer.h"
 #include "mozilla/Preferences.h"
 #include "nsCharSeparatedTokenizer.h"
-#include "mozilla/CDMProxy.h"
 #include "mozilla/Logging.h"
 #include "mozilla/SharedThreadPool.h"
 #include "nsMimeTypes.h"

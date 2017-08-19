@@ -9280,11 +9280,6 @@
     "n_buckets": 16,
     "description": "The number of entries in persistent DataStorage (HSTS and HPKP data, basically)"
   },
-  "VIDEO_EME_PLAY_SUCCESS": {
-    "expires_in_version": "45",
-    "kind": "boolean",
-    "description": "EME video playback success or failure"
-  },
   "VIDEO_PLAY_TIME_MS" : {
     "alert_emails": ["ajones@mozilla.com"],
     "expires_in_version": "55",
@@ -9385,24 +9380,6 @@
     "high": 1000,
     "n_buckets": 100,
     "description": "720p VP9 decode benchmark measurement in frames per second",
-    "releaseChannelCollection": "opt-out"
-  },
-  "VIDEO_CDM_CREATED": {
-    "alert_emails": ["cpearce@mozilla.com"],
-    "expires_in_version": "58",
-    "bug_numbers": [1304207],
-    "kind": "enumerated",
-    "n_values": 6,
-    "description": "Note the type of CDM (0=ClearKey, 1=Primetime, 2=Widevine, 3=unknown) every time we successfully instantiate an EME MediaKeys object.",
-    "releaseChannelCollection": "opt-out"
-  },
-  "VIDEO_CDM_GENERATE_REQUEST_CALLED": {
-    "alert_emails": ["cpearce@mozilla.com"],
-    "expires_in_version": "58",
-    "bug_numbers": [1305552],
-    "kind": "enumerated",
-    "n_values": 6,
-    "description": "Note the type of CDM (0=ClearKey, 1=Primetime, 2=Widevine, 3=unknown) every time we call MediaKeySession.generateRequest().",
     "releaseChannelCollection": "opt-out"
   },
   "MEDIA_CODEC_USED": {
@@ -10167,24 +10144,6 @@
     "n_buckets": 20,
     "keyed": true,
     "description": "Contiguous time spent by an add-on blocking the main loop by performing a blocking cross-process call (microseconds, keyed by add-on ID)."
-  },
-  "VIDEO_EME_REQUEST_SUCCESS_LATENCY_MS": {
-    "alert_emails": ["cpearce@mozilla.com"],
-    "expires_in_version": "55",
-    "kind": "exponential",
-    "high": 60000,
-    "n_buckets": 60,
-    "releaseChannelCollection": "opt-out",
-    "description": "Time spent waiting for a navigator.requestMediaKeySystemAccess call to succeed."
-  },
-  "VIDEO_EME_REQUEST_FAILURE_LATENCY_MS": {
-    "alert_emails": ["cpearce@mozilla.com"],
-    "expires_in_version": "55",
-    "kind": "exponential",
-    "high": 60000,
-    "n_buckets": 60,
-    "releaseChannelCollection": "opt-out",
-    "description": "Time spent waiting for a navigator.requestMediaKeySystemAccess call to fail."
   },
   "FXA_CONFIGURED": {
     "alert_emails": ["fx-team@mozilla.com"],

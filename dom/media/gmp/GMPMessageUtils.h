@@ -9,7 +9,6 @@
 #include "gmp-video-codec.h"
 #include "gmp-video-frame-encoded.h"
 #include "gmp-audio-codec.h"
-#include "gmp-decryption.h"
 
 namespace IPC {
 
@@ -20,59 +19,11 @@ struct ParamTraits<GMPErr>
                                   GMPLastErr>
 {};
 
-struct GMPDomExceptionValidator {
-  static bool IsLegalValue(GMPDOMException aValue) {
-    switch (aValue) {
-      case kGMPNoModificationAllowedError:
-      case kGMPNotFoundError:
-      case kGMPNotSupportedError:
-      case kGMPInvalidStateError:
-      case kGMPSyntaxError:
-      case kGMPInvalidModificationError:
-      case kGMPInvalidAccessError:
-      case kGMPSecurityError:
-      case kGMPAbortError:
-      case kGMPQuotaExceededError:
-      case kGMPTimeoutError:
-      case kGMPTypeError:
-        return true;
-      default:
-        return false;
-    }
-  }
-};
-
 template <>
 struct ParamTraits<GMPVideoFrameType>
 : public ContiguousEnumSerializer<GMPVideoFrameType,
                                   kGMPKeyFrame,
                                   kGMPVideoFrameInvalid>
-{};
-
-template<>
-struct ParamTraits<GMPDOMException>
-: public EnumSerializer<GMPDOMException, GMPDomExceptionValidator>
-{};
-
-template <>
-struct ParamTraits<GMPSessionMessageType>
-: public ContiguousEnumSerializer<GMPSessionMessageType,
-                                  kGMPLicenseRequest,
-                                  kGMPMessageInvalid>
-{};
-
-template <>
-struct ParamTraits<GMPMediaKeyStatus>
-: public ContiguousEnumSerializer<GMPMediaKeyStatus,
-                                  kGMPUsable,
-                                  kGMPMediaKeyStatusInvalid>
-{};
-
-template <>
-struct ParamTraits<GMPSessionType>
-: public ContiguousEnumSerializer<GMPSessionType,
-                                  kGMPTemporySession,
-                                  kGMPSessionInvalid>
 {};
 
 template <>

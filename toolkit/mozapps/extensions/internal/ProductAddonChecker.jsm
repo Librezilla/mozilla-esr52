@@ -6,17 +6,6 @@
 
 const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
 
-const LOCAL_EME_SOURCES = [{
-  "id": "gmp-eme-adobe",
-  "src": "chrome://global/content/gmp-sources/eme-adobe.json"
-}, {
-  "id": "gmp-gmpopenh264",
-  "src": "chrome://global/content/gmp-sources/openh264.json"
-}, {
-  "id": "gmp-widevinecdm",
-  "src": "chrome://global/content/gmp-sources/widevinecdm.json"
-}];
-
 this.EXPORTED_SYMBOLS = [ "ProductAddonChecker" ];
 
 Cu.importGlobalProperties(["XMLHttpRequest"]);
@@ -238,56 +227,8 @@ function parseXML(document) {
  * load the sources from local build configuration.
  */
 function downloadLocalConfig() {
-
-  if (!GMPPrefs.get(GMPPrefs.KEY_UPDATE_ENABLED, true)) {
     logger.info("Updates are disabled via media.gmp-manager.updateEnabled");
     return Promise.resolve({usedFallback: true, gmpAddons: []});
-  }
-
-  return Promise.all(LOCAL_EME_SOURCES.map(conf => {
-    return downloadJSON(conf.src).then(addons => {
-
-      let platforms = addons.vendors[conf.id].platforms;
-      let target = Services.appinfo.OS + "_" + UpdateUtils.ABI;
-      let details = null;
-
-      while (!details) {
-        if (!(target in platforms)) {
-          // There was no matching platform so return false, this addon
-          // will be filtered from the results below
-          logger.info("no details found for: " + target);
-          return false;
-        }
-        // Field either has the details of the binary or is an alias
-        // to another build target key that does
-        if (platforms[target].alias) {
-          target = platforms[target].alias;
-        } else {
-          details = platforms[target];
-        }
-      }
-
-      logger.info("found plugin: " + conf.id);
-      return {
-        "id": conf.id,
-        "URL": details.fileUrl,
-        "hashFunction": addons.hashFunction,
-        "hashValue": details.hashValue,
-        "version": addons.vendors[conf.id].version,
-        "size": details.filesize
-      };
-    });
-  })).then(addons => {
-
-    // Some filters may not match this platform so
-    // filter those out
-    addons = addons.filter(x => x !== false);
-
-    return {
-      usedFallback: true,
-      gmpAddons: addons
-    };
-  });
 }
 
 /**

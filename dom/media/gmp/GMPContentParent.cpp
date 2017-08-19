@@ -5,9 +5,6 @@
 
 #include "GMPContentParent.h"
 #include "GMPAudioDecoderParent.h"
-#ifdef MOZ_EME_MODULES
-#include "GMPDecryptorParent.h"
-#endif
 #include "GMPParent.h"
 #include "GMPServiceChild.h"
 #include "GMPVideoDecoderParent.h"
@@ -69,9 +66,6 @@ void
 GMPContentParent::ActorDestroy(ActorDestroyReason aWhy)
 {
   MOZ_ASSERT(mAudioDecoders.IsEmpty() &&
-#ifdef MOZ_EME_MODULES
-             mDecryptors.IsEmpty() &&
-#endif
              mVideoDecoders.IsEmpty() &&
              mVideoEncoders.IsEmpty());
   NS_DispatchToCurrentThread(new ReleaseGMPContentParent(this));
@@ -112,24 +106,10 @@ GMPContentParent::VideoEncoderDestroyed(GMPVideoEncoderParent* aEncoder)
   CloseIfUnused();
 }
 
-#ifdef MOZ_EME_MODULES
-void
-GMPContentParent::DecryptorDestroyed(GMPDecryptorParent* aSession)
-{
-  MOZ_ASSERT(GMPThread() == NS_GetCurrentThread());
-
-  MOZ_ALWAYS_TRUE(mDecryptors.RemoveElement(aSession));
-  CloseIfUnused();
-}
-#endif /* MOZ_EME_MODULES */
-
 void
 GMPContentParent::CloseIfUnused()
 {
   if (mAudioDecoders.IsEmpty() &&
-#ifdef MOZ_EME_MODULES
-      mDecryptors.IsEmpty() &&
-#endif
       mVideoDecoders.IsEmpty() &&
       mVideoEncoders.IsEmpty()) {
     RefPtr<GMPContentParent> toClose;
@@ -145,25 +125,6 @@ GMPContentParent::CloseIfUnused()
                                                  &GMPContentParent::Close));
   }
 }
-
-#ifdef MOZ_EME_MODULES
-nsresult
-GMPContentParent::GetGMPDecryptor(GMPDecryptorParent** aGMPDP)
-{
-  PGMPDecryptorParent* pdp = SendPGMPDecryptorConstructor();
-  if (!pdp) {
-    return NS_ERROR_FAILURE;
-  }
-  GMPDecryptorParent* dp = static_cast<GMPDecryptorParent*>(pdp);
-  // This addref corresponds to the Proxy pointer the consumer is returned.
-  // It's dropped by calling Close() on the interface.
-  NS_ADDREF(dp);
-  mDecryptors.AppendElement(dp);
-  *aGMPDP = dp;
-
-  return NS_OK;
-}
-#endif /* MOZ_EME_MODULES */
 
 nsIThread*
 GMPContentParent::GMPThread()
@@ -271,24 +232,6 @@ GMPContentParent::DeallocPGMPVideoEncoderParent(PGMPVideoEncoderParent* aActor)
   NS_RELEASE(vep);
   return true;
 }
-
-#ifdef MOZ_EME_MODULES
-PGMPDecryptorParent*
-GMPContentParent::AllocPGMPDecryptorParent()
-{
-  GMPDecryptorParent* ksp = new GMPDecryptorParent(this);
-  NS_ADDREF(ksp);
-  return ksp;
-}
-
-bool
-GMPContentParent::DeallocPGMPDecryptorParent(PGMPDecryptorParent* aActor)
-{
-  GMPDecryptorParent* ksp = static_cast<GMPDecryptorParent*>(aActor);
-  NS_RELEASE(ksp);
-  return true;
-}
-#endif /* MOZ_EME_MODULES */
 
 PGMPAudioDecoderParent*
 GMPContentParent::AllocPGMPAudioDecoderParent()

@@ -4,9 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifdef MOZ_EME_MODULES
-#include "mozilla/CDMProxy.h"
-#endif
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/dom/HTMLMediaElement.h"
 #include "mozilla/Preferences.h"
@@ -347,12 +344,6 @@ MediaFormatReader::DecoderFactory::DoCreateDecoder(TrackType aTrack)
 
   if (!mOwner->mPlatform) {
     mOwner->mPlatform = new PDMFactory();
-#ifdef MOZ_EME_MODULES
-    if (mOwner->IsEncrypted()) {
-      MOZ_ASSERT(mOwner->mCDMProxy);
-      mOwner->mPlatform->SetCDMProxy(mOwner->mCDMProxy);
-    }
-#endif
   }
 
   switch (aTrack) {
@@ -581,52 +572,6 @@ MediaFormatReader::InitInternal()
   return NS_OK;
 }
 
-#ifdef MOZ_EME_MODULES
-class DispatchKeyNeededEvent : public Runnable {
-public:
-  DispatchKeyNeededEvent(AbstractMediaDecoder* aDecoder,
-                         nsTArray<uint8_t>& aInitData,
-                         const nsString& aInitDataType)
-    : mDecoder(aDecoder)
-    , mInitData(aInitData)
-    , mInitDataType(aInitDataType)
-  {
-  }
-  NS_IMETHOD Run() override {
-    // Note: Null check the owner, as the decoder could have been shutdown
-    // since this event was dispatched.
-    MediaDecoderOwner* owner = mDecoder->GetOwner();
-    if (owner) {
-      owner->DispatchEncrypted(mInitData, mInitDataType);
-    }
-    mDecoder = nullptr;
-    return NS_OK;
-  }
-private:
-  RefPtr<AbstractMediaDecoder> mDecoder;
-  nsTArray<uint8_t> mInitData;
-  nsString mInitDataType;
-};
-
-void
-MediaFormatReader::SetCDMProxy(CDMProxy* aProxy)
-{
-  RefPtr<CDMProxy> proxy = aProxy;
-  RefPtr<MediaFormatReader> self = this;
-  nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction([=] () {
-    MOZ_ASSERT(self->OnTaskQueue());
-    self->mCDMProxy = proxy;
-  });
-  OwnerThread()->Dispatch(r.forget());
-}
-
-bool
-MediaFormatReader::IsWaitingOnCDMResource() {
-  MOZ_ASSERT(OnTaskQueue());
-  return IsEncrypted() && !mCDMProxy;
-}
-#endif /* MOZ_EME_MODULES */
-
 RefPtr<MediaDecoderReader::MetadataPromise>
 MediaFormatReader::AsyncReadMetadata()
 {
@@ -662,10 +607,7 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
   UniquePtr<MetadataTags> tags(MakeUnique<MetadataTags>());
 
   RefPtr<PDMFactory> platform;
-#ifdef MOZ_EME_MODULES
-  if (!IsWaitingOnCDMResource())
-#endif
-    platform = new PDMFactory();
+  platform = new PDMFactory();
 
   // To decode, we need valid video and a place to put it.
   bool videoActive = !!mDemuxer->GetNumberTracks(TrackInfo::kVideoTrack) &&
@@ -730,18 +672,6 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
     }
   }
 
-#ifdef MOZ_EME_MODULES
-  UniquePtr<EncryptionInfo> crypto = mDemuxer->GetCrypto();
-  if (mDecoder && crypto && crypto->IsEncrypted()) {
-    // Try and dispatch 'encrypted'. Won't go if ready state still HAVE_NOTHING.
-    for (uint32_t i = 0; i < crypto->mInitDatas.Length(); i++) {
-      NS_DispatchToMainThread(
-        new DispatchKeyNeededEvent(mDecoder, crypto->mInitDatas[i].mInitData, crypto->mInitDatas[i].mType));
-    }
-    mInfo.mCrypto = *crypto;
-  }
-#endif /* MOZ_EME_MODULES */
-
   int64_t videoDuration = HasVideo() ? mInfo.mVideo.mDuration : 0;
   int64_t audioDuration = HasAudio() ? mInfo.mAudio.mDuration : 0;
 
@@ -765,15 +695,6 @@ MediaFormatReader::OnDemuxerInitDone(nsresult)
   metadata->mTags = tags->Count() ? tags.release() : nullptr;
   mMetadataPromise.Resolve(metadata, __func__);
 }
-
-#ifdef MOZ_EME_MODULES
-bool
-MediaFormatReader::IsEncrypted() const
-{
-  return (HasAudio() && mInfo.mAudio.mCrypto.mValid) ||
-         (HasVideo() && mInfo.mVideo.mCrypto.mValid);
-}
-#endif /* MOZ_EME_MODULES */
 
 void
 MediaFormatReader::OnDemuxerInitFailed(const MediaResult& aError)

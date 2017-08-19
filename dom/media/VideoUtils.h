@@ -44,11 +44,6 @@ namespace mozilla {
 
 class MediaContentType;
 
-// EME Key System String.
-extern const nsLiteralCString kEMEKeySystemClearkey;
-extern const nsLiteralCString kEMEKeySystemWidevine;
-extern const nsLiteralCString kEMEKeySystemPrimetime;
-
 /**
  * ReentrantMonitorConditionallyEnter
  *

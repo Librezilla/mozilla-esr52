@@ -11,9 +11,6 @@
 #include "nsTArray.h"
 #include "nsStringGlue.h"
 class GMPAudioDecoderProxy;
-#ifdef MOZ_EME_MODULES
-class GMPDecryptorProxy;
-#endif
 class GMPVideoDecoderProxy;
 class GMPVideoEncoderProxy;
 class GMPVideoHost;
@@ -35,9 +32,6 @@ public:
   virtual ~GMPVideoGetterCallback() { MOZ_COUNT_DTOR(GMPVideoGetterCallback<T>); }
   virtual void Done(T*, GMPVideoHost*) = 0;
 };
-#ifdef MOZ_EME_MODULES
-typedef GMPGetterCallback<GMPDecryptorProxy> GetGMPDecryptorCallback;
-#endif
 typedef GMPGetterCallback<GMPAudioDecoderProxy> GetGMPAudioDecoderCallback;
 typedef GMPVideoGetterCallback<GMPVideoDecoderProxy> GetGMPVideoDecoderCallback;
 typedef GMPVideoGetterCallback<GMPVideoEncoderProxy> GetGMPVideoEncoderCallback;

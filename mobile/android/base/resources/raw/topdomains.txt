@@ -10,7 +10,6 @@ reddit.com
 go.com
 craigslist.org
 live.com
-netflix.com
 pinterest.com
 bing.com
 linkedin.com

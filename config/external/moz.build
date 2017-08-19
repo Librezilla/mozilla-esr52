@@ -52,7 +52,6 @@ external_dirs += [
     'media/libspeex_resampler',
     'media/libstagefright',
     'media/libsoundtouch',
-    'media/psshparser'
 ]
 
 if CONFIG['MOZ_LINKER']:

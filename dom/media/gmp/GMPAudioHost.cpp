@@ -6,7 +6,6 @@
 #include "GMPAudioHost.h"
 #include "gmp-audio-samples.h"
 #include "gmp-errors.h"
-#include "GMPEncryptedBufferDataImpl.h"
 #include "MediaData.h"
 
 namespace mozilla {
@@ -27,9 +26,6 @@ GMPAudioSamplesImpl::GMPAudioSamplesImpl(const GMPAudioEncodedSampleData& aData)
   , mChannels(aData.mChannelCount())
   , mRate(aData.mSamplesPerSecond())
 {
-  if (aData.mDecryptionData().mKeyId().Length() > 0) {
-    mCrypto = new GMPEncryptedBufferDataImpl(aData.mDecryptionData());
-  }
 }
 
 GMPAudioSamplesImpl::GMPAudioSamplesImpl(MediaRawData* aSample,
@@ -41,9 +37,6 @@ GMPAudioSamplesImpl::GMPAudioSamplesImpl(MediaRawData* aSample,
  , mRate(aRate)
 {
   mBuffer.AppendElements(aSample->Data(), aSample->Size());
-  if (aSample->mCrypto.mValid) {
-    mCrypto = new GMPEncryptedBufferDataImpl(aSample->mCrypto);
-  }
 }
 
 GMPAudioSamplesImpl::~GMPAudioSamplesImpl()
@@ -99,19 +92,12 @@ GMPAudioSamplesImpl::Buffer()
   return mBuffer.Elements();
 }
 
-const GMPEncryptedBufferMetadata*
-GMPAudioSamplesImpl::GetDecryptionData() const
-{
-  return mCrypto;
-}
-
 void
 GMPAudioSamplesImpl::InitCrypto(const CryptoSample& aCrypto)
 {
   if (!aCrypto.mValid) {
     return;
   }
-  mCrypto = new GMPEncryptedBufferDataImpl(aCrypto);
 }
 
 void
@@ -119,9 +105,6 @@ GMPAudioSamplesImpl::RelinquishData(GMPAudioEncodedSampleData& aData)
 {
   aData.mData() = Move(mBuffer);
   aData.mTimeStamp() = TimeStamp();
-  if (mCrypto) {
-    mCrypto->RelinquishData(aData.mDecryptionData());
-  }
 }
 
 uint32_t

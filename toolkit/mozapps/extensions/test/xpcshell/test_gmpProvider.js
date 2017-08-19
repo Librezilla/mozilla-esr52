@@ -242,13 +242,7 @@ function createMockPluginFilesIfNeeded(aFile, aPluginId) {
   let libName = AppConstants.DLL_PREFIX + id + AppConstants.DLL_SUFFIX;
 
   createFile(libName);
-  if (aPluginId == "gmp-widevinecdm") {
-    createFile("manifest.json");
-  } else {
-    createFile(id + ".info");
-  }
-  if (aPluginId == "gmp-eme-adobe")
-    createFile(id + ".voucher");
+  createFile(id + ".info");
 }
 
 // Array.includes() is only in Nightly channel, so polyfill so we don't fail

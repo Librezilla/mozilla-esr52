@@ -9,9 +9,6 @@
 #include "GMPProcessParent.h"
 #include "GMPServiceParent.h"
 #include "GMPAudioDecoderParent.h"
-#ifdef MOZ_EME_MODULES
-#include "GMPDecryptorParent.h"
-#endif
 #include "GMPVideoDecoderParent.h"
 #include "GMPVideoEncoderParent.h"
 #include "GMPTimerParent.h"
@@ -228,10 +225,6 @@ private:
   bool mDeleteProcessOnlyOnUnload;
   bool mAbnormalShutdownInProgress;
   bool mIsBlockingDeletion;
-
-#ifdef MOZ_EME_MODULES
-  bool mCanDecrypt;
-#endif
 
   nsTArray<RefPtr<GMPTimerParent>> mTimers;
   nsTArray<RefPtr<GMPStorageParent>> mStorage;

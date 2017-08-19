@@ -9,9 +9,7 @@
 #include "gmp-audio-host.h"
 #include "gmp-audio-samples.h"
 #include "nsTArray.h"
-#include "gmp-decryption.h"
 #include "nsAutoPtr.h"
-#include "GMPEncryptedBufferDataImpl.h"
 #include "mozilla/gmp/GMPTypes.h"
 
 namespace mozilla {
@@ -37,7 +35,6 @@ public:
   uint64_t TimeStamp() override;
   const uint8_t* Buffer() const override;
   uint8_t* Buffer() override;
-  const GMPEncryptedBufferMetadata* GetDecryptionData() const override;
 
   void InitCrypto(const CryptoSample& aCrypto);
 
@@ -52,7 +49,6 @@ private:
   GMPAudioFormat mFormat;
   nsTArray<uint8_t> mBuffer;
   int64_t mTimeStamp;
-  nsAutoPtr<GMPEncryptedBufferDataImpl> mCrypto;
   uint32_t mChannels;
   uint32_t mRate;
 };

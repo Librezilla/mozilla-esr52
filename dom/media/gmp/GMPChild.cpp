@@ -10,9 +10,6 @@
 #include "GMPVideoDecoderChild.h"
 #include "GMPVideoEncoderChild.h"
 #include "GMPAudioDecoderChild.h"
-#ifdef MOZ_EME_MODULES
-#include "GMPDecryptorChild.h"
-#endif
 #include "GMPVideoHost.h"
 #include "nsDebugImpl.h"
 #include "nsIFile.h"
@@ -25,9 +22,6 @@
 #include "GMPUtils.h"
 #include "prio.h"
 #include "base/task.h"
-#ifdef MOZ_EME_MODULES
-#include "widevine-adapter/WidevineAdapter.h"
-#endif
 
 using namespace mozilla::ipc;
 using mozilla::dom::CrashReporterChild;
@@ -384,12 +378,8 @@ GMPChild::AnswerStartPlugin(const nsString& aAdapter)
     return false;
   }
 
-  bool isWidevine = aAdapter.EqualsLiteral("widevine");
 #if defined(MOZ_GMP_SANDBOX) && defined(XP_MACOSX)
   MacSandboxPluginType pluginType = MacSandboxPluginType_GMPlugin_Default;
-  if (isWidevine) {
-    pluginType = MacSandboxPluginType_GMPlugin_EME_Widevine;
-  }
   if (!SetMacSandboxInfo(pluginType)) {
     NS_WARNING("Failed to set Mac GMP sandbox info");
     delete platformAPI;
@@ -397,11 +387,7 @@ GMPChild::AnswerStartPlugin(const nsString& aAdapter)
   }
 #endif
 
-#ifdef MOZ_EME_MODULES
-  GMPAdapter* adapter = (isWidevine) ? new WidevineAdapter() : nullptr;
-#else
   constexpr GMPAdapter* adapter = nullptr;
-#endif
 
   if (!mGMPLoader->Load(libPath.get(),
                         libPath.Length(),

@@ -55,24 +55,11 @@ public:
     // CAN_SEEK_BACKWARD | CAN_SEEK_FORWARD | CAN_SEEK | CAN_PAUSE
     virtual uint32_t flags() const;
 
-    // for DRM
-    virtual void setDrmFlag(bool flag) {
-        mIsDrm = flag;
-    };
-    virtual bool getDrmFlag() {
-        return mIsDrm;
-    }
-    virtual char* getDrmTrackInfo(size_t trackID, int *len) {
-        return NULL;
-    }
-
 protected:
     MediaExtractor() {}
     virtual ~MediaExtractor() {}
 
 private:
-    bool mIsDrm;
-
     MediaExtractor(const MediaExtractor &);
     MediaExtractor &operator=(const MediaExtractor &);
 };

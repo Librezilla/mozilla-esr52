@@ -17,7 +17,6 @@ EXPORTS += [
     'gmp-api/gmp-audio-decode.h',
     'gmp-api/gmp-audio-host.h',
     'gmp-api/gmp-audio-samples.h',
-    'gmp-api/gmp-decryption.h',
     'gmp-api/gmp-entrypoints.h',
     'gmp-api/gmp-errors.h',
     'gmp-api/gmp-platform.h',
@@ -39,9 +38,6 @@ EXPORTS += [
     'GMPContentChild.h',
     'GMPContentParent.h',
     'GMPCrashHelperHolder.h',
-    'GMPDecryptorChild.h',
-    'GMPDecryptorParent.h',
-    'GMPEncryptedBufferDataImpl.h',
     'GMPLoader.h',
     'GMPMessageUtils.h',
     'GMPParent.h',
@@ -61,7 +57,6 @@ EXPORTS += [
     'GMPVideoDecoderChild.h',
     'GMPVideoDecoderParent.h',
     'GMPVideoDecoderProxy.h',
-    'GMPVideoEncodedFrameImpl.h',
     'GMPVideoEncoderChild.h',
     'GMPVideoEncoderParent.h',
     'GMPVideoEncoderProxy.h',
@@ -88,7 +83,6 @@ UNIFIED_SOURCES += [
     'GMPContentChild.cpp',
     'GMPContentParent.cpp',
     'GMPDiskStorage.cpp',
-    'GMPEncryptedBufferDataImpl.cpp',
     'GMPMemoryStorage.cpp',
     'GMPParent.cpp',
     'GMPPlatform.cpp',
@@ -105,7 +99,6 @@ UNIFIED_SOURCES += [
     'GMPUtils.cpp',
     'GMPVideoDecoderChild.cpp',
     'GMPVideoDecoderParent.cpp',
-    'GMPVideoEncodedFrameImpl.cpp',
     'GMPVideoEncoderChild.cpp',
     'GMPVideoEncoderParent.cpp',
     'GMPVideoHost.cpp',
@@ -122,32 +115,12 @@ IPDL_SOURCES += [
   'PGMP.ipdl',
   'PGMPAudioDecoder.ipdl',
   'PGMPContent.ipdl',
-  'PGMPDecryptor.ipdl',
   'PGMPService.ipdl',
   'PGMPStorage.ipdl',
   'PGMPTimer.ipdl',
   'PGMPVideoDecoder.ipdl',
   'PGMPVideoEncoder.ipdl',
 ]
-
-if CONFIG['MOZ_EME_MODULES']:
-    DIRS += [
-        'widevine-adapter',
-    ]
-    EXPORTS += [
-        'GMPCDMCallbackProxy.h',
-        'GMPCDMProxy.h',
-        'GMPDecryptorProxy.h',
-    ]
-    UNIFIED_SOURCES += [
-        'GMPCDMCallbackProxy.cpp',
-        'GMPCDMProxy.cpp',
-        'GMPDecryptorChild.cpp',
-        'GMPDecryptorParent.cpp',
-    ]
-    IPDL_SOURCES += [
-        'PGMPDecryptor.ipdl',
-    ]
 
 # comment this out to use Unsafe Shmem for more performance
 DEFINES['GMP_SAFE_SHMEM'] = True

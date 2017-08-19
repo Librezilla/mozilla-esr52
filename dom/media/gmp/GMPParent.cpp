@@ -41,11 +41,6 @@ using CrashReporter::GetIDFromMinidump;
 #include "WMFDecoderModule.h"
 #endif
 
-#ifdef MOZ_EME_MODULES
-#include "mozilla/dom/WidevineCDMManifestBinding.h"
-#include "widevine-adapter/WidevineAdapter.h"
-#endif
-
 namespace mozilla {
 
 #undef LOG
@@ -68,9 +63,6 @@ GMPParent::GMPParent()
   , mDeleteProcessOnlyOnUnload(false)
   , mAbnormalShutdownInProgress(false)
   , mIsBlockingDeletion(false)
-#ifdef MOZ_EME_MODULES
-  , mCanDecrypt(false)
-#endif
   , mGMPContentChildCount(0)
   , mAsyncShutdownRequired(false)
   , mAsyncShutdownInProgress(false)
@@ -594,23 +586,6 @@ GMPCapability::Supports(const nsTArray<GMPCapability>& aCapabilities,
     }
     for (const nsCString& tag : capabilities.mAPITags) {
       if (tag.Equals(aTag)) {
-#ifdef XP_WIN
-        // Clearkey on Windows advertises that it can decode in its GMP info
-        // file, but uses Windows Media Foundation to decode. That's not present
-        // on Windows XP, and on some Vista, Windows N, and KN variants without
-        // certain services packs.
-        if (tag.Equals(kEMEKeySystemClearkey)) {
-          if (capabilities.mAPIName.EqualsLiteral(GMP_API_VIDEO_DECODER)) {
-            if (!WMFDecoderModule::HasH264()) {
-              continue;
-            }
-          } else if (capabilities.mAPIName.EqualsLiteral(GMP_API_AUDIO_DECODER)) {
-            if (!WMFDecoderModule::HasAAC()) {
-              continue;
-            }
-          }
-        }
-#endif
         return true;
       }
     }
@@ -828,7 +803,6 @@ GMPParent::ReadGMPMetaData()
     return ReadGMPInfoFile(infoFile);
   }
 
-  // Maybe this is the Widevine adapted plugin?
   nsCOMPtr<nsIFile> manifestFile;
   rv = mDirectory->Clone(getter_AddRefs(manifestFile));
   if (NS_FAILED(rv)) {
@@ -892,36 +866,6 @@ GMPParent::ReadGMPInfoFile(nsIFile* aFile)
       }
     }
 
-#ifdef MOZ_EME_MODULES
-    // We support the current GMPDecryptor version, and the previous.
-    // We Adapt the previous to the current in the GMPContentChild.
-    if (cap.mAPIName.EqualsLiteral(GMP_API_DECRYPTOR_BACKWARDS_COMPAT)) {
-      cap.mAPIName.AssignLiteral(GMP_API_DECRYPTOR);
-    }
-
-    if (cap.mAPIName.EqualsLiteral(GMP_API_DECRYPTOR)) {
-      mCanDecrypt = true;
-
-#if defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
-      if (!mozilla::SandboxInfo::Get().CanSandboxMedia()) {
-        printf_stderr("GMPParent::ReadGMPMetaData: Plugin \"%s\" is an EME CDM"
-                      " but this system can't sandbox it; not loading.\n",
-                      mDisplayName.get());
-        return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-      }
-#endif
-#ifdef XP_WIN
-      // Adobe GMP doesn't work without SSE2. Check the tags to see if
-      // the decryptor is for the Adobe GMP, and refuse to load it if
-      // SSE2 isn't supported.
-      if (cap.mAPITags.Contains(kEMEKeySystemPrimetime) &&
-          !mozilla::supports_sse2()) {
-        return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-      }
-#endif // XP_WIN
-    }
-#endif /* MOZ_EME_MODULES */
-
     mCapabilities.AppendElement(Move(cap));
   }
 
@@ -949,61 +893,12 @@ RefPtr<GenericPromise>
 GMPParent::ParseChromiumManifest(nsString aJSON)
 {
   LOGD("%s: for '%s'", __FUNCTION__, NS_LossyConvertUTF16toASCII(aJSON).get());
-#ifdef MOZ_EME_MODULES
-  MOZ_ASSERT(NS_IsMainThread());
-  mozilla::dom::WidevineCDMManifest m;
-  if (!m.Init(aJSON)) {
-    return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-  }
-
-  nsresult ignored; // Note: ToInteger returns 0 on failure.
-  if (!WidevineAdapter::Supports(m.mX_cdm_module_versions.ToInteger(&ignored),
-                                 m.mX_cdm_interface_versions.ToInteger(&ignored),
-                                 m.mX_cdm_host_versions.ToInteger(&ignored))) {
-    return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-  }
-
-  mDisplayName = NS_ConvertUTF16toUTF8(m.mName);
-  mDescription = NS_ConvertUTF16toUTF8(m.mDescription);
-  mVersion = NS_ConvertUTF16toUTF8(m.mVersion);
-
-  GMPCapability video(NS_LITERAL_CSTRING(GMP_API_VIDEO_DECODER));
-  video.mAPITags.AppendElement(NS_LITERAL_CSTRING("h264"));
-  video.mAPITags.AppendElement(NS_LITERAL_CSTRING("vp8"));
-  video.mAPITags.AppendElement(NS_LITERAL_CSTRING("vp9"));
-  video.mAPITags.AppendElement(kEMEKeySystemWidevine);
-  mCapabilities.AppendElement(Move(video));
-
-  GMPCapability decrypt(NS_LITERAL_CSTRING(GMP_API_DECRYPTOR));
-  decrypt.mAPITags.AppendElement(kEMEKeySystemWidevine);
-  mCapabilities.AppendElement(Move(decrypt));
-
-  MOZ_ASSERT(mName.EqualsLiteral("widevinecdm"));
-  mAdapter = NS_LITERAL_STRING("widevine");
-#ifdef XP_WIN
-  mLibs = NS_LITERAL_CSTRING("dxva2.dll");
-#endif
-
-  return GenericPromise::CreateAndResolve(true, __func__);
-#else
-  return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-#endif /* MOZ_EME_MODULES */
 }
 
 bool
 GMPParent::CanBeSharedCrossNodeIds() const
 {
-  return !mAsyncShutdownInProgress &&
-         mNodeId.IsEmpty()
-#ifdef MOZ_EME_MODULES
-         &&
-         // XXX bug 1159300 hack -- maybe remove after openh264 1.4
-         // We don't want to use CDM decoders for non-encrypted playback
-         // just yet; especially not for WebRTC. Don't allow CDMs to be used
-         // without a node ID.
-         !mCanDecrypt
-#endif
-        ;
+  return !mAsyncShutdownInProgress && mNodeId.IsEmpty();
 }
 
 bool

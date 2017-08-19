@@ -20,9 +20,6 @@
 #include "nsNativeCharsetUtils.h"
 #include "nsIConsoleService.h"
 #include "mozilla/Unused.h"
-#ifdef MOZ_EME_MODULES
-#include "GMPDecryptorParent.h"
-#endif
 #include "GMPAudioDecoderParent.h"
 #include "nsComponentManagerUtils.h"
 #include "runnable_utils.h"
@@ -456,67 +453,6 @@ GeckoMediaPluginService::GetGMPVideoEncoder(GMPCrashHelper* aHelper,
 
   return NS_OK;
 }
-
-#ifdef MOZ_EME_MODULES
-class GetGMPContentParentForDecryptorDone : public GetGMPContentParentCallback
-{
-public:
-  explicit GetGMPContentParentForDecryptorDone(UniquePtr<GetGMPDecryptorCallback>&& aCallback,
-                                               GMPCrashHelper* aHelper)
-   : mCallback(Move(aCallback))
-   , mHelper(aHelper)
-  {
-  }
-
-  void Done(GMPContentParent* aGMPParent) override
-  {
-    GMPDecryptorParent* ksp = nullptr;
-    if (aGMPParent && NS_SUCCEEDED(aGMPParent->GetGMPDecryptor(&ksp))) {
-      ksp->SetCrashHelper(mHelper);
-    }
-    mCallback->Done(ksp);
-  }
-
-private:
-  UniquePtr<GetGMPDecryptorCallback> mCallback;
-  RefPtr<GMPCrashHelper> mHelper;
-};
-
-NS_IMETHODIMP
-GeckoMediaPluginService::GetGMPDecryptor(GMPCrashHelper* aHelper,
-                                         nsTArray<nsCString>* aTags,
-                                         const nsACString& aNodeId,
-                                         UniquePtr<GetGMPDecryptorCallback>&& aCallback)
-{
-#if defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
-  if (!SandboxInfo::Get().CanSandboxMedia()) {
-    NS_WARNING("GeckoMediaPluginService::GetGMPDecryptor: "
-               "EME decryption not available without sandboxing support.");
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-#endif
-
-  MOZ_ASSERT(NS_GetCurrentThread() == mGMPThread);
-  NS_ENSURE_ARG(aTags && aTags->Length() > 0);
-  NS_ENSURE_ARG(aCallback);
-
-  if (mShuttingDownOnGMPThread) {
-    return NS_ERROR_FAILURE;
-  }
-
-  UniquePtr<GetGMPContentParentCallback> callback(
-    new GetGMPContentParentForDecryptorDone(Move(aCallback), aHelper));
-  if (!GetContentParentFrom(aHelper,
-                            aNodeId,
-                            NS_LITERAL_CSTRING(GMP_API_DECRYPTOR),
-                            *aTags,
-                            Move(callback))) {
-    return NS_ERROR_FAILURE;
-  }
-
-  return NS_OK;
-}
-#endif
 
 void
 GeckoMediaPluginService::ConnectCrashHelper(uint32_t aPluginId, GMPCrashHelper* aHelper)

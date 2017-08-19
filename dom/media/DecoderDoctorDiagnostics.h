@@ -48,11 +48,6 @@ public:
                               bool aCanPlay,
                               const char* aCallSite);
 
-  void StoreMediaKeySystemAccess(nsIDocument* aDocument,
-                                 const nsAString& aKeySystem,
-                                 bool aIsSupported,
-                                 const char* aCallSite);
-
   void StoreEvent(nsIDocument* aDocument,
                   const DecoderDoctorEvent& aEvent,
                   const char* aCallSite);
@@ -60,7 +55,6 @@ public:
   enum DiagnosticsType {
     eUnsaved,
     eFormatSupportCheck,
-    eMediaKeySystemAccessRequest,
     eEvent
   };
   DiagnosticsType Type() const { return mDiagnosticsType; }
@@ -92,7 +86,6 @@ public:
   bool IsKeySystemSupported() const { return mIsKeySystemSupported; }
   enum KeySystemIssue {
     eUnset,
-    eWidevineWithNoWMF
   };
   void SetKeySystemIssue(KeySystemIssue aKeySystemIssue)
   {

@@ -23,11 +23,6 @@
 #endif
 #include "GMPDecoderModule.h"
 
-#ifdef MOZ_EME_MODULES
-#include "mozilla/CDMProxy.h"
-#include "EMEDecoderModule.h"
-#endif
-
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/SharedThreadPool.h"
 #include "mozilla/StaticPtr.h"
@@ -218,13 +213,6 @@ PDMFactory::CreateDecoder(const CreateDecoderParams& aParams)
   }
 
   const TrackInfo& config = aParams.mConfig;
-#ifdef MOZ_EME_MODULES
-  bool isEncrypted = mEMEPDM && config.mCrypto.mValid;
-
-  if (isEncrypted) {
-    return CreateDecoderWithPDM(mEMEPDM, aParams);
-  }
-#endif
 
   DecoderDoctorDiagnostics* diagnostics = aParams.mDiagnostics;
   if (diagnostics) {
@@ -347,11 +335,6 @@ bool
 PDMFactory::Supports(const TrackInfo& aTrackInfo,
                      DecoderDoctorDiagnostics* aDiagnostics) const
 {
-#ifdef MOZ_EME_MODULES
-  if (mEMEPDM) {
-    return mEMEPDM->Supports(aTrackInfo, aDiagnostics);
-  }
-#endif
   RefPtr<PlatformDecoderModule> current = GetDecoder(aTrackInfo, aDiagnostics);
   return !!current;
 }
@@ -474,14 +457,5 @@ PDMFactory::GetDecoder(const TrackInfo& aTrackInfo,
   }
   return pdm.forget();
 }
-
-#ifdef MOZ_EME_MODULES
-void
-PDMFactory::SetCDMProxy(CDMProxy* aProxy)
-{
-  RefPtr<PDMFactory> m = new PDMFactory();
-  mEMEPDM = new EMEDecoderModule(aProxy, m);
-}
-#endif
 
 }  // namespace mozilla

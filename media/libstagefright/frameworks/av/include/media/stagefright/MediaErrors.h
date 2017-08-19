@@ -41,25 +41,6 @@ namespace stagefright {
 #define INFO_DISCONTINUITY     (MEDIA_ERROR_BASE - 13)
 #define INFO_OUTPUT_BUFFERS_CHANGED (MEDIA_ERROR_BASE - 14)
 
-// The following constant values should be in sync with
-// drm/drm_framework_common.h
-#define DRM_ERROR_BASE (-2000)
-
-#define ERROR_DRM_UNKNOWN                       (DRM_ERROR_BASE)
-#define ERROR_DRM_NO_LICENSE                    (DRM_ERROR_BASE - 1)
-#define ERROR_DRM_LICENSE_EXPIRED               (DRM_ERROR_BASE - 2)
-#define ERROR_DRM_SESSION_NOT_OPENED            (DRM_ERROR_BASE - 3)
-#define ERROR_DRM_DECRYPT_UNIT_NOT_INITIALIZED  (DRM_ERROR_BASE - 4)
-#define ERROR_DRM_DECRYPT                       (DRM_ERROR_BASE - 5)
-#define ERROR_DRM_CANNOT_HANDLE                 (DRM_ERROR_BASE - 6)
-#define ERROR_DRM_TAMPER_DETECTED               (DRM_ERROR_BASE - 7)
-#define ERROR_DRM_NOT_PROVISIONED               (DRM_ERROR_BASE - 8)
-#define ERROR_DRM_DEVICE_REVOKED                (DRM_ERROR_BASE - 9)
-#define ERROR_DRM_RESOURCE_BUSY                 (DRM_ERROR_BASE - 10)
-
-#define ERROR_DRM_VENDOR_MAX                    (DRM_ERROR_BASE - 500)
-#define ERROR_DRM_VENDOR_MIN                    (DRM_ERROR_BASE - 999)
-
 // Heartbeat Error Codes
 #define HEARTBEAT_ERROR_BASE (-3000)
 #define ERROR_HEARTBEAT_TERMINATE_REQUESTED     (HEARTBEAT_ERROR_BASE)
