@@ -36,9 +36,6 @@
 #include "nsITextToSubURI.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIInterfaceRequestorUtils.h"
-#ifdef NECKO_PROTOCOL_ftp
-#include "nsIFTPChannel.h"
-#endif
 #include "nsIWindowWatcher.h"
 #include "nsIPrompt.h"
 #include "nsIAuthPrompt.h"
@@ -81,9 +78,6 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsHTTPIndex)
     NS_INTERFACE_MAP_ENTRY(nsIDirIndexListener)
     NS_INTERFACE_MAP_ENTRY(nsIRequestObserver)
     NS_INTERFACE_MAP_ENTRY(nsIInterfaceRequestor)
-#ifdef NECKO_PROTOCOL_ftp
-    NS_INTERFACE_MAP_ENTRY(nsIFTPEventSink)
-#endif
     NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIHTTPIndex)
 NS_INTERFACE_MAP_END
 
@@ -94,19 +88,6 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(nsHTTPIndex)
 NS_IMETHODIMP
 nsHTTPIndex::GetInterface(const nsIID &anIID, void **aResult ) 
 {
-#ifdef NECKO_PROTOCOL_ftp
-    if (anIID.Equals(NS_GET_IID(nsIFTPEventSink))) {
-        // If we don't have a container to store the logged data
-        // then don't report ourselves back to the caller
-
-        if (!mRequestor)
-          return NS_ERROR_NO_INTERFACE;
-        *aResult = static_cast<nsIFTPEventSink*>(this);
-        NS_ADDREF(this);
-        return NS_OK;
-    }
-#endif
-
     if (anIID.Equals(NS_GET_IID(nsIPrompt))) {
         
         if (!mRequestor) 
@@ -151,43 +132,6 @@ nsHTTPIndex::GetInterface(const nsIID &anIID, void **aResult )
 
     return NS_ERROR_NO_INTERFACE;
 }
-
-#ifdef NECKO_PROTOCOL_ftp
-NS_IMETHODIMP 
-nsHTTPIndex::OnFTPControlLog(bool server, const char *msg)
-{
-    NS_ENSURE_TRUE(mRequestor, NS_OK);
-
-    nsCOMPtr<nsIGlobalObject> globalObject = do_GetInterface(mRequestor);
-    NS_ENSURE_TRUE(globalObject, NS_OK);
-
-    // We're going to run script via JS_CallFunctionName, so we need an
-    // AutoEntryScript. This is Gecko specific and not in any spec.
-    dom::AutoEntryScript aes(globalObject,
-                             "nsHTTPIndex OnFTPControlLog");
-    JSContext* cx = aes.cx();
-
-    JS::Rooted<JSObject*> global(cx, JS::CurrentGlobalOrNull(cx));
-    NS_ENSURE_TRUE(global, NS_OK);
-
-    nsString unicodeMsg;
-    unicodeMsg.AssignWithConversion(msg);
-    JSString* jsMsgStr = JS_NewUCStringCopyZ(cx, unicodeMsg.get());
-    NS_ENSURE_TRUE(jsMsgStr, NS_ERROR_OUT_OF_MEMORY);
-
-    JS::AutoValueArray<2> params(cx);
-    params[0].setBoolean(server);
-    params[1].setString(jsMsgStr);
-
-    JS::Rooted<JS::Value> val(cx);
-    JS_CallFunctionName(cx,
-                        global,
-                        "OnFTPControlLog",
-                        params,
-                        &val);
-    return NS_OK;
-}
-#endif
 
 NS_IMETHODIMP
 nsHTTPIndex::SetEncoding(const char *encoding)
