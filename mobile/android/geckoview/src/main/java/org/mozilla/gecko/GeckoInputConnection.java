@@ -13,7 +13,6 @@ import java.util.concurrent.SynchronousQueue;
 import org.mozilla.gecko.AppConstants.Versions;
 import org.mozilla.gecko.gfx.DynamicToolbarAnimator;
 import org.mozilla.gecko.util.Clipboard;
-import org.mozilla.gecko.util.GamepadUtils;
 import org.mozilla.gecko.util.ThreadUtils;
 import org.mozilla.gecko.util.ThreadUtils.AssertBehavior;
 
@@ -780,10 +779,6 @@ class GeckoInputConnection
                     return new KeyEvent(event.getAction(), KeyEvent.KEYCODE_TAB);
                 }
                 break;
-        }
-
-        if (GamepadUtils.isSonyXperiaGamepadKeyEvent(event)) {
-            return GamepadUtils.translateSonyXperiaGamepadKeys(keyCode, event);
         }
 
         return event;

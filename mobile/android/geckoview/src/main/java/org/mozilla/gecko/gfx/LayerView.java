@@ -8,7 +8,6 @@ package org.mozilla.gecko.gfx;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import org.mozilla.gecko.AndroidGamepadManager;
 import org.mozilla.gecko.annotation.RobocopTarget;
 import org.mozilla.gecko.annotation.WrapForJNI;
 import org.mozilla.gecko.AppConstants;
@@ -271,9 +270,6 @@ public class LayerView extends FrameLayout {
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        if (AndroidGamepadManager.handleMotionEvent(event)) {
-            return true;
-        }
         if (!mLayerClient.isGeckoReady()) {
             // If gecko isn't loaded yet, don't try sending events to the
             // native code because it's just going to crash

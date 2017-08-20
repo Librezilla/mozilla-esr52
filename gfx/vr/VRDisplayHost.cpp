@@ -186,16 +186,3 @@ VRControllerHost::GetButtonPressed()
 {
   return mButtonPressed;
 }
-
-void
-VRControllerHost::SetPose(const dom::GamepadPoseState& aPose)
-{
-  mPose = aPose;
-}
-
-const dom::GamepadPoseState&
-VRControllerHost::GetPose()
-{
-  return mPose;
-}
-

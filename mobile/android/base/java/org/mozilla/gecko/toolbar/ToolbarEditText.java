@@ -14,7 +14,6 @@ import org.mozilla.gecko.toolbar.BrowserToolbar.OnCommitListener;
 import org.mozilla.gecko.toolbar.BrowserToolbar.OnDismissListener;
 import org.mozilla.gecko.toolbar.BrowserToolbar.OnFilterListener;
 import org.mozilla.gecko.toolbar.ToolbarEditLayout.OnSearchStateChangeListener;
-import org.mozilla.gecko.util.GamepadUtils;
 import org.mozilla.gecko.util.StringUtils;
 
 import android.content.Context;
@@ -597,21 +596,13 @@ public class ToolbarEditText extends CustomEditText
     private class KeyListener implements View.OnKeyListener {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_ENTER || GamepadUtils.isActionKey(event)) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) {
                     return true;
                 }
 
                 if (mCommitListener != null) {
                     mCommitListener.onCommit();
-                }
-
-                return true;
-            }
-
-            if (GamepadUtils.isBackKey(event)) {
-                if (mDismissListener != null) {
-                    mDismissListener.onDismiss();
                 }
 
                 return true;

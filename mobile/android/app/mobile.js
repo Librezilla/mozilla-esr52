@@ -676,9 +676,6 @@ pref("ui.scrolling.min_scrollable_distance", -1);
 pref("ui.scrolling.axis_lock_mode", "standard");
 // Negate scroll, true will make the mouse scroll wheel move the screen the same direction as with most desktops or laptops.
 pref("ui.scrolling.negate_wheel_scroll", true);
-// Determine the dead zone for gamepad joysticks. Higher values result in larger dead zones; use a negative value to
-// auto-detect based on reported hardware values
-pref("ui.scrolling.gamepad_dead_zone", 115);
 
 // Prefs for fling acceleration
 pref("ui.scrolling.fling_accel_interval", -1);

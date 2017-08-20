@@ -190,22 +190,6 @@
         "url": "/fullscreen/model/remove-single-manual.html"
       },
       {
-        "path": "gamepad/events-manual.html",
-        "url": "/gamepad/events-manual.html"
-      },
-      {
-        "path": "gamepad/getgamepads-polling-manual.html",
-        "url": "/gamepad/getgamepads-polling-manual.html"
-      },
-      {
-        "path": "gamepad/idlharness-manual.html",
-        "url": "/gamepad/idlharness-manual.html"
-      },
-      {
-        "path": "gamepad/timestamp-manual.html",
-        "url": "/gamepad/timestamp-manual.html"
-      },
-      {
         "path": "geolocation-API/getCurrentPosition_permission-manual.html",
         "url": "/geolocation-API/getCurrentPosition_permission-manual.html"
       },
@@ -17138,10 +17122,6 @@
       {
         "path": "fullscreen/api/document-onfullscreenerror.html",
         "url": "/fullscreen/api/document-onfullscreenerror.html"
-      },
-      {
-        "path": "gamepad/idlharness.html",
-        "url": "/gamepad/idlharness.html"
       },
       {
         "path": "generic-sensor/idlharness.html",

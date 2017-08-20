@@ -194,10 +194,6 @@ user_pref("dom.mozSettings.enabled", true);
 // Make sure the disk cache doesn't get auto disabled
 user_pref("network.http.bypass-cachelock-threshold", 200000);
 
-// Enable Gamepad
-user_pref("dom.gamepad.enabled", true);
-user_pref("dom.gamepad.non_standard_events.enabled", true);
-
 // Always use network provider for geolocation tests
 // so we bypass the OSX dialog raised by the corelocation provider
 user_pref("geo.provider.testing", true);
