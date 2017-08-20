@@ -38,59 +38,8 @@
 #endif
 
 #include <IOKit/pwr_mgt/IOPMLib.h>
-#include "nsIDOMWakeLockListener.h"
-#include "nsIPowerManagerService.h"
 
 using namespace mozilla::widget;
-
-// A wake lock listener that disables screen saver when requested by
-// Gecko. For example when we're playing video in a foreground tab we
-// don't want the screen saver to turn on.
-
-class MacWakeLockListener final : public nsIDOMMozWakeLockListener {
-public:
-  NS_DECL_ISUPPORTS;
-
-private:
-  ~MacWakeLockListener() {}
-
-  IOPMAssertionID mAssertionID = kIOPMNullAssertionID;
-
-  NS_IMETHOD Callback(const nsAString& aTopic, const nsAString& aState) override {
-    if (!aTopic.EqualsASCII("screen")) {
-      return NS_OK;
-    }
-    // Note the wake lock code ensures that we're not sent duplicate
-    // "locked-foreground" notifications when multiple wake locks are held.
-    if (aState.EqualsASCII("locked-foreground")) {
-      // Prevent screen saver.
-      CFStringRef cf_topic =
-        ::CFStringCreateWithCharacters(kCFAllocatorDefault,
-                                       reinterpret_cast<const UniChar*>
-                                         (aTopic.Data()),
-                                       aTopic.Length());
-      IOReturn success =
-        ::IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
-                                      kIOPMAssertionLevelOn,
-                                      cf_topic,
-                                      &mAssertionID);
-      CFRelease(cf_topic);
-      if (success != kIOReturnSuccess) {
-        NS_WARNING("failed to disable screensaver");
-      }
-    } else {
-      // Re-enable screen saver.
-      NS_WARNING("Releasing screensaver");
-      if (mAssertionID != kIOPMNullAssertionID) {
-        IOReturn result = ::IOPMAssertionRelease(mAssertionID);
-        if (result != kIOReturnSuccess) {
-          NS_WARNING("failed to release screensaver");
-        }
-      }
-    }
-    return NS_OK;
-  }
-}; // MacWakeLockListener
 
 // defined in nsCocoaWindow.mm
 extern int32_t             gXULModalLevel;
@@ -205,34 +154,6 @@ nsAppShell::~nsAppShell()
   [mDelegate release];
 
   NS_OBJC_END_TRY_ABORT_BLOCK
-}
-
-NS_IMPL_ISUPPORTS(MacWakeLockListener, nsIDOMMozWakeLockListener)
-mozilla::StaticRefPtr<MacWakeLockListener> sWakeLockListener;
-
-static void
-AddScreenWakeLockListener()
-{
-  nsCOMPtr<nsIPowerManagerService> sPowerManagerService = do_GetService(
-                                                          POWERMANAGERSERVICE_CONTRACTID);
-  if (sPowerManagerService) {
-    sWakeLockListener = new MacWakeLockListener();
-    sPowerManagerService->AddWakeLockListener(sWakeLockListener);
-  } else {
-    NS_WARNING("Failed to retrieve PowerManagerService, wakelocks will be broken!");
-  }
-}
-
-static void
-RemoveScreenWakeLockListener()
-{
-  nsCOMPtr<nsIPowerManagerService> sPowerManagerService = do_GetService(
-                                                          POWERMANAGERSERVICE_CONTRACTID);
-  if (sPowerManagerService) {
-    sPowerManagerService->RemoveWakeLockListener(sWakeLockListener);
-    sPowerManagerService = nullptr;
-    sWakeLockListener = nullptr;
-  }
 }
 
 // An undocumented CoreGraphics framework method, present in the same form
@@ -661,11 +582,7 @@ nsAppShell::Run(void)
 
   mStarted = true;
 
-  AddScreenWakeLockListener();
-
   NS_OBJC_TRY_ABORT([NSApp run]);
-
-  RemoveScreenWakeLockListener();
 
   return NS_OK;
 }

@@ -31,9 +31,6 @@
 #include "nsBidiKeyboard.h"
 #include "nsScreenManagerGtk.h"
 #include "nsGTKToolkit.h"
-#ifdef MOZ_WAKELOCK
-#include "WakeLockListener.h"
-#endif
 
 #ifdef NS_PRINTING
 #include "nsPrintOptionsGTK.h"
@@ -314,9 +311,6 @@ nsWidgetGtk2ModuleDtor()
   KeymapWrapper::Shutdown();
   nsGTKToolkit::Shutdown();
   nsAppShellShutdown();
-#ifdef MOZ_ENABLE_DBUS
-  WakeLockListener::Shutdown();
-#endif
 }
 
 static const mozilla::Module kWidgetModule = {

@@ -17,10 +17,6 @@
 #include "mozilla/HangMonitor.h"
 #include "mozilla/Unused.h"
 #include "GeckoProfiler.h"
-#ifdef MOZ_WAKELOCK
-#include "nsIPowerManagerService.h"
-#include "WakeLockListener.h"
-#endif /* MOZ_WAKELOCK */
 
 using mozilla::Unused;
 
@@ -147,17 +143,6 @@ nsAppShell::Init()
         gWidgetDragLog = PR_NewLogModule("WidgetDrag");
     if (!gWidgetDrawLog)
         gWidgetDrawLog = PR_NewLogModule("WidgetDraw");
-
-#ifdef MOZ_WAKELOCK
-    nsCOMPtr<nsIPowerManagerService> powerManagerService =
-      do_GetService(POWERMANAGERSERVICE_CONTRACTID);
-
-    if (powerManagerService) {
-        powerManagerService->AddWakeLockListener(WakeLockListener::GetSingleton());
-    } else {
-        NS_WARNING("Failed to retrieve PowerManagerService, wakelocks will be broken!");
-    }
-#endif /* MOZ_WAKELOCK */
 
     if (!sPollFunc) {
         sPollFunc = g_main_context_get_poll_func(nullptr);
