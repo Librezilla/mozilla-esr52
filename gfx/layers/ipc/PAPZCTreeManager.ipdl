@@ -5,6 +5,7 @@
 
 include "mozilla/GfxMessageUtils.h";
 include "ipc/nsGUIEventIPC.h";
+include "mozilla/dom/TabMessageUtils.h";
 
 include protocol PCompositorBridge;
 
