@@ -702,8 +702,6 @@
                        onclick="PageProxyClickHandler(event);"/>
                 <image id="sharing-icon" mousethrough="always"/>
                 <box id="blocked-permissions-container" align="center">
-                  <image data-permission-id="geo" class="blocked-permission-icon geo-icon" role="button"
-                         tooltiptext="&urlbar.geolocationBlocked.tooltip;"/>
                   <image data-permission-id="desktop-notification" class="blocked-permission-icon desktop-notification-icon" role="button"
                          tooltiptext="&urlbar.webNotificationsBlocked.tooltip;"/>
                   <image data-permission-id="camera" class="blocked-permission-icon camera-icon" role="button"
@@ -722,8 +720,6 @@
                      align="center">
                   <image id="default-notification-icon" class="notification-anchor-icon" role="button"
                          tooltiptext="&urlbar.defaultNotificationAnchor.tooltip;"/>
-                  <image id="geo-notification-icon" class="notification-anchor-icon geo-icon" role="button"
-                         tooltiptext="&urlbar.geolocationNotificationAnchor.tooltip;"/>
                   <image id="addons-notification-icon" class="notification-anchor-icon install-icon" role="button"
                          tooltiptext="&urlbar.addonsNotificationAnchor.tooltip;"/>
                   <image id="indexedDB-notification-icon" class="notification-anchor-icon indexedDB-icon" role="button"

@@ -116,8 +116,6 @@ public class DoorHangerPopup extends AnchoredPopup
         DoorHanger.Type doorhangerType = DoorHanger.Type.DEFAULT;
         if (DoorHanger.Type.LOGIN.toString().equals(typeString)) {
             doorhangerType = DoorHanger.Type.LOGIN;
-        } else if (DoorHanger.Type.GEOLOCATION.toString().equals(typeString)) {
-            doorhangerType = DoorHanger.Type.GEOLOCATION;
         } else if (DoorHanger.Type.DESKTOPNOTIFICATION2.toString().equals(typeString)) {
             doorhangerType = DoorHanger.Type.DESKTOPNOTIFICATION2;
         } else if (DoorHanger.Type.WEBRTC.toString().equals(typeString)) {

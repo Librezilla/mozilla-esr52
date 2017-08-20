@@ -33,7 +33,6 @@ LOCAL_INCLUDES += [
     '/dom/base',
     '/dom/canvas',
     '/dom/filesystem',
-    '/dom/geolocation',
     '/dom/html',
     '/dom/json',
     '/dom/jsurl',

@@ -34,23 +34,23 @@ var tests = [
   { id: "Test#2",
     run: function () {
       this.notifyObj = new BasicNotification(this.id);
-      this.notifyObj.id = "geolocation";
-      this.notifyObj.anchorID = "geo-notification-icon";
+      this.notifyObj.id = "foo";
+      this.notifyObj.anchorID = "foo-notification-icon";
       this.notification = showNotification(this.notifyObj);
     },
     onShown: function (popup) {
       checkPopup(popup, this.notifyObj);
-      isnot(document.getElementById("geo-notification-icon").boxObject.width, 0,
-            "geo anchor should be visible");
+      isnot(document.getElementById("foo-notification-icon").boxObject.width, 0,
+            "fooo anchor should be visible");
       dismissNotification(popup);
     },
     onHidden: function (popup) {
-      let icon = document.getElementById("geo-notification-icon");
+      let icon = document.getElementById("foo-notification-icon");
       isnot(icon.boxObject.width, 0,
-            "geo anchor should be visible after dismissal");
+            "foo anchor should be visible after dismissal");
       this.notification.remove();
       is(icon.boxObject.width, 0,
-         "geo anchor should not be visible after removal");
+         "foo anchor should not be visible after removal");
     }
   },
 

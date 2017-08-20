@@ -59,7 +59,6 @@ LOCAL_INCLUDES += [
 LOCAL_INCLUDES += [
     '/dom/base',
     '/dom/canvas',
-    '/dom/geolocation',
     '/dom/html',
     '/dom/indexedDB',
     '/dom/media/webaudio',

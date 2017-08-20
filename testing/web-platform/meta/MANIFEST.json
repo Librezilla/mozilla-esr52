@@ -190,22 +190,6 @@
         "url": "/fullscreen/model/remove-single-manual.html"
       },
       {
-        "path": "geolocation-API/getCurrentPosition_permission-manual.html",
-        "url": "/geolocation-API/getCurrentPosition_permission-manual.html"
-      },
-      {
-        "path": "geolocation-API/getCurrentPosition_permission_allow-manual.html",
-        "url": "/geolocation-API/getCurrentPosition_permission_allow-manual.html"
-      },
-      {
-        "path": "geolocation-API/getCurrentPosition_permission_deny-manual.html",
-        "url": "/geolocation-API/getCurrentPosition_permission_deny-manual.html"
-      },
-      {
-        "path": "geolocation-API/watchPosition_permission-manual.html",
-        "url": "/geolocation-API/watchPosition_permission-manual.html"
-      },
-      {
         "path": "html-longdesc/data-uri-image-data-uri-description-manual.html",
         "url": "/html-longdesc/data-uri-image-data-uri-description-manual.html"
       },
@@ -17126,42 +17110,6 @@
       {
         "path": "generic-sensor/idlharness.html",
         "url": "/generic-sensor/idlharness.html"
-      },
-      {
-        "path": "geolocation-API/PositionOptions.html",
-        "url": "/geolocation-API/PositionOptions.html"
-      },
-      {
-        "path": "geolocation-API/clearWatch_TypeError.html",
-        "url": "/geolocation-API/clearWatch_TypeError.html"
-      },
-      {
-        "path": "geolocation-API/getCurrentPosition_IDL.html",
-        "url": "/geolocation-API/getCurrentPosition_IDL.html"
-      },
-      {
-        "path": "geolocation-API/getCurrentPosition_TypeError.html",
-        "url": "/geolocation-API/getCurrentPosition_TypeError.html"
-      },
-      {
-        "path": "geolocation-API/getCurrentPosition_permission_allow.html",
-        "url": "/geolocation-API/getCurrentPosition_permission_allow.html"
-      },
-      {
-        "path": "geolocation-API/getCurrentPosition_permission_deny.html",
-        "url": "/geolocation-API/getCurrentPosition_permission_deny.html"
-      },
-      {
-        "path": "geolocation-API/interfaces.html",
-        "url": "/geolocation-API/interfaces.html"
-      },
-      {
-        "path": "geolocation-API/watchPosition_TypeError.html",
-        "url": "/geolocation-API/watchPosition_TypeError.html"
-      },
-      {
-        "path": "geolocation-API/watchPosition_permission_deny.html",
-        "url": "/geolocation-API/watchPosition_permission_deny.html"
       },
       {
         "path": "hr-time/basic.html",

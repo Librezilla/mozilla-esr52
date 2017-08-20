@@ -14,7 +14,6 @@ import org.mozilla.gecko.Actions;
 
 /* This test will test if doorhangers are displayed and dismissed
    The test will test:
-   * geolocation doorhangers - sharing and not sharing the location dismisses the doorhanger
    * opening a new tab hides the doorhanger
    * offline storage permission doorhangers - allowing and not allowing offline storage dismisses the doorhanger
    * Password Manager doorhangers - Remember and Not Now options dismiss the doorhanger
@@ -23,46 +22,10 @@ public class testDoorHanger extends BaseTest {
     private boolean offlineAllowedByDefault = true;
 
     public void testDoorHanger() {
-        String GEO_URL = getAbsoluteUrl(mStringHelper.ROBOCOP_GEOLOCATION_URL);
         String BLANK_URL = getAbsoluteUrl(mStringHelper.ROBOCOP_BLANK_PAGE_01_URL);
         String OFFLINE_STORAGE_URL = getAbsoluteUrl(mStringHelper.ROBOCOP_OFFLINE_STORAGE_URL);
 
         blockForGeckoReady();
-
-        // Test geolocation notification
-        loadUrlAndWait(GEO_URL);
-        waitForText(mStringHelper.GEO_MESSAGE);
-        mAsserter.is(mSolo.searchText(mStringHelper.GEO_MESSAGE), true, "Geolocation doorhanger has been displayed");
-
-        // Test "Share" button hides the notification
-        waitForCheckBox();
-        mSolo.clickOnCheckBox(0);
-        mSolo.clickOnButton(mStringHelper.GEO_ALLOW);
-        waitForTextDismissed(mStringHelper.GEO_MESSAGE);
-        mAsserter.is(mSolo.searchText(mStringHelper.GEO_MESSAGE), false, "Geolocation doorhanger has been hidden when allowing share");
-
-        // Re-trigger geolocation notification
-        loadUrlAndWait(GEO_URL);
-        waitForText(mStringHelper.GEO_MESSAGE);
-
-        // Test "Don't share" button hides the notification
-        waitForCheckBox();
-        mSolo.clickOnCheckBox(0);
-        mSolo.clickOnButton(mStringHelper.GEO_DENY);
-        waitForTextDismissed(mStringHelper.GEO_MESSAGE);
-        mAsserter.is(mSolo.searchText(mStringHelper.GEO_MESSAGE), false, "Geolocation doorhanger has been hidden when denying share");
-
-        /* FIXME: disabled on fig - bug 880060 (for some reason this fails because of some raciness)
-        // Re-trigger geolocation notification
-        loadUrlAndWait(GEO_URL);
-        waitForText(GEO_MESSAGE);
-
-        // Add a new tab
-        addTab(BLANK_URL);
-
-        // Make sure doorhanger is hidden
-        mAsserter.is(mSolo.searchText(GEO_MESSAGE), false, "Geolocation doorhanger notification is hidden when opening a new tab");
-        */
 
         // Save offline-allow-by-default preferences first
         mActions.getPrefs(new String[] { "offline-apps.allow_by_default" },

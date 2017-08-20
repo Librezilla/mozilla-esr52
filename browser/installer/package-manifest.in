@@ -195,7 +195,6 @@
 @RESPATH@/components/dom_core.xpt
 @RESPATH@/components/dom_css.xpt
 @RESPATH@/components/dom_events.xpt
-@RESPATH@/components/dom_geolocation.xpt
 @RESPATH@/components/dom_media.xpt
 @RESPATH@/components/dom_network.xpt
 @RESPATH@/components/dom_notification.xpt
@@ -403,8 +402,6 @@
 #endif
 @RESPATH@/components/nsHelperAppDlg.manifest
 @RESPATH@/components/nsHelperAppDlg.js
-@RESPATH@/components/NetworkGeolocationProvider.manifest
-@RESPATH@/components/NetworkGeolocationProvider.js
 @RESPATH@/components/extensions.manifest
 @RESPATH@/components/EditorUtils.manifest
 @RESPATH@/components/EditorUtils.js

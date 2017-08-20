@@ -28,11 +28,6 @@
 #include "PermissionMessageUtils.h"
 #include "DriverCrashGuard.h"
 
-#ifdef MOZ_GEOLOCATION
-#include "nsIDOMGeoPositionCallback.h"
-#include "nsIDOMGeoPositionErrorCallback.h"
-#endif
-
 #define CHILD_PROCESS_SHUTDOWN_MESSAGE NS_LITERAL_STRING("child-process-shutdown")
 
 class mozIApplication;
@@ -91,10 +86,6 @@ class GetFilesHelper;
 class ContentParent final : public PContentParent
                           , public nsIContentParent
                           , public nsIObserver
-#ifdef MOZ_GEOLOCATION
-                          , public nsIDOMGeoPositionCallback
-                          , public nsIDOMGeoPositionErrorCallback
-#endif
                           , public gfx::gfxVarReceiver
                           , public mozilla::LinkedListElement<ContentParent>
                           , public gfx::GPUProcessListener
@@ -277,11 +268,6 @@ public:
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_NSIOBSERVER
-
-#ifdef MOZ_GEOLOCATION
-  NS_DECL_NSIDOMGEOPOSITIONCALLBACK
-  NS_DECL_NSIDOMGEOPOSITIONERRORCALLBACK
-#endif
 
   /**
    * MessageManagerCallback methods that we override.
@@ -936,14 +922,6 @@ private:
                                 const IPC::Principal& aPrincipal,
                                 const ClonedMessageData& aData) override;
 
-#ifdef MOZ_GEOLOCATION
-  virtual bool RecvAddGeolocationListener(const IPC::Principal& aPrincipal,
-                                          const bool& aHighAccuracy) override;
-  virtual bool RecvRemoveGeolocationListener() override;
-
-  virtual bool RecvSetGeolocationHigherAccuracy(const bool& aEnable) override;
-#endif
-
   virtual bool RecvConsoleMessage(const nsString& aMessage) override;
 
   virtual bool RecvScriptError(const nsString& aMessage,
@@ -1091,9 +1069,6 @@ private:
   ContentParent* mOpener;
 
   ContentParentId mChildID;
-#ifdef MOZ_GEOLOCATION
-  int32_t mGeolocationWatchID;
-#endif
 
   nsString mAppManifestURL;
 

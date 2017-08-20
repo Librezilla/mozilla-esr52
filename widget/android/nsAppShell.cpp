@@ -16,7 +16,6 @@
 #include "nsICommandLineRunner.h"
 #include "nsIObserverService.h"
 #include "nsIAppStartup.h"
-#include "nsIGeolocationProvider.h"
 #include "nsCacheService.h"
 #include "nsIDOMEventListener.h"
 #include "nsIDOMClientRectList.h"
@@ -30,9 +29,6 @@
 #include "nsCategoryManagerUtils.h"
 #include "nsCDefaultURIFixup.h"
 #include "nsToolkitCompsCID.h"
-#ifdef MOZ_GEOLOCATION
-#include "nsGeoPosition.h"
-#endif
 
 #include "mozilla/Services.h"
 #include "mozilla/Preferences.h"
@@ -77,8 +73,6 @@
 #endif
 
 using namespace mozilla;
-
-nsIGeolocationUpdate *gLocationCallback = nullptr;
 
 nsAppShell* nsAppShell::sAppShell;
 StaticAutoPtr<Mutex> nsAppShell::sAppShellLock;

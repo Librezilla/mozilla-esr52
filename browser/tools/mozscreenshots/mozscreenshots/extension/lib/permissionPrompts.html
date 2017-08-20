@@ -5,7 +5,6 @@
   <title>Permission Prompts</title>
 </head>
 <body>
-  <button id="geo" onclick="navigator.geolocation.getCurrentPosition(() => {})">Geolocation</button>
   <button id="webRTC-shareDevices" onclick="shareDevice({video: true, fake: true});">Video</button>
   <button id="webRTC-shareMicrophone" onclick="shareDevice({audio: true, fake: true});">Audio</button>
   <button id="webRTC-shareDevices2" onclick="shareDevice({audio: true, video: true, fake: true});">Audio and Video</button>

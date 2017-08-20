@@ -43,11 +43,6 @@
 #include "mozilla/dom/FileSystemSecurity.h"
 #include "mozilla/dom/ExternalHelperAppParent.h"
 #include "mozilla/dom/GetFilesHelper.h"
-#ifdef MOZ_GEOLOCATION
-#include "mozilla/dom/GeolocationBinding.h"
-#include "nsIDOMGeoGeolocation.h"
-#include "nsIDOMGeoPositionError.h"
-#endif
 #include "mozilla/dom/Notification.h"
 #include "mozilla/dom/PContentBridgeParent.h"
 #include "mozilla/dom/PContentPermissionRequestParent.h"
@@ -1785,10 +1780,6 @@ ContentParent::ActorDestroy(ActorDestroyReason why)
     gpu->RemoveListener(this);
   }
 
-#ifdef MOZ_GEOLOCATION
-  RecvRemoveGeolocationListener();
-#endif
-
   mConsoleService = nullptr;
 
 #ifdef MOZ_ENABLE_PROFILER_SPS
@@ -2023,9 +2014,6 @@ ContentParent::InitializeMembers()
 {
   mSubprocess = nullptr;
   mChildID = gContentChildID++;
-#ifdef MOZ_GEOLOCATION
-  mGeolocationWatchID = -1;
-#endif
   mNumDestroyingTabs = 0;
   mIsAlive = true;
   mMetamorphosed = false;
@@ -2635,10 +2623,6 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(ContentParent)
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ContentParent)
   NS_INTERFACE_MAP_ENTRY(nsIContentParent)
   NS_INTERFACE_MAP_ENTRY(nsIObserver)
-#ifdef MOZ_GEOLOCATION
-  NS_INTERFACE_MAP_ENTRY(nsIDOMGeoPositionCallback)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMGeoPositionErrorCallback)
-#endif
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIObserver)
 NS_INTERFACE_MAP_END
 
@@ -3758,82 +3742,6 @@ ContentParent::RecvAsyncMessage(const nsString& aMsg,
   return nsIContentParent::RecvAsyncMessage(aMsg, Move(aCpows), aPrincipal,
                                             aData);
 }
-
-#ifdef MOZ_GEOLOCATION
-static int32_t
-AddGeolocationListener(nsIDOMGeoPositionCallback* watcher,
-                       nsIDOMGeoPositionErrorCallback* errorCallBack,
-                       bool highAccuracy)
-{
-  nsCOMPtr<nsIDOMGeoGeolocation> geo = do_GetService("@mozilla.org/geolocation;1");
-  if (!geo) {
-    return -1;
-  }
-
-  UniquePtr<PositionOptions> options = MakeUnique<PositionOptions>();
-  options->mTimeout = 0;
-  options->mMaximumAge = 0;
-  options->mEnableHighAccuracy = highAccuracy;
-  int32_t retval = 1;
-  geo->WatchPosition(watcher, errorCallBack, Move(options), &retval);
-  return retval;
-}
-
-bool
-ContentParent::RecvAddGeolocationListener(const IPC::Principal& aPrincipal,
-                                          const bool& aHighAccuracy)
-{
-  // To ensure no geolocation updates are skipped, we always force the
-  // creation of a new listener.
-  RecvRemoveGeolocationListener();
-  mGeolocationWatchID = AddGeolocationListener(this, this, aHighAccuracy);
-  return true;
-}
-
-bool
-ContentParent::RecvRemoveGeolocationListener()
-{
-  if (mGeolocationWatchID != -1) {
-    nsCOMPtr<nsIDOMGeoGeolocation> geo = do_GetService("@mozilla.org/geolocation;1");
-    if (!geo) {
-      return true;
-    }
-    geo->ClearWatch(mGeolocationWatchID);
-    mGeolocationWatchID = -1;
-  }
-  return true;
-}
-
-bool
-ContentParent::RecvSetGeolocationHigherAccuracy(const bool& aEnable)
-{
-  // This should never be called without a listener already present,
-  // so this check allows us to forgo securing privileges.
-  if (mGeolocationWatchID != -1) {
-    RecvRemoveGeolocationListener();
-    mGeolocationWatchID = AddGeolocationListener(this, this, aEnable);
-  }
-  return true;
-}
-
-NS_IMETHODIMP
-ContentParent::HandleEvent(nsIDOMGeoPosition* postion)
-{
-  Unused << SendGeolocationUpdate(GeoPosition(postion));
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-ContentParent::HandleEvent(nsIDOMGeoPositionError* postionError)
-{
-  int16_t errorCode;
-  nsresult rv;
-  rv = postionError->GetCode(&errorCode);
-  NS_ENSURE_SUCCESS(rv,rv);
-  Unused << SendGeolocationError(errorCode);
-  return NS_OK;
-}
-#endif /* MOZ_GEOLOCATION */
 
 nsConsoleService *
 ContentParent::GetConsoleService()

@@ -73,7 +73,6 @@ public class StringHelper {
     public final String ROBOCOP_BLANK_PAGE_04_URL = "/robocop/robocop_blank_04.html";
     public final String ROBOCOP_BLANK_PAGE_05_URL = "/robocop/robocop_blank_05.html";
     public final String ROBOCOP_BOXES_URL = "/robocop/robocop_boxes.html";
-    public final String ROBOCOP_GEOLOCATION_URL = "/robocop/robocop_geolocation.html";
     public final String ROBOCOP_LOGIN_01_URL= "/robocop/robocop_login_01.html";
     public final String ROBOCOP_LOGIN_02_URL= "/robocop/robocop_login_02.html";
     public final String ROBOCOP_POPUP_URL = "/robocop/robocop_popup.html";
@@ -96,7 +95,6 @@ public class StringHelper {
     public final String ROBOCOP_BIG_MAILTO_TITLE = "Big Mailto";
     public final String ROBOCOP_BLANK_PAGE_01_TITLE = "Browser Blank Page 01";
     public final String ROBOCOP_BLANK_PAGE_02_TITLE = "Browser Blank Page 02";
-    public final String ROBOCOP_GEOLOCATION_TITLE = "Geolocation Test Page";
     public final String ROBOCOP_PICTURE_LINK_TITLE = "Picture Link";
     public final String ROBOCOP_SEARCH_TITLE = "Robocop Search Engine";
 

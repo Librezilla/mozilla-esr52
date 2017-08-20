@@ -16,7 +16,6 @@ interface nsIArray;
 interface nsIContentPermissionType : nsISupports {
   /**
    *  The type of the permission request, such as
-   *  "geolocation".
    */
   readonly attribute ACString type;
 
@@ -63,7 +62,6 @@ interface nsIContentPermissionRequester : nsISupports {
 /**
  * Interface allows access to a content to request
  * permission to perform a privileged operation such as
- * geolocation.
  */
 [scriptable, uuid(875733da-0ac0-4a26-8c76-70a30876be46)]
 interface nsIContentPermissionRequest : nsISupports {

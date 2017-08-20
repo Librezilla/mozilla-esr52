@@ -52,15 +52,7 @@
           found = false;
           for (let tr of trs) {
             let [name,v1,v2,v3] = tr.querySelectorAll("td");
-            if (name.textContent == "geolocation") {
-              found = true;
-              is(v1.className, "permprompt", "geolocation perm is valid");
-              is(v2.className, "permprompt", "geolocation perm is valid");
-              is(v3.className, "permprompt", "geolocation perm is valid");
-              break;
-            }
           }
-          ok(found, "Found geolocation line");
 
           doc.querySelector("#close").click();
 

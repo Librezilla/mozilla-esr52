@@ -28,9 +28,6 @@
   SimpleTest.waitForExplicitFinish();
 
   const PERMISSIONS = [{
-    name: 'geolocation',
-    type: 'geo'
-  }, {
     name: 'notifications',
     type: 'desktop-notification'
   }, {
@@ -124,7 +121,7 @@
       testStatusOnChange() {
         return new Promise((resolve) => {
           SpecialPowers.popPermissions(() => {
-            const permission = 'geolocation';
+            const permission = 'foo';
             const promiseGranted = this.promiseStateChanged(permission, 'granted');
             this.setPermissions(ALLOW_ACTION);
             promiseGranted.then(() => {

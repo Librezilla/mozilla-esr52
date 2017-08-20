@@ -33,10 +33,6 @@ interfaces = [
     'push',
 ]
 
-if CONFIG['MOZ_GEOLOCATION']:
-    interfaces += ['geolocation']
-    DIRS += ['geolocation']
-
 DIRS += ['interfaces/' + i for i in interfaces]
 
 DIRS += [

@@ -1,6 +1,6 @@
 /*
  * Make sure that the origin is shown for ContentPermissionPrompt
- * consumers e.g. geolocation.
+ * consumers
 */
 
 add_task(function* test_displayURI() {
@@ -14,9 +14,6 @@ add_task(function* test_displayURI() {
       });
     });
     yield ContentTask.spawn(browser, null, function*() {
-      content.navigator.geolocation.getCurrentPosition(function (pos) {
-        // Do nothing
-      });
     });
     let panel = yield popupShownPromise;
     let notification = panel.children[0];

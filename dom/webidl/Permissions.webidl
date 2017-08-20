@@ -8,7 +8,6 @@
  */
 
 enum PermissionName {
-  "geolocation",
   "notifications",
   "push"
   // Unsupported: "midi"

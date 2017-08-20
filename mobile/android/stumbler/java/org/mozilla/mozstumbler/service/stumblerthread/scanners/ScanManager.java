@@ -27,7 +27,6 @@ public class ScanManager {
     private Timer mPassiveModeFlushTimer;
     private Context mContext;
     private boolean mIsScanning;
-    private GPSScanner mGPSScanner;
     private WifiScanner mWifiScanner;
     private CellScanner mCellScanner;
     private ActiveOrPassiveStumbling mStumblingMode = ActiveOrPassiveStumbling.ACTIVE_STUMBLING;
@@ -103,17 +102,10 @@ public class ScanManager {
             return;
         }
 
-        if (mGPSScanner == null) {
-            mGPSScanner = new GPSScanner(context, this);
-            mWifiScanner = new WifiScanner(context);
-            mCellScanner = new CellScanner(context);
-        }
-
         if (AppGlobals.isDebug) {
             Log.d(LOG_TAG, "Scanning started...");
         }
 
-        mGPSScanner.start(mStumblingMode);
         if (mStumblingMode == ActiveOrPassiveStumbling.ACTIVE_STUMBLING) {
             mWifiScanner.start(mStumblingMode);
             mCellScanner.start(mStumblingMode);
@@ -131,7 +123,6 @@ public class ScanManager {
             Log.d(LOG_TAG, "Scanning stopped");
         }
 
-        mGPSScanner.stop();
         mWifiScanner.stop();
         mCellScanner.stop();
 
@@ -164,28 +155,25 @@ public class ScanManager {
     }
 
     public int getLocationCount() {
-        return (mGPSScanner == null)? 0 : mGPSScanner.getLocationCount();
+        return 0;
     }
 
     public double getLatitude() {
-        return (mGPSScanner == null)? 0.0 : mGPSScanner.getLatitude();
+        return 0.0;
     }
 
     public double getLongitude() {
-        return (mGPSScanner == null)? 0.0 : mGPSScanner.getLongitude();
+        return 0.0;
     }
 
     public Location getLocation() {
-        return (mGPSScanner == null)? new Location("null") : mGPSScanner.getLocation();
+        return null;
     }
 
     public void checkPrefs() {
-        if (mGPSScanner != null) {
-            mGPSScanner.checkPrefs();
-        }
     }
 
     public boolean isGeofenced() {
-        return (mGPSScanner != null) && mGPSScanner.isGeofenced();
+        return false;
     }
 }

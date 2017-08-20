@@ -57,7 +57,6 @@ CreatePermissionStatus(JSContext* aCx,
   }
 
   switch (permission.mName) {
-    case PermissionName::Geolocation:
     case PermissionName::Notifications:
     case PermissionName::Push:
       return PermissionStatus::Create(aWindow, permission.mName, aRv);

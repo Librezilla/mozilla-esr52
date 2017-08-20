@@ -33,17 +33,7 @@ const PROMPT_ACTION = Ci.nsIPermissionManager.PROMPT_ACTION;
 // network-information,
 // device-capabilities
 
-this.PermissionsTable =  { geolocation: {
-                             app: PROMPT_ACTION,
-                             privileged: PROMPT_ACTION,
-                             certified: PROMPT_ACTION
-                           },
-                           "geolocation-noprompt": {
-                             app: DENY_ACTION,
-                             privileged: DENY_ACTION,
-                             certified: ALLOW_ACTION,
-                             substitute: ["geolocation"]
-                           },
+this.PermissionsTable =  {
                            camera: {
                              app: DENY_ACTION,
                              privileged: PROMPT_ACTION,

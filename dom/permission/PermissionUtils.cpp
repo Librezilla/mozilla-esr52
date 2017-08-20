@@ -10,7 +10,6 @@ namespace mozilla {
 namespace dom {
 
 const char* kPermissionTypes[] = {
-  "geo",
   "desktop-notification",
   // Alias `push` to `desktop-notification`.
   "desktop-notification"

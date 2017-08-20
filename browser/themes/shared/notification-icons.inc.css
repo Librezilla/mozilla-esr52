@@ -72,16 +72,6 @@
 %endif
 }
 
-.popup-notification-icon[popupid="geolocation"] {
-%ifdef XP_MACOSX
-  list-style-image: url(chrome://browser/skin/notification-icons.svg#geo-osx);
-%elif defined(MOZ_WIDGET_GTK)
-  list-style-image: url(chrome://browser/skin/notification-icons.svg#geo-linux-detailed);
-%else
-  list-style-image: url(chrome://browser/skin/notification-icons.svg#geo-windows-detailed);
-%endif
-}
-
 .popup-notification-icon[popupid="indexedDB-permissions-prompt"],
 .indexedDB-icon {
   list-style-image: url(chrome://browser/skin/notification-icons.svg#indexedDB);

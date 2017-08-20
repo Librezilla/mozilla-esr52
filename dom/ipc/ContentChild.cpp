@@ -132,10 +132,6 @@
 #include "nsChromeRegistryContent.h"
 #include "nsFrameMessageManager.h"
 
-#ifdef MOZ_GEOLOCATION
-#include "nsIGeolocationProvider.h"
-#endif
-
 #include "mozilla/dom/PMemoryReportRequestChild.h"
 #include "mozilla/dom/PCycleCollectWithLogsChild.h"
 
@@ -2262,33 +2258,6 @@ ContentChild::RecvAsyncMessage(const nsString& aMsg,
   }
   return true;
 }
-
-#ifdef MOZ_GEOLOCATION
-bool
-ContentChild::RecvGeolocationUpdate(const GeoPosition& somewhere)
-{
-  nsCOMPtr<nsIGeolocationUpdate> gs =
-    do_GetService("@mozilla.org/geolocation/service;1");
-  if (!gs) {
-    return true;
-  }
-  nsCOMPtr<nsIDOMGeoPosition> position = somewhere;
-  gs->Update(position);
-  return true;
-}
-
-bool
-ContentChild::RecvGeolocationError(const uint16_t& errorCode)
-{
-  nsCOMPtr<nsIGeolocationUpdate> gs =
-    do_GetService("@mozilla.org/geolocation/service;1");
-  if (!gs) {
-    return true;
-  }
-  gs->NotifyError(errorCode);
-  return true;
-}
-#endif /* MOZ_GEOLOCATION */
 
 bool
 ContentChild::RecvUpdateDictionaryList(InfallibleTArray<nsString>&& aDictionaries)

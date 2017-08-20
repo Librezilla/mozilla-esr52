@@ -6,7 +6,6 @@
  * The origin of this IDL file is
  * http://www.whatwg.org/specs/web-apps/current-work/#the-navigator-object
  * http://www.w3.org/TR/tracking-dnt/
- * http://www.w3.org/TR/geolocation-API/#geolocation_interface
  * http://www.w3.org/2012/sysapps/runtime/#extension-to-the-navigator-interface-1
  * http://www.w3.org/TR/beacon/#sec-beacon-method
  * https://html.spec.whatwg.org/#navigatorconcurrenthardware
@@ -113,16 +112,6 @@ partial interface Navigator {
 partial interface Navigator {
   readonly attribute DOMString doNotTrack;
 };
-
-#ifdef MOZ_GEOLOCATION
-// http://www.w3.org/TR/geolocation-API/#geolocation_interface
-[NoInterfaceObject]
-interface NavigatorGeolocation {
-  [Throws, Pref="geo.enabled"]
-  readonly attribute Geolocation geolocation;
-};
-Navigator implements NavigatorGeolocation;
-#endif
 
 #ifdef MOZ_FLYWEB
 partial interface Navigator {

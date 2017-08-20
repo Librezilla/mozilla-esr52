@@ -272,8 +272,8 @@ PopupNotifications.prototype = {
    *        The <xul:browser> element associated with the notification. Must not
    *        be null.
    * @param id
-   *        A unique ID that identifies the type of notification (e.g.
-   *        "geolocation"). Only one notification with a given ID can be visible
+   *        A unique ID that identifies the type of notification
+   *        Only one notification with a given ID can be visible
    *        at a time. If a notification already exists with the given ID, it
    *        will be replaced.
    * @param message

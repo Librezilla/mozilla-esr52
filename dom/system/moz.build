@@ -12,8 +12,6 @@ elif toolkit == 'cocoa':
     DIRS += ['mac']
 elif toolkit == 'android':
     DIRS += ['android']
-elif toolkit in ('gtk2', 'gtk3'):
-    DIRS += ['linux']
 
 XPIDL_SOURCES += [
     'nsIOSFileConstantsService.idl',
@@ -31,8 +29,6 @@ UNIFIED_SOURCES += [
 ]
 
 EXTRA_COMPONENTS += [
-    'NetworkGeolocationProvider.js',
-    'NetworkGeolocationProvider.manifest',
     'SystemUpdate.manifest',
     'SystemUpdateManager.js',
 ]

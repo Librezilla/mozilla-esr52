@@ -14,9 +14,6 @@
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/dom/DesktopNotification.h"
 #include "mozilla/dom/File.h"
-#ifdef MOZ_GEOLOCATION
-#include "nsGeolocation.h"
-#endif
 #include "nsIClassOfService.h"
 #include "nsIHttpProtocolHandler.h"
 #include "nsIContentPolicy.h"
@@ -193,9 +190,6 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(Navigator)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mMimeTypes)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPlugins)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPermissions)
-#ifdef MOZ_GEOLOCATION
-  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mGeolocation)
-#endif
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mNotification)
 #ifdef MOZ_POWER
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mPowerManager)
@@ -233,14 +227,6 @@ Navigator::Invalidate()
   mPermissions = nullptr;
 
   mStorageManager = nullptr;
-
-#ifdef MOZ_GEOLOCATION
-  // If there is a page transition, make sure delete the geolocation object.
-  if (mGeolocation) {
-    mGeolocation->Shutdown();
-    mGeolocation = nullptr;
-  }
-#endif
 
   if (mNotification) {
     mNotification->Shutdown();
@@ -786,30 +772,6 @@ Navigator::RegisterProtocolHandler(const nsAString& aProtocol,
                                            mWindow->GetOuterWindow());
 }
 
-#ifdef MOZ_GEOLOCATION
-Geolocation*
-Navigator::GetGeolocation(ErrorResult& aRv)
-{
-  if (mGeolocation) {
-    return mGeolocation;
-  }
-
-  if (!mWindow || !mWindow->GetOuterWindow() || !mWindow->GetDocShell()) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  mGeolocation = new Geolocation();
-  if (NS_FAILED(mGeolocation->Init(mWindow))) {
-    mGeolocation = nullptr;
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  return mGeolocation;
-}
-#endif /* MOZ_GEOLOCATION */
-
 class BeaconStreamListener final : public nsIStreamListener
 {
     ~BeaconStreamListener() {}
@@ -1333,7 +1295,6 @@ Navigator::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const
 
   // TODO: add SizeOfIncludingThis() to nsMimeTypeArray, bug 674113.
   // TODO: add SizeOfIncludingThis() to nsPluginArray, bug 674114.
-  // TODO: add SizeOfIncludingThis() to Geolocation, bug 674115.
   // TODO: add SizeOfIncludingThis() to DesktopNotificationCenter, bug 674116.
 
   return n;

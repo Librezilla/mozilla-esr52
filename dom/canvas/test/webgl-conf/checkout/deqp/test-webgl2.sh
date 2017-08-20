@@ -41,7 +41,6 @@ $JAVA -jar ../../../../closure/compiler.jar \
   --externs temp_externs/w3c_encoding.js \
   --externs temp_externs/w3c_event.js \
   --externs temp_externs/w3c_event3.js \
-  --externs temp_externs/w3c_geolocation.js \
   --externs temp_externs/w3c_indexeddb.js \
   --externs temp_externs/w3c_navigation_timing.js \
   --externs temp_externs/w3c_range.js \

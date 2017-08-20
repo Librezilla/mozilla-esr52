@@ -46,18 +46,6 @@ function do_check_set_eq(a1, a2) {
 }
 
 function test_substitute_does_not_break_substituted(scope) {
-  const Ci = Components.interfaces;
-
-  // geolocation-noprompt substitutes for geolocation ...
-  do_check_eq(scope.PermissionsTable["geolocation-noprompt"].substitute[0],
-              "geolocation");
-  // ... and sets silent allow ...
-  do_check_eq(scope.PermissionsTable["geolocation-noprompt"].certified,
-              Ci.nsIPermissionManager.ALLOW_ACTION)
-  // ... which works ...
-  do_check_false(scope.isExplicitInPermissionsTable("geolocation-noprompt", Ci.nsIPrincipal.APP_STATUS_CERTIFIED));
-  // ... but does not interfere with geolocation's PROMPT value
-  do_check_true(scope.isExplicitInPermissionsTable("geolocation", Ci.nsIPrincipal.APP_STATUS_CERTIFIED));
 }
 
 function run_test() {

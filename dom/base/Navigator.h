@@ -28,9 +28,6 @@ class nsIURI;
 
 namespace mozilla {
 namespace dom {
-#ifdef MOZ_GEOLOCATION
-class Geolocation;
-#endif
 class systemMessageCallback;
 class MediaDevices;
 struct MediaStreamConstraints;
@@ -131,10 +128,6 @@ public:
   nsMimeTypeArray* GetMimeTypes(ErrorResult& aRv);
   nsPluginArray* GetPlugins(ErrorResult& aRv);
   Permissions* GetPermissions(ErrorResult& aRv);
-  // The XPCOM GetDoNotTrack is ok
-#ifdef MOZ_GEOLOCATION
-  Geolocation* GetGeolocation(ErrorResult& aRv);
-#endif
 
   already_AddRefed<Promise> PublishServer(const nsAString& aName,
                                           const FlyWebPublishOptions& aOptions,
@@ -257,9 +250,6 @@ private:
   RefPtr<nsMimeTypeArray> mMimeTypes;
   RefPtr<nsPluginArray> mPlugins;
   RefPtr<Permissions> mPermissions;
-#ifdef MOZ_GEOLOCATION
-  RefPtr<Geolocation> mGeolocation;
-#endif
   RefPtr<DesktopNotificationCenter> mNotification;
 #ifdef MOZ_POWER
   RefPtr<PowerManager> mPowerManager;
